@@ -35,6 +35,7 @@ class _LoginPageState extends State<LoginPage>
       child: Scaffold(
           resizeToAvoidBottomInset: false,
           body: SafeArea(
+            bottom: false,
             child: Stack(
               children: [
                 Container(
@@ -321,7 +322,7 @@ class _LoginButton extends StatelessWidget {
             }
             userInfo = GetIt.I<AriUser>();
 
-            Navigator.push(
+            Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                 builder: (context) => Tmp(),

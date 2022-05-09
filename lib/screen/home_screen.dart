@@ -20,9 +20,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       var loginCrwal = LoginCrwal(id: saved_id, pw: saved_pw);
       final getuserInfo = await loginCrwal.userInfo();
-      Navigator.push(context, MaterialPageRoute(builder: (context) => Tmp()));
+      Navigator.pushReplacement(
+          context, MaterialPageRoute(builder: (context) => Tmp()));
     } catch (e) {
-      Navigator.push(
+      Navigator.pushReplacement(
           context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
   }
