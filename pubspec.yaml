@@ -39,6 +39,7 @@ dependencies:
   flutter_switch: ^0.3.2
   shared_preferences: ^2.0.5
   animated_splash_screen: ^1.2.0
+  page_transition: ^2.0.5
 
 dev_dependencies:
   flutter_test:

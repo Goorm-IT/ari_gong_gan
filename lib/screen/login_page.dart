@@ -215,10 +215,10 @@ class CustomClipPath extends CustomClipper<Path> {
 typedef LoginController = void Function(String);
 
 class _LoginTextField extends StatefulWidget {
-  String hintText;
-  String image;
-  bool obscureText;
-  LoginController controller;
+  final String hintText;
+  final String image;
+  final bool obscureText;
+  final LoginController controller;
 
   _LoginTextField(
       {required this.controller,
