@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage>
   void initState() {
     super.initState();
     _animationController =
-        AnimationController(vsync: this, duration: Duration(milliseconds: 200));
+        AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
 
   @override
@@ -140,7 +140,7 @@ class _LoginPageState extends State<LoginPage>
                             if (_animationController.status ==
                                 AnimationStatus.completed) {
                               _animationController.reverse();
-                              Future.delayed(const Duration(milliseconds: 200),
+                              Future.delayed(const Duration(milliseconds: 350),
                                   () {
                                 _animationController.forward();
                               });
@@ -256,7 +256,8 @@ class _LoginTextFieldState extends State<_LoginTextField> {
       child: TextField(
         obscureText: widget.obscureText,
         controller: myController,
-        style: const TextStyle(color: Colors.grey, fontWeight: FontWeight.w500),
+        style: const TextStyle(
+            color: Color(0xff97AAC3), fontWeight: FontWeight.w500),
         decoration: loginTextFieldStyle(widget.hintText, widget.image),
       ),
     );
