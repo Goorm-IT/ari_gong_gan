@@ -11,8 +11,8 @@ class LoginData {
     final prefs = await SharedPreferences.getInstance();
 
     return {
-      'user_id': prefs.getString('user_id') ?? '',
-      'user_pw': prefs.getString('user_pw') ?? ''
+      'user_id': prefs.getString('user_id') ?? "",
+      'user_pw': prefs.getString('user_pw') ?? ""
     };
   }
 
