@@ -1,5 +1,7 @@
+import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
+import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
@@ -109,7 +111,7 @@ class _LoginPageState extends State<LoginPage>
                             width: 10,
                           ),
                           FlutterSwitch(
-                            activeColor: Color(0xff4888E0),
+                            activeColor: PRIMARY_COLOR_DEEP,
                             inactiveColor: Colors.grey,
                             width: 50.0,
                             height: 25.0,
@@ -326,7 +328,7 @@ class _LoginButton extends StatelessWidget {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (context) => Tmp(),
+                builder: (context) => HomeScreen(),
               ),
             );
           } catch (e) {

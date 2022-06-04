@@ -1,4 +1,5 @@
 import 'package:ari_gong_gan/http/login_crawl.dart';
+import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
@@ -19,7 +20,7 @@ void main() {
     try {
       var loginCrwal = LoginCrwal(id: saved_id, pw: saved_pw);
       final getuserInfo = await loginCrwal.userInfo();
-      return Tmp();
+      return HomeScreen();
     } catch (e) {
       return LoginPage();
     }
@@ -29,7 +30,10 @@ void main() {
   GetIt.I.allowReassignment = true;
   runApp(
     MaterialApp(
-      theme: ThemeData(fontFamily: 'NotoSans'),
+      theme: ThemeData(
+        fontFamily: 'NotoSans',
+        bottomSheetTheme: BottomSheetThemeData(),
+      ),
       title: '아리공간',
       home: AnimatedSplashScreen.withScreenFunction(
         splash: Image.asset('assets/images/title.png'),
