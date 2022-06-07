@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'login_page.dart';
 
 class MyPage extends StatefulWidget {
   const MyPage({Key? key}) : super(key: key);
@@ -19,93 +20,240 @@ class _MyPageState extends State<MyPage> {
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: _myPageAppbar(context),
-      body: Container(
-        color: Color(0xffd1e9ff),
-        width: windowWidth,
-        height: windowHeight,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            SizedBox(
-              height: 28.0,
-            ),
-            Row(
-              children: [
-                Container(
-                  margin: const EdgeInsets.only(left: 35.0),
-                  child: ClipOval(
-                    child: Container(
+      body: Stack(children: [
+        Container(
+          height: windowHeight,
+          width: windowWidth,
+          color: Color(0xff6ea0e6),
+        ),
+        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+          SizedBox(
+            height: 28.0,
+          ),
+          Row(
+            children: [
+              Container(
+                margin: const EdgeInsets.only(left: 35.0),
+                child: ClipOval(
+                  child: Container(
+                      color: Colors.white,
+                      width: 60,
+                      height: 60,
+                      padding: const EdgeInsets.all(12),
+                      child: Image.asset(
+                        'assets/images/ari_book_leading_icon.png',
+                        width: 10,
+                        height: 10,
+                      )),
+                ),
+              ),
+              SizedBox(
+                width: 20,
+              ),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    userInfo.name,
+                    style: TextStyle(
+                        fontSize: 16,
                         color: Colors.white,
-                        width: 60,
-                        height: 60,
-                        padding: const EdgeInsets.all(12),
-                        child: Image.asset(
-                          'assets/images/ari_book_leading_icon.png',
-                          width: 10,
-                          height: 10,
-                        )),
+                        fontWeight: FontWeight.w600),
+                  ),
+                  SizedBox(
+                    height: 5.0,
+                  ),
+                  Text(
+                    userInfo.studentId,
+                    style: TextStyle(
+                        fontSize: 10,
+                        color: Colors.white,
+                        fontWeight: FontWeight.w500),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ]),
+        Positioned(
+          bottom: 0,
+          child: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 69.0),
+            height: 500,
+            child: Column(
+              children: [
+                Material(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(28),
+                    ),
+                    onTap: () {
+                      Null;
+                    },
+                    child: Ink(
+                      width: windowWidth - 139,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "이용수칙",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff6ea0e6),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
-                  width: 20,
+                  height: 30.0,
                 ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      userInfo.name,
-                      style: TextStyle(
-                          color: PRIMARY_COLOR_DEEP,
-                          fontWeight: FontWeight.w600),
+                Material(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(28),
                     ),
-                    SizedBox(
-                      height: 5.0,
+                    onTap: () {
+                      Null;
+                    },
+                    child: Ink(
+                      width: windowWidth - 139,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "대여방법",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff6ea0e6),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    Text(
-                      userInfo.studentId,
-                      style: TextStyle(
-                          fontSize: 10,
-                          color: PRIMARY_COLOR_DEEP,
-                          fontWeight: FontWeight.w500),
+                  ),
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                Material(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(28),
                     ),
-                  ],
+                    onTap: () {
+                      Null;
+                    },
+                    child: Ink(
+                      width: windowWidth - 139,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "예약취소",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff6ea0e6),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+                SizedBox(
+                  height: 30.0,
+                ),
+                Material(
+                  borderRadius: BorderRadius.all(
+                    Radius.circular(30),
+                  ),
+                  child: InkWell(
+                    borderRadius: BorderRadius.all(
+                      Radius.circular(28),
+                    ),
+                    onTap: () {
+                      Null;
+                    },
+                    child: Ink(
+                      width: windowWidth - 139,
+                      height: 35,
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(30),
+                        ),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            "로그아웃",
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Color(0xff6ea0e6),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ],
             ),
-            SizedBox(
-              height: 35,
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 3,
-            ),
-            _Item(
-              title: "이용수칙",
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 3,
-            ),
-            _Item(
-              title: "대여방법",
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 3,
-            ),
-            _Item(
-              title: "예약취소",
-            ),
-            Divider(
-              color: Colors.white,
-              thickness: 3,
-            ),
-            _Item(
-              title: "로그아웃",
-            ),
-          ],
+          ),
         ),
-      ),
+        Align(
+          alignment: Alignment.bottomCenter,
+          child: ClipPath(
+            child: Container(
+              width: MediaQuery.of(context).size.width,
+              height: 150,
+              color: Color(0xffd1e9ff),
+            ),
+            clipper: CustomClipPath(),
+          ),
+        ),
+        SizedBox(
+          height: 22,
+        ),
+      ]),
     );
   }
 }
