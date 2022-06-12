@@ -318,7 +318,6 @@ class __BookCardState extends State<_BookCard> {
           borderRadius: BorderRadius.all(Radius.circular(15.0)),
           onTap: () {
             showModalBottomSheet<void>(
-                isDismissible: false,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.only(
                       topLeft: Radius.circular(30.0),

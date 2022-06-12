@@ -1,5 +1,6 @@
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
+import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'login_page.dart';
@@ -82,158 +83,43 @@ class _MyPageState extends State<MyPage> {
             height: 500,
             child: Column(
               children: [
-                Material(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(28),
-                    ),
-                    onTap: () {
-                      Null;
-                    },
-                    child: Ink(
-                      width: windowWidth - 139,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "이용수칙",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff6ea0e6),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _Item(
+                  title: '이용수칙',
+                  onPress: () {
+                    return null;
+                  },
                 ),
                 SizedBox(
                   height: 30.0,
                 ),
-                Material(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(28),
-                    ),
-                    onTap: () {
-                      Null;
-                    },
-                    child: Ink(
-                      width: windowWidth - 139,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "대여방법",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff6ea0e6),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _Item(
+                  title: '대여방법',
+                  onPress: () {
+                    return null;
+                  },
                 ),
                 SizedBox(
                   height: 30.0,
                 ),
-                Material(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(28),
-                    ),
-                    onTap: () {
-                      Null;
-                    },
-                    child: Ink(
-                      width: windowWidth - 139,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "예약취소",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff6ea0e6),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _Item(
+                  title: '예약취소',
+                  onPress: () {
+                    return null;
+                  },
                 ),
                 SizedBox(
                   height: 30.0,
                 ),
-                Material(
-                  borderRadius: BorderRadius.all(
-                    Radius.circular(30),
-                  ),
-                  child: InkWell(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(28),
-                    ),
-                    onTap: () {
-                      Null;
-                    },
-                    child: Ink(
-                      width: windowWidth - 139,
-                      height: 35,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(30),
-                        ),
-                      ),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Text(
-                            "로그아웃",
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Color(0xff6ea0e6),
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+                _Item(
+                  title: '로그아웃',
+                  onPress: () async {
+                    var ctrl = new LoginData();
+                    await ctrl.removeLoginData();
+                    Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        (route) => false);
+                  },
                 ),
               ],
             ),
@@ -298,8 +184,10 @@ PreferredSizeWidget _myPageAppbar(BuildContext context) {
 
 class _Item extends StatefulWidget {
   String title;
+  Function() onPress;
 
-  _Item({required this.title, Key? key}) : super(key: key);
+  _Item({required this.title, required this.onPress, Key? key})
+      : super(key: key);
 
   @override
   State<_Item> createState() => __ItemState();
@@ -309,19 +197,39 @@ class __ItemState extends State<_Item> {
   Color textColor = PRIMARY_COLOR_DEEP;
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        setState(() {
-          textColor =
-              (textColor == Colors.white) ? PRIMARY_COLOR_DEEP : Colors.white;
-        });
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(vertical: 9.0, horizontal: 35.0),
-        child: Text(
-          widget.title,
-          style: TextStyle(
-              color: textColor, fontSize: 15.0, fontWeight: FontWeight.w600),
+    double windowHeight = MediaQuery.of(context).size.height;
+    double windowWidth = MediaQuery.of(context).size.width;
+    return Material(
+      borderRadius: BorderRadius.all(
+        Radius.circular(30),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.all(
+          Radius.circular(28),
+        ),
+        onTap: widget.onPress,
+        child: Ink(
+          width: windowWidth - 139,
+          height: 35,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(
+              Radius.circular(30),
+            ),
+          ),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                widget.title,
+                style: TextStyle(
+                  fontSize: 16,
+                  color: Color(0xff6ea0e6),
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
