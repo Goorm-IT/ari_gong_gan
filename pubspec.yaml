@@ -43,8 +43,8 @@ dependencies:
   intl: ^0.17.0
   flutter_inset_box_shadow: ^1.0.8
 
-  # flutter_beacon: ^0.5.1
-  # get: ^4.6.5
+  flutter_beacon: ^0.5.1
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:

@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
+import 'package:ari_gong_gan/testt/home_page.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:ari_gong_gan/widget/requirement_state_controller.dart';
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ void main() {
       final getuserInfo = await loginCrwal.userInfo();
       return HomeScreen();
     } catch (e) {
-      return LoginPage();
+      return HomePage();
     }
   }
 
