@@ -30,7 +30,7 @@ class LoginCrwal {
     } else {
       int index = rawCookie.indexOf(';');
       this._cookie = (index == -1) ? rawCookie : rawCookie.substring(0, index);
-      print('cookie1: ${this._cookie} ');
+      // print('cookie1: ${this._cookie} ');
     }
   }
 
