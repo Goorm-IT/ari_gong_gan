@@ -1,10 +1,13 @@
 import 'package:ari_gong_gan/const/user_info.dart';
+import 'package:ari_gong_gan/http/ari_server.dart';
+import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/my_page.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import "dart:math" show pi;
 
 import 'package:page_transition/page_transition.dart';
@@ -24,9 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Color bookBorderColor = Colors.white;
   double bookBorderWidth = 0.0;
   bool isPressed = false;
-
+  late RevervationAllProvider _revervationAllProvider;
   @override
   Widget build(BuildContext context) {
+    _revervationAllProvider =
+        Provider.of<RevervationAllProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -57,8 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   margin: const EdgeInsets.only(left: 35),
                   child: Text.rich(
                     TextSpan(
-                      text: "아리공간",
-                      // text: userInfo.name,
+                      text: userInfo.name,
                       style: TextStyle(
                           fontSize: 18,
                           color: Colors.white,
@@ -121,7 +125,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     //     bookBorderWidth = 0.0;
                     //   });
                     // },
-                    onTap: () {
+                    onTap: () async {
+                      await _revervationAllProvider.getReservationAll();
                       Navigator.push(
                           context,
                           MaterialPageRoute(
@@ -251,13 +256,13 @@ class _ButtonState extends State<_Button> {
                 isPressed = false;
               });
             },
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => MyPage(),
-                ),
-              );
+            onTap: () async {
+              // Navigator.push(
+              //   context,
+              //   MaterialPageRoute(
+              //     builder: (context) => MyPage(),
+              //   ),
+              // );
             },
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,

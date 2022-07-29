@@ -1,20 +1,26 @@
 PODS:
   - Flutter (1.0.0)
+  - flutter_beacon (0.3.0):
+    - Flutter
   - shared_preferences_ios (0.0.1):
     - Flutter
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - flutter_beacon (from `.symlinks/plugins/flutter_beacon/ios`)
   - shared_preferences_ios (from `.symlinks/plugins/shared_preferences_ios/ios`)
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  flutter_beacon:
+    :path: ".symlinks/plugins/flutter_beacon/ios"
   shared_preferences_ios:
     :path: ".symlinks/plugins/shared_preferences_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
+  flutter_beacon: 2525df9d96b904623f325968a73bac805e648119
   shared_preferences_ios: 548a61f8053b9b8a49ac19c1ffbc8b92c50d68ad
 
 PODFILE CHECKSUM: aafe91acc616949ddb318b77800a7f51bffa2a4c
