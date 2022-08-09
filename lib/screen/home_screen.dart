@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/my_page.dart';
+import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
@@ -185,6 +186,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         _Button(
                           title: '스터디룸',
                           image: 'assets/images/ari_book_leading_icon.png',
+                          ontap: () {},
                         ),
                         _Button(
                           title: '예약확인',
@@ -213,7 +215,8 @@ class _HomeScreenState extends State<HomeScreen> {
 class _Button extends StatefulWidget {
   final String title;
   final String image;
-  _Button({required this.title, required this.image, Key? key})
+  Function()? ontap;
+  _Button({required this.title, required this.image, this.ontap, Key? key})
       : super(key: key);
 
   @override
@@ -256,14 +259,7 @@ class _ButtonState extends State<_Button> {
                 isPressed = false;
               });
             },
-            onTap: () async {
-              // Navigator.push(
-              //   context,
-              //   MaterialPageRoute(
-              //     builder: (context) => MyPage(),
-              //   ),
-              // );
-            },
+            onTap: widget.ontap,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [

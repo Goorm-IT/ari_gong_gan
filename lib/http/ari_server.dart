@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 late String _cookie;
 
 class AriServer {
-  String url = 'http://13.125.65.206:8000';
+  String url = 'http://54.183.139.95:8000';
   Future<String> login({required String id, required String pw}) async {
     var headers = {
       'Content-Type': 'text/plain',
@@ -22,6 +22,7 @@ class AriServer {
     String _tmpCookie = response.headers['set-cookie'] ?? '';
     var idx = _tmpCookie.indexOf(';');
     _cookie = (idx == -1) ? _tmpCookie : _tmpCookie.substring(0, idx);
+    print(response.statusCode);
     if (response.statusCode == 200) {
       String tmp = await response.stream.bytesToString();
 
@@ -31,7 +32,7 @@ class AriServer {
     }
   }
 
-  Future<void> revervation() async {
+  Future<int> revervation() async {
     var headers = {'Content-Type': 'text/plain', 'Cookie': _cookie};
     print(reservationInfo);
     var request = http.Request('POST', Uri.parse('$url/reservation'));
@@ -41,11 +42,7 @@ class AriServer {
 
     http.StreamedResponse response = await request.send();
     print(response.statusCode);
-    if (response.statusCode == 200) {
-      print(await response.stream.bytesToString());
-    } else {
-      print(response.reasonPhrase);
-    }
+    return response.statusCode;
   }
 
   Future<List<ReservationAll>> revervationAll() async {

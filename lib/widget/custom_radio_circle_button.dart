@@ -56,7 +56,7 @@ class CustomRadioCircleButtonState extends State<CustomRadioCircleButton>
     shadowColor = !widget.isPressed
         ? widget.shadowColor
         : Color.fromARGB(223, 56, 56, 56);
-    return widget.isBooked == 'available'
+    return widget.isBooked == 'activate'
         ? GestureDetector(
             onTap: () {
               if (widget.onTap != null) {

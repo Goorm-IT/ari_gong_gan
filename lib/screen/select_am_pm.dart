@@ -126,7 +126,7 @@ class _SelectAMPMState extends State<SelectAMPM>
                               }
                             });
                           },
-                          isBooked: 'available',
+                          isBooked: 'activate',
                         ),
                         SizedBox(
                           width: 10,
@@ -159,7 +159,7 @@ class _SelectAMPMState extends State<SelectAMPM>
                               }
                             });
                           },
-                          isBooked: 'available',
+                          isBooked: 'activate',
                         ),
                         SizedBox(
                           width: 10,

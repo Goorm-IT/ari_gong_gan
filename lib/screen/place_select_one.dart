@@ -28,7 +28,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
   List<ReservationAll> _placeList = [];
   @override
   Widget build(BuildContext context) {
-    print(widget.placeListFilteredBytime);
+    print("placeListFilteredBytime :  ${widget.placeListFilteredBytime} ");
     return Scaffold(
       appBar: customAppbar(context),
       body: Stack(
@@ -152,7 +152,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
               reservationInfo.name = "";
             });
 
-            reservationInfo.floor = title.replaceAll(' ', '');
+            reservationInfo.floor = title;
             _placeList.clear();
             for (int i = 0; i < widget.placeListFilteredBytime.length; i++) {
               if (reservationInfo.floor ==
@@ -160,6 +160,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
                 _placeList.add(widget.placeListFilteredBytime[i]);
               }
             }
+            print("_placeList:  ${_placeList}");
             Navigator.push(
               context,
               MaterialPageRoute(

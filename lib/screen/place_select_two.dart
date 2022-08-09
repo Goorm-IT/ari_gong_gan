@@ -4,6 +4,7 @@ import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_place.dart';
 import 'package:ari_gong_gan/model/resevation_all.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:ari_gong_gan/widget/custom_radio_circle_button.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
@@ -40,7 +41,8 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.placeListFilteredByfloor);
+    print(
+        'widget.placeListFilteredByfloor:  ${widget.placeListFilteredByfloor}');
     return Scaffold(
       appBar: customAppbar(context),
       body: Stack(
@@ -180,9 +182,8 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                                 shadowColor: Color.fromARGB(223, 150, 150, 150),
                                 onTap: () {
                                   setState(() {
-                                    reservationInfo.name = widget
-                                        .rooms[index].place
-                                        .replaceAll(' ', '');
+                                    reservationInfo.name =
+                                        widget.rooms[index].place;
                                   });
                                   if (_isPressed[index]) {
                                     reservationInfo.name = "";
@@ -203,14 +204,36 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                             ? null
                             : () async {
                                 var ariServer = AriServer();
-                                await ariServer.revervation();
-                                customShowDiaLog(
-                                  context: context,
-                                  title: diaLogTitle(),
-                                  content: diaLogContent(),
-                                  action: [diaLogAction()],
-                                  isBackButton: false,
-                                );
+                                int result = await ariServer.revervation();
+                                late String tmpFloor, tmpName, tmpTime;
+                                setState(() {
+                                  tmpFloor = reservationInfo.floor;
+                                  tmpName = reservationInfo.name;
+                                  tmpTime = reservationInfo.time;
+                                  reservationInfo.floor = "";
+                                  reservationInfo.name = "";
+                                  reservationInfo.time = "";
+                                  reservationInfo.userNum = "";
+                                });
+                                if (result == 200) {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              ReservationComplete(
+                                                floor: tmpFloor,
+                                                name: tmpName,
+                                                time: tmpTime,
+                                              )));
+                                } else {
+                                  customShowDiaLog(
+                                    context: context,
+                                    title: diaLogTitle(),
+                                    content: diaLogContent(),
+                                    action: [diaLogAction()],
+                                    isBackButton: false,
+                                  );
+                                }
                               },
                         child: Text(
                           "예약하기",
@@ -246,7 +269,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
     return Container(
       child: Center(
         child: Text(
-          "예약 완료",
+          "예약 실패",
           style: TextStyle(
               color: PRIMARY_COLOR_DEEP,
               fontSize: 18,
@@ -262,7 +285,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
         child: Column(
           children: [
             Text(
-              "예약이 완료 되었습니다",
+              "잠시후에 다시 시도해주세요",
               style: TextStyle(
                 color: PRIMARY_COLOR_DEEP,
               ),
@@ -275,35 +298,50 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
   }
 
   Widget diaLogAction() {
-    return Container(
-      alignment: Alignment.center,
-      decoration: BoxDecoration(
-        color: Color(0xffF9E769),
-        borderRadius: BorderRadius.only(
-          bottomLeft: Radius.circular(18.0),
-          bottomRight: Radius.circular(18.0),
-        ),
-      ),
-      child: TextButton(
-        onPressed: () {
-          setState(() {
-            reservationInfo.floor = "";
-            reservationInfo.name = "";
-            reservationInfo.time = "";
-            reservationInfo.userNum = "";
-          });
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-              (route) => false);
-        },
-        child: Container(
-          child: Text(
-            "메인으로",
-            style: TextStyle(color: Colors.white),
+    return Row(
+      children: [
+        Flexible(
+          child: ClipRRect(
+            borderRadius: BorderRadius.only(
+              bottomLeft: Radius.circular(18.0),
+              bottomRight: Radius.circular(18.0),
+            ),
+            child: Material(
+              color: Color(0xffF9E769),
+              child: InkWell(
+                onTap: () {
+                  setState(() {
+                    reservationInfo.floor = "";
+                    reservationInfo.name = "";
+                    reservationInfo.time = "";
+                    reservationInfo.userNum = "";
+                  });
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                      (route) => false);
+                },
+                child: Container(
+                  height: 53,
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.only(
+                      bottomRight: Radius.circular(18.0),
+                      bottomLeft: Radius.circular(18.0),
+                    ),
+                  ),
+                  child: Container(
+                    child: Text(
+                      "메인으로",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
           ),
         ),
-      ),
+      ],
     );
   }
 }
