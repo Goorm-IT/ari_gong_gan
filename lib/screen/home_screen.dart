@@ -1,6 +1,8 @@
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
+import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/screen/check_reservation.dart';
 import 'package:ari_gong_gan/screen/my_page.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
@@ -29,10 +31,13 @@ class _HomeScreenState extends State<HomeScreen> {
   double bookBorderWidth = 0.0;
   bool isPressed = false;
   late RevervationAllProvider _revervationAllProvider;
+  late ReservationByUserProvider _reservationByUserProvider;
   @override
   Widget build(BuildContext context) {
     _revervationAllProvider =
         Provider.of<RevervationAllProvider>(context, listen: false);
+    _reservationByUserProvider =
+        Provider.of<ReservationByUserProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -171,7 +176,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 color: Color(0xffecf3ff),
               ),
-              height: 300,
+              height: MediaQuery.of(context).size.height - 420,
               margin: const EdgeInsets.symmetric(horizontal: 48.0),
               width: windowWidth - 96,
               child: Padding(
@@ -191,6 +196,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         _Button(
                           title: '예약확인',
                           image: 'assets/images/ari_book_leading_icon.png',
+                          ontap: () async {
+                            await _reservationByUserProvider
+                                .getReservationByUser();
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => CheckReservation()));
+                          },
                         ),
                       ],
                     ),

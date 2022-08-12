@@ -91,8 +91,8 @@ class _LoginPageState extends State<LoginPage>
                           height: 10,
                         ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               child: Container(
@@ -107,9 +107,11 @@ class _LoginPageState extends State<LoginPage>
                                 ),
                               ),
                             ),
-                            Text(
-                              "자동로그인",
-                              style: TextStyle(color: Color(0xff2098EB)),
+                            Center(
+                              child: Text(
+                                "자동로그인",
+                                style: TextStyle(color: Color(0xff2098EB)),
+                              ),
                             ),
                             SizedBox(
                               width: 10,
