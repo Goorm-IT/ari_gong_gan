@@ -1,8 +1,8 @@
-import 'package:ari_gong_gan/widget/requirement_state_controller.dart';
-import 'package:flutter/material.dart';
-import 'dart:async';
+import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
+import 'dart:async';
 
 import 'package:get/get.dart';
 
@@ -47,8 +47,8 @@ class _TabScanningState extends State<TabScanning> {
     }
     final regions = <Region>[
       Region(
-        identifier: 'Cubeacon',
-        proximityUUID: 'CB10023F-A318-3394-4199-A8730C7C1AEC',
+        identifier: 'MBeacon',
+        proximityUUID: '74278BDA-B644-4520-8F0C-720EAF059935',
       ),
       Region(
         identifier: 'BeaconType2',

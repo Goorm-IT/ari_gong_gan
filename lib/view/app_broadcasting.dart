@@ -1,4 +1,4 @@
-import 'package:ari_gong_gan/widget/requirement_state_controller.dart';
+import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flutter/services.dart';
@@ -15,7 +15,6 @@ class _TabBroadcastingState extends State<TabBroadcasting> {
   final controller = Get.find<RequirementStateController>();
   final clearFocus = FocusNode();
   bool broadcasting = false;
-  
 
   final regexUUID = RegExp(
       r'[0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12}');

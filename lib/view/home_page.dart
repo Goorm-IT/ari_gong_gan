@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:ari_gong_gan/testt/app_broadcasting.dart';
-import 'package:ari_gong_gan/testt/app_scanning.dart';
-import 'package:ari_gong_gan/widget/requirement_state_controller.dart';
+import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
+import 'package:ari_gong_gan/view/app_broadcasting.dart';
+import 'package:ari_gong_gan/view/app_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
@@ -16,7 +16,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
-  final controller = Get.put(RequirementStateController());
+  final controller = Get.find<RequirementStateController>();
   StreamSubscription<BluetoothState>? _streamBluetooth;
   int currentIndex = 0;
 
@@ -189,7 +189,7 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           });
 
           if (currentIndex == 0) {
-            controller.startScanning();
+            controller.startScanning(); //이걸 누르면 스캔 하기 시작함!! 그래서 아까 멈춘듯
           } else {
             controller.pauseScanning();
             controller.startBroadcasting();

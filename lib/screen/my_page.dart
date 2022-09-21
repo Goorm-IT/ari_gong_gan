@@ -1,6 +1,7 @@
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
@@ -109,6 +110,10 @@ class _MyPageState extends State<MyPage> {
                 _Item(
                   title: '이용수칙',
                   onPress: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return HomePage();
+                    })));
                     return null;
                   },
                 ),
@@ -405,8 +410,8 @@ class __ItemState extends State<_Item> {
       child: ElevatedButton(
         onPressed: widget.onPress,
         style: ElevatedButton.styleFrom(
-          onPrimary: Colors.grey,
-          primary: Colors.white,
+          foregroundColor: Colors.grey,
+          backgroundColor: Colors.white,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
