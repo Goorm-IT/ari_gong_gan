@@ -30,7 +30,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
   Widget build(BuildContext context) {
     print("placeListFilteredBytime :  ${widget.placeListFilteredBytime} ");
     return Scaffold(
-      appBar: customAppbar(context),
+      appBar: customAppbar(context, true),
       body: Stack(
         children: [
           Container(

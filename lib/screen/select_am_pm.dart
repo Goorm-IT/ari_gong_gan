@@ -47,7 +47,7 @@ class _SelectAMPMState extends State<SelectAMPM>
         }
       },
       child: Scaffold(
-        appBar: customAppbar(context),
+        appBar: customAppbar(context, true),
         body: Stack(
           children: [
             Container(

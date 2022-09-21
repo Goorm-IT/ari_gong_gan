@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
@@ -13,11 +14,15 @@ import 'package:get_it/get_it.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 // import 'package:get/get.dart';
 
 const Color color = Color(0xfff9e769);
-
-void main() {
+int? isInitView;
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  SharedPreferences prefs = await SharedPreferences.getInstance();
+  isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
     var ctrl = new LoginData();
 
@@ -33,10 +38,10 @@ void main() {
       if (ariLogin == "SUCCESS") {
         return HomeScreen();
       } else {
-        return LoginPage();
+        return isInitView == 0 ? LoginPage() : AgreementPage();
       }
     } catch (e) {
-      return LoginPage();
+      return isInitView == 0 ? LoginPage() : AgreementPage();
     }
   }
 
@@ -60,10 +65,10 @@ void main() {
         ),
         title: '아리공간',
         home: AnimatedSplashScreen.withScreenFunction(
-          splash: Image.asset('assets/images/title.png'),
-          splashIconSize: 170,
+          splash: Image.asset('assets/images/splash_launcher.gif'),
+          splashIconSize: 4000,
           screenFunction: isLoginDataSaved,
-          duration: 100,
+          duration: 1000,
           splashTransition: SplashTransition.fadeTransition,
           pageTransitionType: PageTransitionType.fade,
           backgroundColor: color,

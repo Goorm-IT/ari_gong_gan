@@ -64,7 +64,6 @@ class _CheckReservationState extends State<CheckReservation> {
     setState(() {
       _itemList = _tmp.toList();
     });
-    print('${_tmp.toList()}asdasd');
   }
 
   void changeSort(List<ReservationByUser> list, int sort) {
@@ -88,7 +87,7 @@ class _CheckReservationState extends State<CheckReservation> {
     double windowWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
-      appBar: customAppbar(context),
+      appBar: customAppbar(context, true),
       body: Stack(
         children: [
           Container(
@@ -331,7 +330,7 @@ class _CheckReservationState extends State<CheckReservation> {
                   },
                   style: ElevatedButton.styleFrom(
                       padding: EdgeInsets.zero,
-                      primary: Colors.white,
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(50))),
                   child: Text(
@@ -560,7 +559,8 @@ class _CheckReservationState extends State<CheckReservation> {
       {required double windowHeight,
       required List<ReservationByUser> reservationInfo}) {
     return Container(
-      height: windowHeight - 240 - customAppbar(context).preferredSize.height,
+      height:
+          windowHeight - 240 - customAppbar(context, true).preferredSize.height,
       margin: const EdgeInsets.symmetric(horizontal: 40),
       child: ListView.builder(
           itemCount: reservationInfo.length,

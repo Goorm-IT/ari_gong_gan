@@ -44,7 +44,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
     print(
         'widget.placeListFilteredByfloor:  ${widget.placeListFilteredByfloor}');
     return Scaffold(
-      appBar: customAppbar(context),
+      appBar: customAppbar(context, true),
       body: Stack(
         children: [
           Container(

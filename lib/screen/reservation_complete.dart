@@ -34,7 +34,7 @@ class _ReservationCompleteState extends State<ReservationComplete> {
         return false;
       },
       child: Scaffold(
-        appBar: customAppbar(context),
+        appBar: customAppbar(context, true),
         body: Stack(
           children: [
             Container(

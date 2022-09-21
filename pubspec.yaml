@@ -46,6 +46,7 @@ dependencies:
   flutter_beacon: ^0.5.1
   get: ^4.6.5
   blur: ^3.0.0
+  path_provider: ^2.0.11
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +70,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - assets/texts/
 
   # To add assets to your application, add an assets section, like this:
   # assets:

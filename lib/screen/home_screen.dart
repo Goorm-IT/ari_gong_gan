@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/check_reservation.dart';
 import 'package:ari_gong_gan/screen/my_page.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
@@ -41,7 +42,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: customAppbar(context),
+      appBar: customAppbar(context, true),
       body: Stack(
         children: [
           Container(
@@ -191,7 +192,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         _Button(
                           title: '스터디룸',
                           image: 'assets/images/ari_book_leading_icon.png',
-                          ontap: () {},
+                          ontap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AgreementPage()));
+                          },
                         ),
                         _Button(
                           title: '예약확인',
