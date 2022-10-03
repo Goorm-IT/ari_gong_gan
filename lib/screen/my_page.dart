@@ -1,6 +1,6 @@
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
-import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
@@ -47,58 +47,61 @@ class _MyPageState extends State<MyPage> {
             ),
           ),
         ),
-        Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-          SizedBox(
-            height: 28.0,
-          ),
-          Row(
-            children: [
-              Container(
-                margin: const EdgeInsets.only(left: 35.0),
-                child: ClipOval(
-                  child: Container(
-                      color: Colors.white,
-                      width: 60,
-                      height: 60,
-                      padding: const EdgeInsets.all(12),
-                      child: Image.asset(
-                        'assets/images/ari_book_leading_icon.png',
-                        width: 10,
-                        height: 10,
-                      )),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 28.0,
+            ),
+            Row(
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(left: 35.0),
+                  child: ClipOval(
+                    child: Container(
+                        color: Colors.white,
+                        width: 60,
+                        height: 60,
+                        padding: const EdgeInsets.all(12),
+                        child: Image.asset(
+                          'assets/images/ari_book_leading_icon.png',
+                          width: 10,
+                          height: 10,
+                        )),
+                  ),
                 ),
-              ),
-              SizedBox(
-                width: 20,
-              ),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Text(
-                    userInfo.name,
-                    style: TextStyle(
-                        fontSize: 20,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600),
-                  ),
-                  SizedBox(
-                    height: 2.0,
-                  ),
-                  Text(
-                    userInfo.studentId,
-                    style: TextStyle(
-                        fontSize: 16,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w500),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ]),
+                SizedBox(
+                  width: 20,
+                ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 10.0,
+                    ),
+                    Text(
+                      userInfo.name,
+                      style: TextStyle(
+                          fontSize: 20,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w600),
+                    ),
+                    SizedBox(
+                      height: 2.0,
+                    ),
+                    Text(
+                      userInfo.studentId,
+                      style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                          fontWeight: FontWeight.w500),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
+        ),
         Positioned(
           top: 180,
           child: Container(
@@ -108,7 +111,31 @@ class _MyPageState extends State<MyPage> {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 _Item(
+                  title: '공지사항',
+                  onPress: () {
+                    return null;
+                  },
+                  isChecked: true,
+                ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                _Item(
                   title: '이용수칙',
+                  onPress: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: ((context) {
+                      return TermsOfUse();
+                    })));
+                    return null;
+                  },
+                  isChecked: true,
+                ),
+                SizedBox(
+                  height: 15.0,
+                ),
+                _Item(
+                  title: '문의사항',
                   onPress: () {
                     Navigator.push(context,
                         MaterialPageRoute(builder: ((context) {
@@ -116,27 +143,30 @@ class _MyPageState extends State<MyPage> {
                     })));
                     return null;
                   },
+                  isChecked: true,
                 ),
                 SizedBox(
-                  height: 30.0,
+                  height: 15.0,
                 ),
                 _Item(
-                  title: '대여방법',
+                  title: '이용약관',
                   onPress: () {
                     return null;
                   },
+                  isChecked: true,
                 ),
                 SizedBox(
-                  height: 30.0,
+                  height: 15.0,
                 ),
                 _Item(
                   title: '예약취소',
                   onPress: () {
                     return null;
                   },
+                  isChecked: false,
                 ),
                 SizedBox(
-                  height: 30.0,
+                  height: 15.0,
                 ),
                 _Item(
                   title: '로그아웃',
@@ -149,6 +179,7 @@ class _MyPageState extends State<MyPage> {
                       isBackButton: true,
                     );
                   },
+                  isChecked: false,
                 ),
               ],
             ),
@@ -389,8 +420,13 @@ PreferredSizeWidget _myPageAppbar(BuildContext context) {
 class _Item extends StatefulWidget {
   String title;
   Function() onPress;
+  bool isChecked;
 
-  _Item({required this.title, required this.onPress, Key? key})
+  _Item(
+      {required this.title,
+      required this.onPress,
+      required this.isChecked,
+      Key? key})
       : super(key: key);
 
   @override
@@ -414,13 +450,14 @@ class __ItemState extends State<_Item> {
           backgroundColor: Colors.white,
           padding: EdgeInsets.zero,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
+            borderRadius: BorderRadius.circular(33),
           ),
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Container(
                   margin: const EdgeInsets.only(left: 35),
@@ -433,6 +470,15 @@ class __ItemState extends State<_Item> {
                     ),
                   ),
                 ),
+                widget.isChecked
+                    ? Container(
+                        child: Icon(
+                          Icons.arrow_forward_ios,
+                          color: Color(0xff4888E0),
+                        ),
+                        margin: const EdgeInsets.only(right: 30),
+                      )
+                    : Container(),
               ],
             ),
           ],

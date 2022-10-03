@@ -173,7 +173,7 @@ class _CheckReservationState extends State<CheckReservation> {
                               content: _sortBottomSheet,
                             );
                           },
-                          title: '최신순',
+                          title: _selected == 1 ? '과거순' : '최신순',
                         ),
                       ],
                     ),

@@ -1,6 +1,7 @@
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
+import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
@@ -198,23 +199,7 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                                   _reservationCompleteInfo(
                                       "장소", '${widget.floor} ${widget.name}'),
                                   SizedBox(height: 30),
-                                  Container(
-                                    margin: const EdgeInsets.symmetric(
-                                        horizontal: 15),
-                                    child: Row(
-                                      children: List.generate(
-                                        220 ~/ 4,
-                                        (index) => Expanded(
-                                          child: Container(
-                                            color: index % 2 == 0
-                                                ? Colors.transparent
-                                                : Color(0xff4888E0),
-                                            height: 1,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
+                                  custom_dotted_line(margin: 15.0, divide: 4),
                                   SizedBox(
                                     height: 20,
                                   ),

@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/view/app_broadcasting.dart';
 import 'package:ari_gong_gan/view/app_scanning.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
-
 import 'package:get/get.dart';
 
 class HomePage extends StatefulWidget {
