@@ -173,8 +173,8 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
             );
           },
           style: ElevatedButton.styleFrom(
-            onPrimary: Colors.grey,
-            primary: Colors.white,
+            foregroundColor: Colors.grey,
+            backgroundColor: Colors.white,
             padding: EdgeInsets.zero,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(20),

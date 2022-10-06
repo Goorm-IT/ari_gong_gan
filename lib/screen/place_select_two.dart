@@ -243,8 +243,8 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                               fontWeight: FontWeight.w600),
                         ),
                         style: ElevatedButton.styleFrom(
-                          onPrimary: Colors.white,
-                          primary: Color(0xff80bcfa),
+                          foregroundColor: Colors.white,
+                          backgroundColor: Color(0xff80bcfa),
                           padding: EdgeInsets.zero,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(50),

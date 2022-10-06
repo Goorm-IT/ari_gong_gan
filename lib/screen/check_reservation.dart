@@ -184,7 +184,6 @@ class _CheckReservationState extends State<CheckReservation> {
                 height: 20,
               ),
               _listItem(
-                windowHeight: windowHeight,
                 reservationInfo: _itemList,
               ),
             ],
@@ -445,7 +444,7 @@ class _CheckReservationState extends State<CheckReservation> {
               },
               style: ElevatedButton.styleFrom(
                   padding: EdgeInsets.zero,
-                  primary: Colors.white,
+                  backgroundColor: Colors.white,
                   shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(50))),
               child: Text(
@@ -555,49 +554,79 @@ class _CheckReservationState extends State<CheckReservation> {
     );
   }
 
-  Widget _listItem(
-      {required double windowHeight,
-      required List<ReservationByUser> reservationInfo}) {
-    return Container(
-      height:
-          windowHeight - 240 - customAppbar(context, true).preferredSize.height,
-      margin: const EdgeInsets.symmetric(horizontal: 40),
-      child: ListView.builder(
-          itemCount: reservationInfo.length,
-          itemBuilder: (listcontext, index) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 20),
-              height: 90,
-              decoration: BoxDecoration(
-                color: Color(0xffECF3FF),
-                borderRadius: BorderRadius.all(Radius.circular(20)),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: 25,
-                    decoration: BoxDecoration(
-                      color: Color(0xff2099EA),
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(20),
-                        bottomLeft: Radius.circular(20),
+  Widget _listItem({required List<ReservationByUser> reservationInfo}) {
+    return Expanded(
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 40),
+        child: ListView.builder(
+            itemCount: reservationInfo.length,
+            itemBuilder: (listcontext, index) {
+              return Container(
+                margin: const EdgeInsets.only(bottom: 20),
+                height: 90,
+                decoration: BoxDecoration(
+                  color: Color(0xffECF3FF),
+                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      width: 25,
+                      decoration: BoxDecoration(
+                        color: Color(0xff2099EA),
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(20),
+                          bottomLeft: Radius.circular(20),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    width: 5,
-                  ),
-                  _imageByFloor(floor: reservationInfo[index].floor),
-                  Flexible(
-                    child: SizedBox(
-                      width: 30,
+                    SizedBox(
+                      width: 5,
                     ),
-                  ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        reservationInfo[index].floor,
+                    _imageByFloor(floor: reservationInfo[index].floor),
+                    Flexible(
+                      child: SizedBox(
+                        width: 30,
+                      ),
+                    ),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          reservationInfo[index].floor,
+                          style: TextStyle(
+                            color: Color(0xff2099EA),
+                            fontSize: 14,
+                            fontFamily: "Noto_Sans_KR",
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text(
+                          reservationInfo[index]
+                              .realTime
+                              .substring(0, 10)
+                              .replaceAll('-', '. '),
+                          style: TextStyle(
+                            color: Color(0xff80BCFA),
+                            fontSize: 11,
+                            fontFamily: "Noto_Sans_KR",
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ],
+                    ),
+                    Flexible(
+                      child: SizedBox(
+                        width: 30,
+                      ),
+                    ),
+                    Transform.translate(
+                      offset: Offset(0, -10),
+                      child: Text(
+                        '${reservationInfo[index].time.substring(0, 5)} - ${int.parse(reservationInfo[index].time.substring(0, 2)) + 1}:00',
                         style: TextStyle(
                           color: Color(0xff2099EA),
                           fontSize: 14,
@@ -605,44 +634,12 @@ class _CheckReservationState extends State<CheckReservation> {
                           fontWeight: FontWeight.w700,
                         ),
                       ),
-                      SizedBox(
-                        height: 3,
-                      ),
-                      Text(
-                        reservationInfo[index]
-                            .realTime
-                            .substring(0, 10)
-                            .replaceAll('-', '. '),
-                        style: TextStyle(
-                          color: Color(0xff80BCFA),
-                          fontSize: 11,
-                          fontFamily: "Noto_Sans_KR",
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Flexible(
-                    child: SizedBox(
-                      width: 30,
                     ),
-                  ),
-                  Transform.translate(
-                    offset: Offset(0, -10),
-                    child: Text(
-                      '${reservationInfo[index].time.substring(0, 5)} - ${int.parse(reservationInfo[index].time.substring(0, 2)) + 1}:00',
-                      style: TextStyle(
-                        color: Color(0xff2099EA),
-                        fontSize: 14,
-                        fontFamily: "Noto_Sans_KR",
-                        fontWeight: FontWeight.w700,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            );
-          }),
+                  ],
+                ),
+              );
+            }),
+      ),
     );
   }
 

@@ -214,10 +214,11 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
   Function()? selectFunction = null;
   Color selectColor = Colors.grey;
   List<ReservationAll> _placeList = [];
-
+  List<ReservationAll> _list = [];
   @override
   void initState() {
     super.initState();
+    _list = context.read<RevervationAllProvider>().revervationAll;
     widget.animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
   }
@@ -229,15 +230,13 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
       selectColor = Colors.grey;
     } else {
       selectFunction = () {
-        List<ReservationAll> _list =
-            context.read<RevervationAllProvider>().revervationAll;
         _placeList.clear();
         for (int i = 0; i < _list.length; i++) {
           if (_list[i].time == reservationInfo.time) {
             _placeList.add(_list[i]);
           }
         }
-
+        print(_placeList);
         Navigator.push(
             context,
             MaterialPageRoute(
@@ -284,22 +283,48 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
                         (e) {
                           ReservationTime val = e.value;
                           int index = e.key;
-                          return timeButton(
-                            reservationTimeInfo: val,
-                            isAM: true,
-                            idx: index,
-                          );
+                          bool flag = false;
+                          for (int i = 0; i < _list.length; i++) {
+                            if (_list[i].time == val.time + ":00") {
+                              if (_list[i].isBooked == "activate") {
+                                flag = true;
+                              }
+                            }
+                          }
+                          if (flag) {
+                            return timeButton(
+                              reservationTimeInfo: val,
+                              isAM: true,
+                              idx: index,
+                            );
+                          } else {
+                            return deactivateTimeButton(
+                                reservationTimeInfo: val);
+                          }
                         },
                       ).toList()
                     : tmpPM.asMap().entries.map(
                         (e) {
                           ReservationTime val = e.value;
                           int index = e.key;
-                          return timeButton(
-                            reservationTimeInfo: val,
-                            isAM: false,
-                            idx: index,
-                          );
+                          bool flag = false;
+                          for (int i = 0; i < _list.length; i++) {
+                            if (_list[i].time == val.time + ":00") {
+                              if (_list[i].isBooked == "activate") {
+                                flag = true;
+                              }
+                            }
+                          }
+                          if (flag) {
+                            return timeButton(
+                              reservationTimeInfo: val,
+                              isAM: false,
+                              idx: index,
+                            );
+                          } else {
+                            return deactivateTimeButton(
+                                reservationTimeInfo: val);
+                          }
                         },
                       ).toList(),
               ),
@@ -325,33 +350,13 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
             height: 50,
             child: ElevatedButton(
               onPressed: selectFunction,
-              // onPressed: reservationInfo.time == ""
-              //     ? null
-              //     : () {
-              //         if (reservationInfo.time != "") {
-              //           Navigator.push(
-              //               context,
-              //               MaterialPageRoute(
-              //                   builder: (context) => PlaceSelectOne()));
-              //         } else {
-              //           if (widget.animationController.status ==
-              //               AnimationStatus.completed) {
-              //             widget.animationController.reverse();
-              //             Future.delayed(const Duration(milliseconds: 350), () {
-              //               widget.animationController.forward();
-              //             });
-              //           } else {
-              //             widget.animationController.forward();
-              //           }
-              //         }
-              //       },
               child: Text(
                 "선택완료",
                 style: TextStyle(color: selectColor, fontSize: 16),
               ),
               style: ElevatedButton.styleFrom(
-                onPrimary: Colors.grey,
-                primary: Colors.white,
+                foregroundColor: Colors.grey,
+                backgroundColor: Colors.white,
                 padding: EdgeInsets.zero,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50),
@@ -360,6 +365,37 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
             ),
           )
         ],
+      ),
+    );
+  }
+
+  Widget deactivateTimeButton({required ReservationTime reservationTimeInfo}) {
+    return Container(
+      margin: const EdgeInsets.only(right: 15),
+      width: 86,
+      height: 57,
+      decoration: BoxDecoration(
+        boxShadow: [
+          BoxShadow(
+            blurRadius: 4.0,
+            offset: Offset(0.5, 1.9),
+            color: Color.fromARGB(223, 178, 178, 178),
+          )
+        ],
+        borderRadius: BorderRadius.all(
+          Radius.circular(10),
+        ),
+        color: Color(0xffFFF4B4),
+      ),
+      child: Center(
+        child: Text(
+          reservationTimeInfo.time,
+          style: TextStyle(
+              color: Color(0xff2772ac),
+              fontSize: 15,
+              fontWeight: FontWeight.w700,
+              fontFamily: "Noto_Sans_KR"),
+        ),
       ),
     );
   }
