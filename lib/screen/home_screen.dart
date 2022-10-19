@@ -136,8 +136,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       await _revervationAllProvider.getReservationAll();
                       Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => SelectAMPM()));
+                          PageTransition(
+                              type: PageTransitionType.fade,
+                              child: SelectAMPM()));
                     },
                     child: Row(
                       children: [
@@ -195,8 +196,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           ontap: () {
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => AgreementPage()));
+                                PageTransition(
+                                    type: PageTransitionType.fade,
+                                    duration: const Duration(milliseconds: 100),
+                                    child: AgreementPage()));
                           },
                         ),
                         _Button(
@@ -207,8 +210,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 .getReservationByUser();
                             Navigator.push(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => CheckReservation()));
+                                PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: CheckReservation()));
                           },
                         ),
                       ],

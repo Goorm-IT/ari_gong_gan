@@ -6,6 +6,7 @@ import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:page_transition/page_transition.dart';
 import 'login_page.dart';
 
 class MyPage extends StatefulWidget {
@@ -123,11 +124,11 @@ class _MyPageState extends State<MyPage> {
                 _Item(
                   title: '이용수칙',
                   onPress: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return TermsOfUse();
-                    })));
-                    return null;
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.fade,
+                            child: TermsOfUse()));
                   },
                   isChecked: true,
                 ),
@@ -137,11 +138,10 @@ class _MyPageState extends State<MyPage> {
                 _Item(
                   title: '문의사항',
                   onPress: () {
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: ((context) {
-                      return HomePage();
-                    })));
-                    return null;
+                    Navigator.push(
+                        context,
+                        PageTransition(
+                            type: PageTransitionType.fade, child: HomePage()));
                   },
                   isChecked: true,
                 ),
@@ -349,9 +349,11 @@ class _MyPageState extends State<MyPage> {
                   onTap: () async {
                     var ctrl = new LoginData();
                     await ctrl.removeLoginData();
+
                     Navigator.pushAndRemoveUntil(
                         context,
-                        MaterialPageRoute(builder: (context) => LoginPage()),
+                        PageTransition(
+                            type: PageTransitionType.fade, child: LoginPage()),
                         (route) => false);
                   },
                   child: Container(

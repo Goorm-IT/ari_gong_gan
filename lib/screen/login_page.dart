@@ -8,6 +8,7 @@ import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:get_it/get_it.dart';
+import 'package:page_transition/page_transition.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({Key? key}) : super(key: key);
@@ -376,12 +377,11 @@ class _LoginButton extends StatelessWidget {
               }
               userInfo = GetIt.I<AriUser>();
               isLoading(false);
+
               Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => HomeScreen(),
-                ),
-              );
+                  context,
+                  PageTransition(
+                      type: PageTransitionType.fade, child: HomeScreen()));
             } else {
               isLoading(false);
               sendMessage(true);

@@ -1,6 +1,7 @@
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/screen/my_page.dart';
 import 'package:flutter/material.dart';
+import 'package:page_transition/page_transition.dart';
 
 PreferredSizeWidget customAppbar(BuildContext context, bool menuVisible) {
   return PreferredSize(
@@ -20,17 +21,9 @@ PreferredSizeWidget customAppbar(BuildContext context, bool menuVisible) {
                 ? IconButton(
                     onPressed: () {
                       Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => MyPage(),
-                        ),
-                        // PageTransition(
-                        //   duration: Duration(milliseconds: 300),
-                        //   type: PageTransitionType.rightToLeft,
-                        //   alignment: Alignment.topCenter,
-                        //   child: MyPage(),
-                        // ),
-                      );
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.fade, child: MyPage()));
                     },
                     icon: const Icon(
                       Icons.menu,

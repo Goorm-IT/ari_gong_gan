@@ -5,9 +5,11 @@ import 'package:ari_gong_gan/model/reservation_place_list.dart';
 import 'package:ari_gong_gan/model/resevation_all.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_two.dart';
+import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
 
 class PlaceSelectOne extends StatefulWidget {
@@ -20,15 +22,26 @@ class PlaceSelectOne extends StatefulWidget {
 }
 
 class _PlaceSelectOneState extends State<PlaceSelectOne> {
+  List<ReservationAll> _placeList = [];
+  Map<String, int> _remainList = {
+    "아리관 3층": 0,
+    "아리관 4층": 0,
+    "수봉관 7층": 0,
+    "수리관 1층": 0,
+  };
   @override
   void initState() {
     super.initState();
+    for (int i = 0; i < widget.placeListFilteredBytime.length; i++) {
+      if (widget.placeListFilteredBytime[i].isBooked == "activate") {
+        _remainList[widget.placeListFilteredBytime[i].floor] =
+            _remainList[widget.placeListFilteredBytime[i].floor]! + 1;
+      }
+    }
   }
 
-  List<ReservationAll> _placeList = [];
   @override
   Widget build(BuildContext context) {
-    print("placeListFilteredBytime :  ${widget.placeListFilteredBytime} ");
     return Scaffold(
       appBar: customAppbar(context, true),
       body: Stack(
@@ -42,31 +55,37 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
                 SizedBox(height: 45),
                 Container(
                   margin: const EdgeInsets.only(left: 33),
-                  child: Text.rich(
-                    TextSpan(
-                      text: '장소',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                        fontSize: 20.0,
+                  child: BottomToUpFade(
+                    height: 75,
+                    delayTime: 1,
+                    initAlignment: Alignment(-1.0, 1.0),
+                    changeAlignment: Alignment(-1.0, -1.0),
+                    insideWidget: Text.rich(
+                      TextSpan(
+                        text: '장소',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w700,
+                          color: Colors.white,
+                          fontSize: 20.0,
+                        ),
+                        children: <TextSpan>[
+                          const TextSpan(
+                            text: '을 선택해주세요\n',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: 16.0,
+                            ),
+                          ),
+                          TextSpan(
+                            text: DateFormat('MMM. dd. yyyy')
+                                .format(DateTime.now()),
+                            style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
-                      children: <TextSpan>[
-                        const TextSpan(
-                          text: '을 선택해주세요\n',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 16.0,
-                          ),
-                        ),
-                        TextSpan(
-                          text: DateFormat('MMM. dd. yyyy')
-                              .format(DateTime.now()),
-                          style: const TextStyle(
-                            fontSize: 13,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
                     ),
                   ),
                 ),
@@ -76,7 +95,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
           Positioned(
             bottom: 0,
             child: Container(
-              height: MediaQuery.of(context).size.height - 210,
+              height: MediaQuery.of(context).size.height - 215,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -104,25 +123,58 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
                     child: SingleChildScrollView(
                       child: Column(
                         children: [
-                          placeCard(
-                            title: '아리관 3층',
-                            imagePath: "ari_3rd_floor",
-                            rooms: ari_3rd_floor,
+                          BottomToUpFade(
+                            height: 70,
+                            delayTime: 350,
+                            initAlignment: Alignment(-1.0, 0.0),
+                            changeAlignment: Alignment(0.0, 0.0),
+                            insideWidget: placeCard(
+                              title: '아리관 3층',
+                              imagePath: "ari_3rd_floor",
+                              rooms: ari_3rd_floor,
+                            ),
                           ),
-                          placeCard(
-                            title: '아리관 4층',
-                            imagePath: "ari_4th_floor",
-                            rooms: ari_4th_floor,
+                          SizedBox(
+                            height: 20,
                           ),
-                          placeCard(
-                            title: '수봉관 7층',
-                            imagePath: "subong_7th_floor",
-                            rooms: subong_7th_floor,
+                          BottomToUpFade(
+                            height: 70,
+                            delayTime: 400,
+                            initAlignment: Alignment(-1.0, 0.0),
+                            changeAlignment: Alignment(0.0, 0.0),
+                            insideWidget: placeCard(
+                              title: '아리관 4층',
+                              imagePath: "ari_4th_floor",
+                              rooms: ari_4th_floor,
+                            ),
                           ),
-                          placeCard(
-                            title: '수리관 1층',
-                            imagePath: "suri_1st_floor",
-                            rooms: suri_1st_floor,
+                          SizedBox(
+                            height: 20,
+                          ),
+                          BottomToUpFade(
+                            height: 70,
+                            delayTime: 450,
+                            initAlignment: Alignment(-1.0, 0.0),
+                            changeAlignment: Alignment(0.0, 0.0),
+                            insideWidget: placeCard(
+                              title: '수봉관 7층',
+                              imagePath: "subong_7th_floor",
+                              rooms: subong_7th_floor,
+                            ),
+                          ),
+                          SizedBox(
+                            height: 20,
+                          ),
+                          BottomToUpFade(
+                            height: 70,
+                            delayTime: 500,
+                            initAlignment: Alignment(-1.0, 0.0),
+                            changeAlignment: Alignment(0.0, 0.0),
+                            insideWidget: placeCard(
+                              title: '수리관 1층',
+                              imagePath: "suri_1st_floor",
+                              rooms: suri_1st_floor,
+                            ),
                           ),
                         ],
                       ),
@@ -141,90 +193,96 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
       {required String title,
       required String imagePath,
       required List<ReservationPlace> rooms}) {
-    return Center(
-      child: Container(
-        width: 280,
-        height: 70,
-        margin: const EdgeInsets.only(bottom: 20),
-        child: ElevatedButton(
-          onPressed: () {
-            setState(() {
-              reservationInfo.name = "";
-            });
+    return Container(
+      width: 280,
+      height: 70,
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            reservationInfo.name = "";
+          });
 
-            reservationInfo.floor = title;
-            _placeList.clear();
-            for (int i = 0; i < widget.placeListFilteredBytime.length; i++) {
-              if (reservationInfo.floor ==
-                  widget.placeListFilteredBytime[i].floor) {
-                _placeList.add(widget.placeListFilteredBytime[i]);
-              }
+          reservationInfo.floor = title;
+          _placeList.clear();
+          for (int i = 0; i < widget.placeListFilteredBytime.length; i++) {
+            if (reservationInfo.floor ==
+                widget.placeListFilteredBytime[i].floor) {
+              _placeList.add(widget.placeListFilteredBytime[i]);
             }
-            print("_placeList:  ${_placeList}");
-            Navigator.push(
+          }
+          Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (context) => PlaceSelectTwo(
+              PageTransition(
+                type: PageTransitionType.fade,
+                child: PlaceSelectTwo(
                   title: title,
                   rooms: rooms,
                   placeListFilteredByfloor: _placeList,
                 ),
-              ),
-            );
-          },
-          style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.grey,
-            backgroundColor: Colors.white,
-            padding: EdgeInsets.zero,
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
+              ));
+        },
+        style: ElevatedButton.styleFrom(
+          foregroundColor: Colors.grey,
+          backgroundColor: Colors.white,
+          padding: EdgeInsets.zero,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
           ),
-          child: Row(
-            children: [
-              SizedBox(
-                width: 24,
-              ),
-              ClipOval(
-                child: Container(
-                  color: Color(0xff80bcfa),
-                  width: 40,
-                  height: 40,
-                  child: Stack(
-                    children: [
-                      Center(
-                        child: Image.asset(
-                          'assets/images/${imagePath}.png',
-                          width: 21,
-                          height: 21,
-                        ),
+        ),
+        child: Row(
+          children: [
+            SizedBox(
+              width: 24,
+            ),
+            ClipOval(
+              child: Container(
+                color: Color(0xff80bcfa),
+                width: 40,
+                height: 40,
+                child: Stack(
+                  children: [
+                    Center(
+                      child: Image.asset(
+                        'assets/images/${imagePath}.png',
+                        width: 21,
+                        height: 21,
                       ),
-                    ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            SizedBox(
+              width: 11,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Color(0xff4888E0),
+                    fontSize: 15.0,
+                    fontWeight: FontWeight.w700,
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 11,
-              ),
-              Text(
-                title,
-                style: TextStyle(
-                  color: Color(0xff4888E0),
-                  fontSize: 15.0,
-                  fontWeight: FontWeight.w700,
+                Text(
+                  '잔여석 ${_remainList[title].toString()}',
+                  style: TextStyle(fontSize: 10, color: Color(0xff2099EA)),
                 ),
-              ),
-              Spacer(),
-              Icon(
-                Icons.navigate_next,
-                color: PRIMARY_COLOR_DEEP,
-                size: 30.0,
-              ),
-              SizedBox(
-                width: 22,
-              ),
-            ],
-          ),
+              ],
+            ),
+            Spacer(),
+            Icon(
+              Icons.navigate_next,
+              color: PRIMARY_COLOR_DEEP,
+              size: 30.0,
+            ),
+            SizedBox(
+              width: 22,
+            ),
+          ],
         ),
       ),
     );

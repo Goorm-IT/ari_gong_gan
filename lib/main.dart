@@ -64,10 +64,11 @@ void main() async {
         ),
         title: '아리공간',
         home: AnimatedSplashScreen.withScreenFunction(
-          splash: Image.asset('assets/images/splash_launcher.gif'),
-          splashIconSize: 4000,
+          splash: Image.asset('assets/images/ari_logo.png'),
+
+          splashIconSize: 100,
           screenFunction: isLoginDataSaved,
-          duration: 1000,
+          duration: 500,
           splashTransition: SplashTransition.fadeTransition,
           pageTransitionType: PageTransitionType.fade,
           backgroundColor: color,

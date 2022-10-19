@@ -43,7 +43,6 @@ class _CheckReservationState extends State<CheckReservation> {
 
   void changePeroid(List<ReservationByUser> list) {
     Iterable<ReservationByUser> _tmp = list.where((e) {
-      print('${e.realTime} asdasdasd');
       if (("${sYear.text}-${sMonth.text.padLeft(2, '0')}-${sDay.text.padLeft(2, '0')}"
                       .compareTo(e.realTime.substring(0, 10)) ==
                   -1 ||

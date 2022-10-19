@@ -5,12 +5,14 @@ import 'package:ari_gong_gan/model/reservation_place.dart';
 import 'package:ari_gong_gan/model/resevation_all.dart';
 import 'package:ari_gong_gan/screen/home_screen.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
+import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:ari_gong_gan/widget/custom_radio_circle_button.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/possible_or_not.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 
 class PlaceSelectTwo extends StatefulWidget {
   final String title;
@@ -41,8 +43,6 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
 
   @override
   Widget build(BuildContext context) {
-    print(
-        'widget.placeListFilteredByfloor:  ${widget.placeListFilteredByfloor}');
     return Scaffold(
       appBar: customAppbar(context, true),
       body: Stack(
@@ -56,6 +56,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                 SizedBox(height: 45),
                 Container(
                   margin: const EdgeInsets.only(left: 33),
+                  height: 75,
                   child: Text.rich(
                     TextSpan(
                       text: '장소',
@@ -90,7 +91,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
           Positioned(
             bottom: 0,
             child: Container(
-              height: MediaQuery.of(context).size.height - 210,
+              height: MediaQuery.of(context).size.height - 215,
               width: MediaQuery.of(context).size.width,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.only(
@@ -107,17 +108,20 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                       margin: const EdgeInsets.only(
                         top: 30,
                       ),
-                      child: Text(
-                        widget.title,
-                        style: TextStyle(
-                          color: Color(0xff2772AC),
-                          fontSize: 20,
-                          fontWeight: FontWeight.w700,
+                      child: BottomToUpFade(
+                        height: 40,
+                        delayTime: 1,
+                        initAlignment: Alignment(0.0, 1.0),
+                        changeAlignment: Alignment(0.0, -1.0),
+                        insideWidget: Text(
+                          widget.title,
+                          style: TextStyle(
+                            color: Color(0xff2772AC),
+                            fontSize: 20,
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
                       ),
-                    ),
-                    SizedBox(
-                      height: 12,
                     ),
                     Divider(
                       height: 0,
@@ -153,42 +157,56 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                             crossAxisCount: 2,
                             childAspectRatio: 1,
                             mainAxisSpacing: 35,
-                            crossAxisSpacing: 35,
+                            crossAxisSpacing: 15,
                           ),
                           itemCount: widget.rooms.length,
                           itemBuilder: (gridContext, index) {
-                            return CustomRadioCircleButton(
-                                isPressed: _isPressed[index],
-                                isSelected: (bool isSelected) {
-                                  setState(() {
-                                    for (int i = 0;
-                                        i < widget.rooms.length;
-                                        i++) {
-                                      if (i == index) {
-                                        _isPressed[i] = isSelected;
-                                      } else {
-                                        if (isSelected == true) {
-                                          _isPressed[i] = !isSelected;
+                            return BottomToUpFade(
+                              height: 150,
+                              delayTime: 350 + index * 50,
+                              initAlignment:
+                                  Alignment(index % 2 == 0 ? -1.0 : 1.0, 1.0),
+                              changeAlignment:
+                                  Alignment(index % 2 == 0 ? -1.0 : 1.0, -1.0),
+                              insideWidget: Container(
+                                margin:
+                                    const EdgeInsets.only(left: 2, right: 2),
+                                child: CustomRadioCircleButton(
+                                    isPressed: _isPressed[index],
+                                    isSelected: (bool isSelected) {
+                                      setState(() {
+                                        for (int i = 0;
+                                            i < widget.rooms.length;
+                                            i++) {
+                                          if (i == index) {
+                                            _isPressed[i] = isSelected;
+                                          } else {
+                                            if (isSelected == true) {
+                                              _isPressed[i] = !isSelected;
+                                            }
+                                          }
                                         }
+                                      });
+                                    },
+                                    size: 100,
+                                    title: widget.rooms[index].place,
+                                    isBooked: widget
+                                        .placeListFilteredByfloor[index]
+                                        .isBooked,
+                                    pressedColor: Color(0xff4888E0),
+                                    shadowColor:
+                                        Color.fromARGB(223, 150, 150, 150),
+                                    onTap: () {
+                                      setState(() {
+                                        reservationInfo.name =
+                                            widget.rooms[index].place;
+                                      });
+                                      if (_isPressed[index]) {
+                                        reservationInfo.name = "";
                                       }
-                                    }
-                                  });
-                                },
-                                size: 100,
-                                title: widget.rooms[index].place,
-                                isBooked: widget
-                                    .placeListFilteredByfloor[index].isBooked,
-                                pressedColor: Color(0xff4888E0),
-                                shadowColor: Color.fromARGB(223, 150, 150, 150),
-                                onTap: () {
-                                  setState(() {
-                                    reservationInfo.name =
-                                        widget.rooms[index].place;
-                                  });
-                                  if (_isPressed[index]) {
-                                    reservationInfo.name = "";
-                                  }
-                                });
+                                    }),
+                              ),
+                            );
                           },
                         ),
                       ),
@@ -218,13 +236,13 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                                 if (result == 200) {
                                   Navigator.push(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) =>
-                                              ReservationComplete(
-                                                floor: tmpFloor,
-                                                name: tmpName,
-                                                time: tmpTime,
-                                              )));
+                                      PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: ReservationComplete(
+                                            floor: tmpFloor,
+                                            name: tmpName,
+                                            time: tmpTime,
+                                          )));
                                 } else {
                                   customShowDiaLog(
                                     context: context,
@@ -316,9 +334,11 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                     reservationInfo.time = "";
                     reservationInfo.userNum = "";
                   });
+
                   Navigator.pushAndRemoveUntil(
                       context,
-                      MaterialPageRoute(builder: (context) => HomeScreen()),
+                      PageTransition(
+                          type: PageTransitionType.fade, child: HomeScreen()),
                       (route) => false);
                 },
                 child: Container(

@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AgreementPage extends StatefulWidget {
@@ -169,10 +170,12 @@ class _AgreementPageState extends State<AgreementPage> {
                     onPressed: _totalRadioSelected
                         ? () {
                             _controlTutorial();
+
                             Navigator.pushReplacement(
                                 context,
-                                MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
+                                PageTransition(
+                                    type: PageTransitionType.fade,
+                                    child: LoginPage()));
                           }
                         : null,
                     child: Text(
@@ -203,7 +206,6 @@ class _AgreementPageState extends State<AgreementPage> {
     int isInitView = 0;
     SharedPreferences pref = await SharedPreferences.getInstance();
     await pref.setInt('agreement', isInitView);
-    print(pref.getInt('agreement'));
   }
 
   Widget _text({required String title}) {

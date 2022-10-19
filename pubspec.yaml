@@ -39,7 +39,7 @@ dependencies:
   flutter_switch: ^0.3.2
   shared_preferences: ^2.0.5
   animated_splash_screen: ^1.2.0
-  page_transition: ^2.0.5
+  page_transition: ^2.0.9
   intl: ^0.17.0
   flutter_inset_box_shadow: ^1.0.8
   provider: ^6.0.3

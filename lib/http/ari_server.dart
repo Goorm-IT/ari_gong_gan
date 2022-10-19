@@ -34,7 +34,7 @@ class AriServer {
 
   Future<int> revervation() async {
     var headers = {'Content-Type': 'text/plain', 'Cookie': _cookie};
-    print(reservationInfo);
+
     var request = http.Request('POST', Uri.parse('$url/reservation'));
     request.body =
         '{"floor" : "${reservationInfo.floor}","name" : "${reservationInfo.name}","time" : "${reservationInfo.time}","userNum" : "01012341234"}';
@@ -42,6 +42,9 @@ class AriServer {
 
     http.StreamedResponse response = await request.send();
     print(response.statusCode);
+    String tmp = await response.stream.bytesToString();
+    var _list = jsonDecode(tmp)["message"];
+    print(_list);
     return response.statusCode;
   }
 

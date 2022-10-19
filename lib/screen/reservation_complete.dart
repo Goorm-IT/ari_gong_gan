@@ -5,6 +5,7 @@ import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:page_transition/page_transition.dart';
 import "dart:math" show pi;
 import '../model/reservation.dart';
 
@@ -30,8 +31,9 @@ class _ReservationCompleteState extends State<ReservationComplete> {
       onWillPop: () async {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => HomeScreen()),
+            PageTransition(type: PageTransitionType.fade, child: HomeScreen()),
             (route) => false);
+
         return false;
       },
       child: Scaffold(
@@ -89,8 +91,9 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                                 onPressed: () {
                                   Navigator.pushAndRemoveUntil(
                                       context,
-                                      MaterialPageRoute(
-                                          builder: (context) => HomeScreen()),
+                                      PageTransition(
+                                          type: PageTransitionType.fade,
+                                          child: HomeScreen()),
                                       (route) => false);
                                 },
                               ),
