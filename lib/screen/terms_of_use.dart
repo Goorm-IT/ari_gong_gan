@@ -234,42 +234,46 @@ class _TermsOfUseState extends State<TermsOfUse> {
                             ),
                             Align(
                               alignment: Alignment.centerLeft,
-                              child: Container(
-                                height: 35,
-                                width: 130,
-                                decoration: BoxDecoration(
-                                  boxShadow: [
-                                    BoxShadow(
-                                      blurRadius: 4.0,
-                                      offset: Offset(0.5, 1.9),
-                                      color: Color(0xffbdc3c7),
-                                    )
-                                  ],
-                                  color: color,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(20)),
-                                ),
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 15),
-                                child: Align(
-                                  alignment: Alignment.center,
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Container(
-                                        height: 13,
-                                        child: Image.asset(
-                                          'assets/images/$imagePath.png',
-                                        ),
-                                      ),
-                                      Text(
-                                        ' $title',
-                                        textAlign: TextAlign.center,
-                                        style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.w600),
-                                      ),
+                              child: Expanded(
+                                child: Container(
+                                  height: 35,
+                                  width: 135,
+                                  decoration: BoxDecoration(
+                                    boxShadow: [
+                                      BoxShadow(
+                                        blurRadius: 4.0,
+                                        offset: Offset(0.5, 1.9),
+                                        color: Color(0xffbdc3c7),
+                                      )
                                     ],
+                                    color: color,
+                                    borderRadius:
+                                        BorderRadius.all(Radius.circular(20)),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 15),
+                                  child: Align(
+                                    alignment: Alignment.center,
+                                    child: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        Container(
+                                          height: 13,
+                                          child: Image.asset(
+                                            'assets/images/$imagePath.png',
+                                          ),
+                                        ),
+                                        Text(
+                                          ' $title',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              fontSize: 14,
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.w600),
+                                        ),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

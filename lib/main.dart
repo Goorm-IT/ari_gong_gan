@@ -4,7 +4,7 @@ import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
-import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
 import 'package:ari_gong_gan/view/home_page.dart';

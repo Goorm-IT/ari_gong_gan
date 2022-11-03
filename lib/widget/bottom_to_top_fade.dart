@@ -41,10 +41,10 @@ class _BottomToUpFadeState extends State<BottomToUpFade>
       // color: Colors.red,
       height: widget.height,
       child: AnimatedOpacity(
-        duration: Duration(milliseconds: 450),
+        duration: Duration(milliseconds: 400),
         opacity: _opacitiy,
         child: AnimatedAlign(
-            duration: Duration(milliseconds: 200),
+            duration: Duration(milliseconds: 150),
             alignment: _position,
             child: widget.insideWidget),
       ),

@@ -1,23 +1,25 @@
+import 'dart:io';
+
 import 'package:ari_gong_gan/const/user_info.dart';
-import 'package:ari_gong_gan/http/ari_server.dart';
+import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/check_reservation.dart';
-import 'package:ari_gong_gan/screen/my_page.dart';
-import 'package:ari_gong_gan/screen/reservation_complete.dart';
+import 'package:ari_gong_gan/screen/home_sreen/book_card.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
-import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
+import 'package:flutter/services.dart';
+import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import "dart:math" show pi;
-
+import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
-
-import '../const/colors.dart';
+import '../../const/colors.dart';
+import 'dart:async';
+import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -26,13 +28,87 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
   AriUser userInfo = GetIt.I<AriUser>();
   Color bookBorderColor = Colors.white;
   double bookBorderWidth = 0.0;
   bool isPressed = false;
+  final controller = Get.find<RequirementStateController>();
+  StreamSubscription<BluetoothState>? _streamBluetooth;
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
+  bool isBeaconSearch = false;
+
+  @override
+  void initState() {
+    WidgetsBinding.instance.addObserver(this);
+    super.initState();
+    listeningState();
+  }
+
+  listeningState() async {
+    print('Listening to bluetooth state');
+    _streamBluetooth = flutterBeacon
+        .bluetoothStateChanged()
+        .listen((BluetoothState state) async {
+      controller.updateBluetoothState(state);
+      await checkAllRequirements();
+    });
+  }
+
+  checkAllRequirements() async {
+    final bluetoothState = await flutterBeacon.bluetoothState;
+    controller.updateBluetoothState(bluetoothState);
+    print('BLUETOOTH $bluetoothState');
+
+    final authorizationStatus = await flutterBeacon.authorizationStatus;
+    controller.updateAuthorizationStatus(authorizationStatus);
+    print('AUTHORIZATION $authorizationStatus');
+
+    final locationServiceEnabled =
+        await flutterBeacon.checkLocationServicesIfEnabled;
+    controller.updateLocationService(locationServiceEnabled);
+    print('LOCATION SERVICE $locationServiceEnabled');
+
+    if (controller.bluetoothEnabled &&
+        controller.authorizationStatusOk &&
+        controller.locationServiceEnabled) {
+      print('STATE READY');
+      if (isBeaconSearch == true) {
+        print('SCANNING');
+        controller.startScanning();
+      } else {
+        print('STOPScannig');
+        controller.pauseScanning();
+      }
+    } else {
+      print('STATE NOT READY');
+      controller.pauseScanning();
+    }
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) async {
+    print('AppLifecycleState = $state');
+    if (state == AppLifecycleState.resumed) {
+      if (_streamBluetooth != null) {
+        if (_streamBluetooth!.isPaused) {
+          _streamBluetooth?.resume();
+        }
+      }
+      await checkAllRequirements();
+    } else if (state == AppLifecycleState.paused) {
+      _streamBluetooth?.pause();
+    }
+  }
+
+  @override
+  void dispose() {
+    _streamBluetooth?.cancel();
+
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     _revervationAllProvider =
@@ -223,7 +299,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xff80BCFA),
                     ),
                     SizedBox(height: 14.5),
-                    _BookCard(),
+                    BookCard(),
                   ],
                 ),
               ),
@@ -250,6 +326,7 @@ class _ButtonState extends State<_Button> {
   bool isPressed = false;
   CustomPainter a = MyPainter(containerRadius: 10, containerWidth: 108);
   CustomPainter b = MyPainters();
+
   @override
   Widget build(BuildContext context) {
     Color titleColor = isPressed ? PRIMARY_COLOR_DEEP : PRIMARY_COLOR_DEEP;
@@ -298,77 +375,6 @@ class _ButtonState extends State<_Button> {
                   style:
                       TextStyle(color: titleColor, fontWeight: FontWeight.w600),
                 )
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-BoxDecoration decoWithShadow(double ridius) {
-  return BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.all(Radius.circular(ridius)),
-      boxShadow: [
-        BoxShadow(
-          blurRadius: 4.0,
-          offset: Offset(0.5, 1.9),
-          color: Color(0xffbdc3c7),
-        )
-      ]);
-}
-
-class _BookCard extends StatefulWidget {
-  const _BookCard({Key? key}) : super(key: key);
-
-  @override
-  State<_BookCard> createState() => __BookCardState();
-}
-
-class __BookCardState extends State<_BookCard> {
-  @override
-  Widget build(BuildContext context) {
-    double windowHeight = MediaQuery.of(context).size.height;
-    double windowWidth = MediaQuery.of(context).size.width;
-    return Container(
-      width: windowWidth - 146,
-      height: 50,
-      decoration: decoWithShadow(15.0),
-      child: Material(
-        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-        child: InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          onTap: () {
-            showModalBottomSheet<void>(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0)),
-                ),
-                context: context,
-                builder: (BuildContext context) {
-                  return Container(
-                    height: 250,
-                    color: Colors.transparent,
-                  );
-                });
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "예약카드",
-                  style: TextStyle(
-                      color: Color(0xff2772AC), fontWeight: FontWeight.w600),
-                ),
-                Transform.translate(
-                    offset: Offset(-7, 0),
-                    child: Container(
-                        width: 15, height: 50, color: Color(0xff2099e9)))
               ],
             ),
           ),

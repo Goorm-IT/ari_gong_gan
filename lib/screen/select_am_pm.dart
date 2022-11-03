@@ -72,7 +72,7 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
                     BottomToUpFade(
                       height: 65,
                       delayTime: 1,
-                      initAlignment: Alignment(-1.0, 1.0),
+                      initAlignment: Alignment(-1.0, 0.5),
                       changeAlignment: Alignment(-1.0, -1.0),
                       insideWidget: Text.rich(
                         TextSpan(
@@ -108,7 +108,7 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
                     BottomToUpFade(
                       height: 130,
                       delayTime: 350,
-                      initAlignment: Alignment(-1.0, 1.0),
+                      initAlignment: Alignment(-1.0, 0.5),
                       changeAlignment: Alignment(-1.0, -1.0),
                       insideWidget: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,

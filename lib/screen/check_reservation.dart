@@ -487,15 +487,16 @@ class _CheckReservationState extends State<CheckReservation> {
                         margin: const EdgeInsets.only(left: 33),
                         padding: const EdgeInsets.only(left: 16),
                         decoration: BoxDecoration(
-                            color: Color(0xffECF3FF),
-                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                            boxShadow: [
-                              BoxShadow(
-                                blurRadius: 4.0,
-                                offset: Offset(0.5, 1.9),
-                                color: Color(0xffbdc3c7),
-                              )
-                            ]),
+                          color: Color(0xffECF3FF),
+                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                          boxShadow: [
+                            BoxShadow(
+                              blurRadius: 4.0,
+                              offset: Offset(0.5, 1.9),
+                              color: Color(0xffbdc3c7),
+                            )
+                          ],
+                        ),
                         child: Align(
                           alignment: Alignment.centerLeft,
                           child: Text(

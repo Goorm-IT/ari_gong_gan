@@ -3,7 +3,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_place.dart';
 import 'package:ari_gong_gan/model/resevation_all.dart';
-import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';

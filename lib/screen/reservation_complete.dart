@@ -1,5 +1,5 @@
 import 'package:ari_gong_gan/const/user_info.dart';
-import 'package:ari_gong_gan/screen/home_screen.dart';
+import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
