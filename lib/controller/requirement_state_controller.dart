@@ -57,4 +57,7 @@ class RequirementStateController extends GetxController {
   Stream<bool> get pauseStream {
     return _pauseScanning.stream;
   }
+
+  @override
+  String toString() => "_startScanning.value: ${_startScanning.value}";
 }

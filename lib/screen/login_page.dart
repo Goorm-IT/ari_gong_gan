@@ -4,6 +4,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
+
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -24,7 +25,6 @@ class _LoginPageState extends State<LoginPage>
   AriUser userInfo = AriUser('', '');
   bool status = false;
   bool isLoading = false;
-
   late AnimationController _animationController;
   @override
   void initState() {
@@ -367,6 +367,7 @@ class _LoginButton extends StatelessWidget {
           isLoading(true);
           try {
             final getuserInfo = await loginCrwal.userInfo();
+
             var ariServer = AriServer();
             String ariLogin = await ariServer.login(id: id, pw: pw);
             if (ariLogin == "SUCCESS") {
@@ -390,6 +391,7 @@ class _LoginButton extends StatelessWidget {
           } catch (e) {
             isLoading(false);
             sendMessage(true);
+            print(e);
             print("로그인 실패2");
           }
         },

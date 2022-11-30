@@ -1,19 +1,22 @@
 import 'dart:convert';
 
+import 'package:ari_gong_gan/exception/custom_exception.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_by_user.dart';
-import 'package:ari_gong_gan/model/resevation_all.dart';
+import 'package:ari_gong_gan/model/reservation_all.dart';
+import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 late String _cookie;
 
 class AriServer {
-  String url = 'http://54.183.139.95:8000';
+  String url = 'http://18.144.154.104:8000';
   Future<String> login({required String id, required String pw}) async {
     var headers = {
       'Content-Type': 'text/plain',
     };
+
     var request = http.Request('POST', Uri.parse('$url/logIn'));
 
     request.body = '{"userId" : "$id","password" : "$pw"}';
@@ -25,10 +28,9 @@ class AriServer {
     _cookie = (idx == -1) ? _tmpCookie : _tmpCookie.substring(0, idx);
     if (response.statusCode == 200) {
       String tmp = await response.stream.bytesToString();
-
       return jsonDecode(tmp)["message"];
     } else {
-      return "Login Fail";
+      throw CustomException(400, "로그인 오류");
     }
   }
 
@@ -50,7 +52,7 @@ class AriServer {
 
   Future<List<ReservationByUser>> reservationByUser() async {
     var headers = {'Cookie': _cookie};
-    var request = http.Request('GET', Uri.parse('$url/reservationList'));
+    var request = http.Request('GET', Uri.parse('$url/user-reservation'));
     List<dynamic> _list = [];
     request.headers.addAll(headers);
 
@@ -62,6 +64,26 @@ class AriServer {
       _list = jsonDecode(tmp)["res"];
       return _list
           .map<ReservationByUser>((item) => ReservationByUser.fromJson(item))
+          .toList();
+    } else {
+      return [];
+    }
+  }
+
+  Future<List<TodayReservation>> todayReservation() async {
+    var headers = {'Cookie': _cookie};
+    var request = http.Request('GET', Uri.parse('$url/reservationList'));
+    List<dynamic> _list = [];
+    request.headers.addAll(headers);
+
+    http.StreamedResponse response = await request.send();
+
+    print(response.statusCode);
+    if (response.statusCode == 200) {
+      String tmp = await response.stream.bytesToString();
+      _list = jsonDecode(tmp)["res"];
+      return _list
+          .map<TodayReservation>((item) => TodayReservation.fromJson(item))
           .toList();
     } else {
       return [];
@@ -85,5 +107,22 @@ class AriServer {
     } else {
       return [];
     }
+  }
+
+  Future<int> booked(
+      {required String floor,
+      required String name,
+      required String time}) async {
+    var headers = {'Content-Type': 'text/plain', 'Cookie': _cookie};
+
+    var request = http.Request('POST', Uri.parse('$url/booked'));
+    request.body = '{"floor" : "$floor" ,"name" : $name, "time" : "$time"}';
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    print(response.statusCode);
+    String tmp = await response.stream.bytesToString();
+    var _list = jsonDecode(tmp)["message"];
+    print(_list);
+    return response.statusCode;
   }
 }

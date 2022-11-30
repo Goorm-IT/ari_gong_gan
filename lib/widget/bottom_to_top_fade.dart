@@ -19,8 +19,7 @@ class BottomToUpFade extends StatefulWidget {
   State<BottomToUpFade> createState() => _BottomToUpFadeState();
 }
 
-class _BottomToUpFadeState extends State<BottomToUpFade>
-    with TickerProviderStateMixin {
+class _BottomToUpFadeState extends State<BottomToUpFade> {
   double _opacitiy = 0.0;
   late Alignment _position;
 
@@ -38,7 +37,7 @@ class _BottomToUpFadeState extends State<BottomToUpFade>
   @override
   Widget build(BuildContext context) {
     return Container(
-      // color: Colors.red,
+      color: Colors.transparent,
       height: widget.height,
       child: AnimatedOpacity(
         duration: Duration(milliseconds: 400),

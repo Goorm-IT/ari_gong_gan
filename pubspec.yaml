@@ -47,6 +47,9 @@ dependencies:
   get: ^4.6.5
   blur: ^3.0.0
   path_provider: ^2.0.11
+  ntp: ^2.0.0
+  smooth_page_indicator: ^1.0.0+2
+  fluttertoast: ^8.1.1
 
 dev_dependencies:
   flutter_test:

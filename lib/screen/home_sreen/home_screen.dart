@@ -1,24 +1,22 @@
-import 'dart:io';
-
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/check_reservation.dart';
 import 'package:ari_gong_gan/screen/home_sreen/book_card.dart';
+import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:ntp/ntp.dart';
 import 'package:provider/provider.dart';
 import "dart:math" show pi;
-import 'package:get/get.dart';
 import 'package:page_transition/page_transition.dart';
 import '../../const/colors.dart';
-import 'dart:async';
 import 'package:flutter/material.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -28,84 +26,24 @@ class HomeScreen extends StatefulWidget {
   State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomeScreenState extends State<HomeScreen> {
   AriUser userInfo = GetIt.I<AriUser>();
+  DateTime realTime = GetIt.I<DateTime>();
   Color bookBorderColor = Colors.white;
   double bookBorderWidth = 0.0;
   bool isPressed = false;
-  final controller = Get.find<RequirementStateController>();
-  StreamSubscription<BluetoothState>? _streamBluetooth;
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
-  bool isBeaconSearch = false;
+
+  final controller = Get.find<RequirementStateController>();
 
   @override
   void initState() {
-    WidgetsBinding.instance.addObserver(this);
     super.initState();
-    listeningState();
-  }
-
-  listeningState() async {
-    print('Listening to bluetooth state');
-    _streamBluetooth = flutterBeacon
-        .bluetoothStateChanged()
-        .listen((BluetoothState state) async {
-      controller.updateBluetoothState(state);
-      await checkAllRequirements();
-    });
-  }
-
-  checkAllRequirements() async {
-    final bluetoothState = await flutterBeacon.bluetoothState;
-    controller.updateBluetoothState(bluetoothState);
-    print('BLUETOOTH $bluetoothState');
-
-    final authorizationStatus = await flutterBeacon.authorizationStatus;
-    controller.updateAuthorizationStatus(authorizationStatus);
-    print('AUTHORIZATION $authorizationStatus');
-
-    final locationServiceEnabled =
-        await flutterBeacon.checkLocationServicesIfEnabled;
-    controller.updateLocationService(locationServiceEnabled);
-    print('LOCATION SERVICE $locationServiceEnabled');
-
-    if (controller.bluetoothEnabled &&
-        controller.authorizationStatusOk &&
-        controller.locationServiceEnabled) {
-      print('STATE READY');
-      if (isBeaconSearch == true) {
-        print('SCANNING');
-        controller.startScanning();
-      } else {
-        print('STOPScannig');
-        controller.pauseScanning();
-      }
-    } else {
-      print('STATE NOT READY');
-      controller.pauseScanning();
-    }
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    print('AppLifecycleState = $state');
-    if (state == AppLifecycleState.resumed) {
-      if (_streamBluetooth != null) {
-        if (_streamBluetooth!.isPaused) {
-          _streamBluetooth?.resume();
-        }
-      }
-      await checkAllRequirements();
-    } else if (state == AppLifecycleState.paused) {
-      _streamBluetooth?.pause();
-    }
   }
 
   @override
   void dispose() {
-    _streamBluetooth?.cancel();
-
     super.dispose();
   }
 
@@ -115,6 +53,7 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         Provider.of<RevervationAllProvider>(context, listen: false);
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
+
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
@@ -137,12 +76,14 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
             ),
           ),
           Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SizedBox(
                 height: 53,
               ),
               Container(
                   margin: const EdgeInsets.only(left: 35),
+                  height: 25,
                   child: Text.rich(
                     TextSpan(
                       text: userInfo.name,
@@ -155,14 +96,18 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
                             text: '님 반갑습니다.\n',
                             style: TextStyle(
                                 fontSize: 16, fontWeight: FontWeight.w500)),
-                        TextSpan(
-                            text: DateFormat('MMM. dd. yyyy')
-                                .format(DateTime.now()),
-                            style: TextStyle(
-                                fontSize: 13, fontWeight: FontWeight.w500)),
                       ],
                     ),
                   )),
+              Container(
+                margin: const EdgeInsets.only(left: 35),
+                child: Text(DateFormat('MMM. dd. yyyy').format(realTime),
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white,
+                    )),
+              )
             ],
           ),
           Positioned(

@@ -3,15 +3,16 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
-import 'package:ari_gong_gan/screen/tmp.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
+import 'package:ntp/ntp.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const Color color = Color(0xfff9e769);
 int? isInitView;
+
 void main() async {
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
@@ -27,10 +29,14 @@ void main() async {
   isLoginDataSaved() async {
     // return HomePage();
     var ctrl = new LoginData();
-
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";
     String saved_pw = assurance["user_pw"] ?? "";
+
+    DateTime tmp = await NTP.now();
+    DateTime currentTime = tmp.toUtc().add(Duration(hours: 9));
+    GetIt.I.registerSingleton<DateTime>(currentTime);
+
     try {
       var loginCrwal = LoginCrwal(id: saved_id, pw: saved_pw);
       final getuserInfo = await loginCrwal.userInfo();
@@ -55,7 +61,10 @@ void main() async {
         ),
         ChangeNotifierProvider(
           create: (BuildContext context) => ReservationByUserProvider(),
-        )
+        ),
+        ChangeNotifierProvider(
+          create: (BuildContext context) => TodayReservationProvider(),
+        ),
       ],
       child: MaterialApp(
         theme: ThemeData(
@@ -65,7 +74,6 @@ void main() async {
         title: '아리공간',
         home: AnimatedSplashScreen.withScreenFunction(
           splash: Image.asset('assets/images/ari_logo.png'),
-
           splashIconSize: 100,
           screenFunction: isLoginDataSaved,
           duration: 500,

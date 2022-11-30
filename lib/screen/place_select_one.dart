@@ -2,7 +2,7 @@ import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_place.dart';
 import 'package:ari_gong_gan/model/reservation_place_list.dart';
-import 'package:ari_gong_gan/model/resevation_all.dart';
+import 'package:ari_gong_gan/model/reservation_all.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_two.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';

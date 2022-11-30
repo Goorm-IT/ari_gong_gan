@@ -1,7 +1,7 @@
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_time.dart';
 import 'package:ari_gong_gan/model/reservation_time_list.dart';
-import 'package:ari_gong_gan/model/resevation_all.dart';
+import 'package:ari_gong_gan/model/reservation_all.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_one.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
@@ -24,17 +24,12 @@ class SelectAMPM extends StatefulWidget {
 class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
   bool _isPressedAM = false;
   bool _isPressedPM = false;
-  double _opacitiy = 0.0;
-  Alignment _position = Alignment(-1.0, 1.0);
   late AnimationController _animationController;
 
   @override
   void initState() {
     super.initState();
-    Future.delayed(Duration(milliseconds: 1)).then((value) => setState(() {
-          _opacitiy = 1.0;
-          _position = Alignment(-1.0, -1.0);
-        }));
+
     _animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 400));
   }
@@ -185,6 +180,80 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
                         ],
                       ),
                     ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    //   children: [
+                    //     SizedBox(
+                    //       width: 10,
+                    //     ),
+                    //     CustomRadioCircleButton(
+                    //       isSelected: (bool isSelected) {
+                    //         setState(
+                    //           () {
+                    //             _isPressedAM = isSelected;
+                    //             if (_isPressedPM == true) {
+                    //               _isPressedPM = false;
+                    //             }
+                    //           },
+                    //         );
+                    //       },
+                    //       isPressed: _isPressedAM,
+                    //       title: "오전",
+                    //       size: 105.0,
+                    //       pressedColor: Color(0xff2772ac),
+                    //       shadowColor: Color.fromARGB(223, 59, 59, 59),
+                    //       onTap: () {
+                    //         _animationController.reverse();
+                    //         reservationInfo.time = "";
+                    //         setState(() {
+                    //           for (ReservationTime list in tmpAM) {
+                    //             list.isPressed = false;
+                    //           }
+                    //           for (ReservationTime list in tmpPM) {
+                    //             list.isPressed = false;
+                    //           }
+                    //         });
+                    //       },
+                    //       isBooked: 'activate',
+                    //     ),
+                    //     SizedBox(
+                    //       width: 10,
+                    //     ),
+                    //     CustomRadioCircleButton(
+                    //       isSelected: (bool isSelected) {
+                    //         setState(
+                    //           () {
+                    //             _isPressedPM = isSelected;
+                    //             if (_isPressedAM == true) {
+                    //               _isPressedAM = false;
+                    //             }
+                    //           },
+                    //         );
+                    //       },
+                    //       isPressed: _isPressedPM,
+                    //       title: "오후",
+                    //       size: 105.0,
+                    //       pressedColor: Color(0xff2772ac),
+                    //       shadowColor: Color.fromARGB(223, 59, 59, 59),
+                    //       onTap: () {
+                    //         _animationController.reverse();
+                    //         reservationInfo.time = "";
+                    //         setState(() {
+                    //           for (ReservationTime list in tmpAM) {
+                    //             list.isPressed = false;
+                    //           }
+                    //           for (ReservationTime list in tmpPM) {
+                    //             list.isPressed = false;
+                    //           }
+                    //         });
+                    //       },
+                    //       isBooked: 'activate',
+                    //     ),
+                    //     SizedBox(
+                    //       width: 10,
+                    //     ),
+                    //   ],
+                    // ),
                   ],
                 ),
               ),
@@ -240,6 +309,12 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
     _list = context.read<RevervationAllProvider>().revervationAll;
     widget.animationController =
         AnimationController(vsync: this, duration: Duration(milliseconds: 300));
+  }
+
+  @override
+  void dispose() {
+    widget.animationController.dispose();
+    super.dispose();
   }
 
   @override

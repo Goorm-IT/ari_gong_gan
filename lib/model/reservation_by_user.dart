@@ -21,7 +21,11 @@ class ReservationByUser {
       realTime: json[1] as String,
       name: json[2] as String,
       floor: json[3] as String,
-      time: json[4] as String,
+      time: json[4].substring(4, 6) +
+          ':' +
+          json[4].substring(7, 9) +
+          ':' +
+          json[4].substring(10, 12),
     );
   }
 }

@@ -5,6 +5,7 @@ import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:ntp/ntp.dart';
 import 'package:page_transition/page_transition.dart';
 import "dart:math" show pi;
 import '../model/reservation.dart';
@@ -192,11 +193,20 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                                   _reservationCompleteInfo("이름", userInfo.name),
                                   _reservationCompleteInfo(
                                       "학번", userInfo.studentId),
-                                  _reservationCompleteInfo(
-                                    "날짜",
-                                    DateFormat('yyyy. MM. dd')
-                                        .format(DateTime.now()),
-                                  ),
+                                  FutureBuilder(
+                                      future: getRealTime(),
+                                      builder: (context, snapshot) {
+                                        if (snapshot.hasData) {
+                                          return _reservationCompleteInfo(
+                                            "날짜",
+                                            snapshot.data.toString(),
+                                            // DateFormat('yyyy. MM. dd')
+                                            //     .format(DateTime.now()),
+                                          );
+                                        } else {
+                                          return Container();
+                                        }
+                                      }),
                                   _reservationCompleteInfo("시간",
                                       '${widget.time.substring(0, 5)} - ${int.parse(widget.time.substring(0, 2)) + 1}:00'),
                                   _reservationCompleteInfo(
@@ -232,6 +242,11 @@ class _ReservationCompleteState extends State<ReservationComplete> {
         ),
       ),
     );
+  }
+
+  Future<DateTime> getRealTime() async {
+    DateTime currentTime = await NTP.now();
+    return currentTime.toUtc().add(Duration(hours: 9));
   }
 
   Widget _reservationCompleteInfo(String title, String body) {

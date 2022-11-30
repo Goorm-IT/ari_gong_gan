@@ -2,7 +2,7 @@ import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_place.dart';
-import 'package:ari_gong_gan/model/resevation_all.dart';
+import 'package:ari_gong_gan/model/reservation_all.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
@@ -31,6 +31,7 @@ class PlaceSelectTwo extends StatefulWidget {
 
 class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
   List<bool> _isPressed = [];
+  bool _isLoading = false;
 
   @override
   void initState() {
@@ -221,8 +222,14 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                         onPressed: reservationInfo.name == ""
                             ? null
                             : () async {
+                                setState(() {
+                                  _isLoading = true;
+                                });
                                 var ariServer = AriServer();
                                 int result = await ariServer.revervation();
+                                setState(() {
+                                  _isLoading = false;
+                                });
                                 late String tmpFloor, tmpName, tmpTime;
                                 setState(() {
                                   tmpFloor = reservationInfo.floor;
@@ -277,6 +284,12 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                 ),
               ),
             ),
+          ),
+          Container(
+            width: _isLoading ? MediaQuery.of(context).size.width : 0,
+            height: _isLoading ? MediaQuery.of(context).size.height : 0,
+            color: Colors.grey.withOpacity(0.4),
+            child: Center(child: CircularProgressIndicator()),
           )
         ],
       ),

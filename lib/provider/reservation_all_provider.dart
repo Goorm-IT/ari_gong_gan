@@ -1,5 +1,5 @@
 import 'package:ari_gong_gan/http/ari_server.dart';
-import 'package:ari_gong_gan/model/resevation_all.dart';
+import 'package:ari_gong_gan/model/reservation_all.dart';
 import 'package:flutter/material.dart';
 
 class RevervationAllProvider extends ChangeNotifier {

@@ -23,11 +23,13 @@ class _CheckReservationState extends State<CheckReservation> {
   TextEditingController eMonth = TextEditingController();
   TextEditingController eDay = TextEditingController();
   int _selected = 1;
+  int bookedCount = 0;
   @override
   void initState() {
     super.initState();
     _inititemList = context.read<ReservationByUserProvider>().reservationByUser;
     _itemList = _inititemList;
+    countbooked();
   }
 
   @override
@@ -39,6 +41,14 @@ class _CheckReservationState extends State<CheckReservation> {
     eMonth.dispose();
     eDay.dispose();
     super.dispose();
+  }
+
+  void countbooked() {
+    for (int i = 0; i < _itemList.length; i++) {
+      if (_itemList[i].status == 'booked') {
+        bookedCount++;
+      }
+    }
   }
 
   void changePeroid(List<ReservationByUser> list) {
@@ -84,7 +94,6 @@ class _CheckReservationState extends State<CheckReservation> {
   Widget build(BuildContext context) {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
-
     return Scaffold(
       appBar: customAppbar(context, true),
       body: Stack(
@@ -123,6 +132,81 @@ class _CheckReservationState extends State<CheckReservation> {
                           fontWeight: FontWeight.w500,
                         ),
                       ),
+                      Row(
+                        children: [
+                          Container(
+                            height: 20,
+                            width: 20,
+                            child: Image.asset(
+                              'assets/images/beaconSearch.png',
+                            ),
+                          ),
+                          SizedBox(
+                            width: 5,
+                          ),
+                          Text(
+                            "인증완료",
+                            style: TextStyle(
+                              color: Color(0xff2772AC),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Row(
+                        children: [
+                          Stack(
+                            children: [
+                              Container(
+                                height: 8,
+                                width: 200,
+                                decoration: BoxDecoration(
+                                  color: Color(0xff2099EA),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                              ),
+                              Container(
+                                height: 8,
+                                width: 200 *
+                                    (bookedCount / _itemList.length), //수정 요
+                                decoration: BoxDecoration(
+                                  color: Color(0xff2772AC),
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10)),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Text.rich(
+                            TextSpan(
+                              text: '  $bookedCount',
+                              style: TextStyle(
+                                  fontSize: 17,
+                                  color: Color(0xff2772AC),
+                                  fontWeight: FontWeight.w600),
+                              children: [
+                                TextSpan(
+                                    text: '/',
+                                    style: TextStyle(
+                                        fontSize: 15,
+                                        fontWeight: FontWeight.w500)),
+                                TextSpan(
+                                  text: '${_itemList.length}',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      )
                     ],
                   ),
                 ),

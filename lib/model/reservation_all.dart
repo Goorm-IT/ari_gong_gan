@@ -17,7 +17,11 @@ class ReservationAll {
     return ReservationAll(
       name: json[0] as String,
       floor: json[1] as String,
-      time: json[2] as String,
+      time: json[2].substring(4, 6) +
+          ':' +
+          json[2].substring(7, 9) +
+          ':' +
+          json[2].substring(10, 12),
       isBooked: json[3] as String,
     );
   }

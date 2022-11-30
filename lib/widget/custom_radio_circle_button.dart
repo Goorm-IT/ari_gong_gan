@@ -35,27 +35,15 @@ class CustomRadioCircleButton extends StatefulWidget {
       CustomRadioCircleButtonState();
 }
 
-class CustomRadioCircleButtonState extends State<CustomRadioCircleButton>
-    with SingleTickerProviderStateMixin {
-  late Color textColor;
-  late Color buttonColor;
-  late Color shadowColor;
-
+class CustomRadioCircleButtonState extends State<CustomRadioCircleButton> {
   @override
   void initState() {
     super.initState();
-    textColor = widget.pressedColor;
-    buttonColor = widget.pressedColor;
-    shadowColor = widget.shadowColor;
   }
 
   @override
   Widget build(BuildContext context) {
-    textColor = widget.isPressed ? Colors.white : widget.pressedColor;
-    buttonColor = !widget.isPressed ? Colors.white : widget.pressedColor;
-    shadowColor = !widget.isPressed
-        ? widget.shadowColor
-        : Color.fromARGB(223, 56, 56, 56);
+    print(widget.isPressed);
     return widget.isBooked == 'activate'
         ? GestureDetector(
             onTap: () {
@@ -79,12 +67,14 @@ class CustomRadioCircleButtonState extends State<CustomRadioCircleButton>
               height: widget.size,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: buttonColor,
+                color: !widget.isPressed ? Colors.white : widget.pressedColor,
                 boxShadow: [
                   BoxShadow(
                     blurRadius: 4.0,
                     offset: Offset(0.5, 1.9),
-                    color: shadowColor,
+                    color: !widget.isPressed
+                        ? widget.shadowColor
+                        : Color.fromARGB(223, 56, 56, 56),
                     inset: widget.isPressed,
                   )
                 ],
@@ -92,8 +82,11 @@ class CustomRadioCircleButtonState extends State<CustomRadioCircleButton>
               child: Center(
                 child: Text(
                   widget.title,
-                  style:
-                      TextStyle(fontWeight: FontWeight.w600, color: textColor),
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      color: widget.isPressed
+                          ? Colors.white
+                          : widget.pressedColor),
                 ),
               ),
             ),
@@ -108,14 +101,19 @@ class CustomRadioCircleButtonState extends State<CustomRadioCircleButton>
                 BoxShadow(
                   blurRadius: 4.0,
                   offset: Offset(0.5, 1.9),
-                  color: shadowColor,
+                  color: !widget.isPressed
+                      ? widget.shadowColor
+                      : Color.fromARGB(223, 56, 56, 56),
                 )
               ],
             ),
             child: Center(
               child: Text(
                 widget.title,
-                style: TextStyle(fontWeight: FontWeight.w600, color: textColor),
+                style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                    color:
+                        widget.isPressed ? Colors.white : widget.pressedColor),
               ),
             ),
           );
