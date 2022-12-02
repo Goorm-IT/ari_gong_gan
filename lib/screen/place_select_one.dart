@@ -8,6 +8,7 @@ import 'package:ari_gong_gan/screen/place_select_two.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -23,6 +24,7 @@ class PlaceSelectOne extends StatefulWidget {
 
 class _PlaceSelectOneState extends State<PlaceSelectOne> {
   List<ReservationAll> _placeList = [];
+  DateTime realTime = GetIt.I<DateTime>();
   Map<String, int> _remainList = {
     "아리관 3층": 0,
     "아리관 4층": 0,
@@ -77,8 +79,7 @@ class _PlaceSelectOneState extends State<PlaceSelectOne> {
                             ),
                           ),
                           TextSpan(
-                            text: DateFormat('MMM. dd. yyyy')
-                                .format(DateTime.now()),
+                            text: DateFormat('MMM. dd. yyyy').format(realTime),
                             style: const TextStyle(
                               fontSize: 13,
                               fontWeight: FontWeight.w500,

@@ -11,11 +11,13 @@ import 'package:ari_gong_gan/widget/custom_radio_circle_button.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/possible_or_not.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
 
 class PlaceSelectTwo extends StatefulWidget {
   final String title;
+
   final List<ReservationPlace> rooms;
   final List<ReservationAll> placeListFilteredByfloor;
   const PlaceSelectTwo(
@@ -32,7 +34,7 @@ class PlaceSelectTwo extends StatefulWidget {
 class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
   List<bool> _isPressed = [];
   bool _isLoading = false;
-
+  DateTime realTime = GetIt.I<DateTime>();
   @override
   void initState() {
     super.initState();
@@ -75,8 +77,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                           ),
                         ),
                         TextSpan(
-                          text: DateFormat('MMM. dd. yyyy')
-                              .format(DateTime.now()),
+                          text: DateFormat('MMM. dd. yyyy').format(realTime),
                           style: const TextStyle(
                             fontSize: 13,
                             fontWeight: FontWeight.w500,

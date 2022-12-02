@@ -26,6 +26,7 @@ class _ReservationCompleteState extends State<ReservationComplete> {
   @override
   Widget build(BuildContext context) {
     AriUser userInfo = GetIt.I<AriUser>();
+    DateTime realTime = GetIt.I<DateTime>();
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return WillPopScope(
@@ -193,20 +194,10 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                                   _reservationCompleteInfo("이름", userInfo.name),
                                   _reservationCompleteInfo(
                                       "학번", userInfo.studentId),
-                                  FutureBuilder(
-                                      future: getRealTime(),
-                                      builder: (context, snapshot) {
-                                        if (snapshot.hasData) {
-                                          return _reservationCompleteInfo(
-                                            "날짜",
-                                            snapshot.data.toString(),
-                                            // DateFormat('yyyy. MM. dd')
-                                            //     .format(DateTime.now()),
-                                          );
-                                        } else {
-                                          return Container();
-                                        }
-                                      }),
+                                  _reservationCompleteInfo(
+                                    "날짜",
+                                    DateFormat('yyyy. MM. dd').format(realTime),
+                                  ),
                                   _reservationCompleteInfo("시간",
                                       '${widget.time.substring(0, 5)} - ${int.parse(widget.time.substring(0, 2)) + 1}:00'),
                                   _reservationCompleteInfo(
@@ -217,14 +208,18 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                                     height: 20,
                                   ),
                                   Center(
-                                    child: Text(
-                                      "예약하신 시간과 장소에서\n홈화면의 예약인증을 해주시길 바랍니다. \n예약 미인증 시 패널티가 부과됩니다.",
-                                      style: TextStyle(
-                                        color: Color(0xff4888E0),
-                                        fontSize: 10,
-                                        letterSpacing: 1.1,
+                                    child: Container(
+                                      margin: const EdgeInsets.symmetric(
+                                          horizontal: 10),
+                                      child: Text(
+                                        "예약하신 시간과 장소에서\n홈화면 > 예약카드의 예약인증을 해주시길 바랍니다. \n예약 미인증 시 패널티가 부과됩니다.",
+                                        style: TextStyle(
+                                          color: Color(0xff4888E0),
+                                          fontSize: 10,
+                                          letterSpacing: 1.1,
+                                        ),
+                                        textAlign: TextAlign.center,
                                       ),
-                                      textAlign: TextAlign.center,
                                     ),
                                   )
                                 ],

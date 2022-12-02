@@ -8,6 +8,7 @@ import 'package:ari_gong_gan/screen/check_reservation.dart';
 import 'package:ari_gong_gan/screen/home_sreen/book_card.dart';
 import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
+import 'package:ari_gong_gan/screen/studyroom.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
@@ -220,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 PageTransition(
                                     type: PageTransitionType.fade,
                                     duration: const Duration(milliseconds: 100),
-                                    child: AgreementPage()));
+                                    child: Studyroom()));
                           },
                         ),
                         _Button(

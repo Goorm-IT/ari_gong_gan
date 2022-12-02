@@ -185,6 +185,9 @@ class _OpenBookCardState extends State<OpenBookCard>
               }),
             ),
           ),
+          SizedBox(
+            height: 5,
+          ),
           SmoothPageIndicator(
               controller: _pageController,
               count: _list.length,

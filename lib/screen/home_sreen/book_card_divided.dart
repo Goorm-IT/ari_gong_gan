@@ -30,7 +30,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   AriUser userInfo = GetIt.I<AriUser>();
   final controller = Get.find<RequirementStateController>();
   DateTime realTime = GetIt.I<DateTime>();
-  int buttonStatus = 0;
+
   double _settingErrorOpacitiy = 0.0;
   double _searchResultOpacitiy = 1.0;
   String _searchResultMessage = "인증 가능 시간이 아닙니다";
@@ -64,9 +64,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
           _settingErrorOpacitiy = 1.0;
         });
       }
-      setState(() {
-        buttonStatus = 0;
-      });
+
       return;
     }
     setState(() {
@@ -110,7 +108,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   }
 
   pauseScanBeacon() async {
-    _streamRanging?.pause();
+    _streamRanging?.cancel();
+    // _streamRanging?.pause();
+
     if (_beacons.isNotEmpty) {
       setState(() {
         _beacons.clear();
@@ -133,32 +133,37 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   }
 
   compareBeaconRoom() async {
-    print("시작");
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
         if (_beacons[i].minor == beaconRoom[widget.reservationInfo.floor]) {
-          print(widget.reservationInfo.floor);
-          print("끝!");
-          controller.pauseScanning();
-          pauseScanBeacon();
-          showToast();
-          setState(() {
-            buttonStatus = 0;
-          });
+          stopScanning();
           AriServer ariServer = AriServer();
           try {
             await ariServer.booked(
                 floor: widget.reservationInfo.floor,
                 name: widget.reservationInfo.name,
                 time: widget.reservationInfo.time);
+            showToast(msg: "예약 인증이 완료되었습니다.");
           } catch (e) {
-            print("개같이 실패");
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
           }
+          setState(() {
+            _isScanning = false;
+          });
           await _reservationByUserProvider.getReservationByUser();
         }
       }
     }
+
     return;
+  }
+
+  stopScanning() {
+    controller.pauseScanning();
+    pauseScanBeacon();
+    setState(() {
+      _isScanning = false;
+    });
   }
 
   @override
@@ -178,7 +183,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.reservationInfo);
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
     return Column(
@@ -296,31 +300,16 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                     BorderRadius.all(Radius.circular(60)),
                                 splashColor: Colors.grey.withOpacity(0.5),
                                 onTap: () async {
-                                  if (buttonStatus == 0) {
-                                    if (!settingbuttonCheck()) {
-                                      return;
-                                    }
-                                    setState(() {
-                                      buttonStatus = 1;
-                                      _isScanning = true;
-                                    });
-                                    controller.startScanning();
-                                    startScanBeacon();
-                                    // await Future.delayed(
-                                    //     Duration(milliseconds: 2000));
-
-                                    setState(() {
-                                      _isScanning = false;
-                                    });
-                                  } else if (buttonStatus == 1) {
-                                    setState(() {
-                                      buttonStatus = 0;
-                                    });
-                                    controller.pauseScanning();
-                                    pauseScanBeacon();
-                                    // flutterBeacon.close;
-
+                                  if (!settingbuttonCheck()) {
+                                    return;
                                   }
+                                  setState(() {
+                                    _isScanning = true;
+                                  });
+                                  controller.startScanning();
+                                  startScanBeacon();
+                                  await Future.delayed(
+                                      Duration(milliseconds: 2000));
                                 },
                                 child: Container(
                                   width: 60,
@@ -329,21 +318,27 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                               ),
                             ),
                             _isScanning == true
-                                ? Container(
-                                    width: 60,
-                                    height: 60,
-                                    decoration: BoxDecoration(
-                                      color: Colors.grey.withOpacity(0.7),
-                                      borderRadius:
-                                          BorderRadius.all(Radius.circular(60)),
-                                    ),
+                                ? GestureDetector(
+                                    onTap: () {
+                                      stopScanning();
+                                      showToast(msg: '예약인증을 취소했습니다.');
+                                    },
                                     child: Container(
-                                        width: 40,
-                                        height: 40,
-                                        margin: const EdgeInsets.all(13),
-                                        child: CircularProgressIndicator(
-                                          color: PRIMARY_COLOR_DEEP,
-                                        )),
+                                      width: 60,
+                                      height: 60,
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey.withOpacity(0.7),
+                                        borderRadius: BorderRadius.all(
+                                            Radius.circular(60)),
+                                      ),
+                                      child: Container(
+                                          width: 40,
+                                          height: 40,
+                                          margin: const EdgeInsets.all(13),
+                                          child: CircularProgressIndicator(
+                                            color: PRIMARY_COLOR_DEEP,
+                                          )),
+                                    ),
                                   )
                                 : Container()
                           ],
@@ -431,9 +426,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
           _settingErrorOpacitiy = 1.0;
         });
       }
-      setState(() {
-        buttonStatus = 0;
-      });
       return false;
     }
 
@@ -470,9 +462,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         fontSize: 14, fontWeight: FontWeight.w600, color: Color(0xff2772AC));
   }
 
-  showToast() {
+  showToast({required String msg}) {
     Fluttertoast.showToast(
-      msg: "예약 인증이 완료되었습니다",
+      msg: msg,
       gravity: ToastGravity.BOTTOM,
       fontSize: 15,
       backgroundColor: Colors.grey,
