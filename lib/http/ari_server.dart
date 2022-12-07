@@ -39,15 +39,18 @@ class AriServer {
 
     var request = http.Request('POST', Uri.parse('$url/reservation'));
     request.body =
-        '{"floor" : "${reservationInfo.floor}","name" : "${reservationInfo.name}","time" : "${reservationInfo.time}","userNum" : "01012341234"}';
+        '{"floor" : "${reservationInfo.floor}","name" : "${reservationInfo.name}","time" : "${reservationInfo.time}"}';
     request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-    print(response.statusCode);
-    String tmp = await response.stream.bytesToString();
-    var _list = jsonDecode(tmp)["message"];
-    print(_list);
-    return response.statusCode;
+    try {
+      http.StreamedResponse response = await request.send();
+      print(response.statusCode);
+      String tmp = await response.stream.bytesToString();
+      var _list = jsonDecode(tmp)["message"];
+      return response.statusCode;
+    } catch (e) {
+      return -1;
+    }
   }
 
   Future<List<ReservationByUser>> reservationByUser() async {
@@ -56,16 +59,18 @@ class AriServer {
     List<dynamic> _list = [];
     request.headers.addAll(headers);
 
-    http.StreamedResponse response = await request.send();
-
-    print(response.statusCode);
-    if (response.statusCode == 200) {
-      String tmp = await response.stream.bytesToString();
-      _list = jsonDecode(tmp)["res"];
-      return _list
-          .map<ReservationByUser>((item) => ReservationByUser.fromJson(item))
-          .toList();
-    } else {
+    try {
+      http.StreamedResponse response = await request.send();
+      if (response.statusCode == 200) {
+        String tmp = await response.stream.bytesToString();
+        _list = jsonDecode(tmp)["res"];
+        return _list
+            .map<ReservationByUser>((item) => ReservationByUser.fromJson(item))
+            .toList();
+      } else {
+        return [];
+      }
+    } catch (e) {
       return [];
     }
   }
@@ -116,7 +121,7 @@ class AriServer {
     var headers = {'Content-Type': 'text/plain', 'Cookie': _cookie};
 
     var request = http.Request('POST', Uri.parse('$url/booked'));
-    request.body = '{"floor" : "$floor" ,"name" : $name, "time" : "$time"}';
+    request.body = '{"floor" : "$floor" ,"name" : "$name", "time" : "$time"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     print(response.statusCode);
@@ -124,5 +129,38 @@ class AriServer {
     var _list = jsonDecode(tmp)["message"];
     print(_list);
     return response.statusCode;
+  }
+
+  Future<int> delete(
+      {required String id,
+      required String floor,
+      required String name,
+      required String time}) async {
+    var headers = {'Content-Type': 'text/plain', 'Cookie': _cookie};
+
+    var request = http.Request('POST', Uri.parse('$url/delete'));
+    request.body =
+        '{"userId" : "$id","floor" : "$floor" ,"name" : "$name", "time" : "$time"}';
+
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    print('$id $floor $name $time');
+    print(response.statusCode);
+    String tmp = await response.stream.bytesToString();
+    var _list = jsonDecode(tmp)["message"];
+
+    return response.statusCode;
+
+    // request.body =
+    //     '''{\n    "userId" : "2018H1109",\n    "floor" : "아리관 3층",\n    "name" : "Self 4",\n    "time" : "10:00:00"\n}''';
+    // request.headers.addAll(headers);
+
+    // http.StreamedResponse response = await request.send();
+
+    // if (response.statusCode == 200) {
+    //   print(await response.stream.bytesToString());
+    // } else {
+    //   print(response.reasonPhrase);
+    // }
   }
 }

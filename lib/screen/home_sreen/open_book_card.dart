@@ -87,7 +87,12 @@ class _OpenBookCardState extends State<OpenBookCard>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
-    _list = context.read<TodayReservationProvider>().todayReservation;
+    _list = context
+        .read<TodayReservationProvider>()
+        .todayReservation
+        .where((TodayReservation element) {
+      return element.resStatus != "delete";
+    }).toList();
     listeningState();
   }
 

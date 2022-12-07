@@ -1,5 +1,5 @@
 class TodayReservation {
-  final String resStatus;
+  late final String resStatus;
   final String seatStatus;
   final String floor;
   final String name;
