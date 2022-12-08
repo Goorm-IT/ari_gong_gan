@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
@@ -21,7 +23,18 @@ import 'package:shared_preferences/shared_preferences.dart';
 const Color color = Color(0xfff9e769);
 int? isInitView;
 
+// 릴리즈시 삭제할 것
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
+  }
+}
+
 void main() async {
+  HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
   SharedPreferences prefs = await SharedPreferences.getInstance();
