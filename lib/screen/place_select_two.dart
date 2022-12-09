@@ -7,6 +7,7 @@ import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/reservation_complete.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
+import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:ari_gong_gan/widget/custom_radio_circle_button.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/possible_or_not.dart';
@@ -231,6 +232,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                                 setState(() {
                                   _isLoading = false;
                                 });
+                                print("여기아님?");
                                 late String tmpFloor, tmpName, tmpTime;
                                 setState(() {
                                   tmpFloor = reservationInfo.floor;
@@ -290,7 +292,10 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
             width: _isLoading ? MediaQuery.of(context).size.width : 0,
             height: _isLoading ? MediaQuery.of(context).size.height : 0,
             color: Colors.grey.withOpacity(0.4),
-            child: Center(child: CircularProgressIndicator()),
+            child: Center(
+                child: CustomCircularProgress(
+              size: 40,
+            )),
           )
         ],
       ),

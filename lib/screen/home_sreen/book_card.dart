@@ -5,8 +5,11 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:provider/provider.dart';
 
+typedef IsLoadingType = void Function(bool);
+
 class BookCard extends StatefulWidget {
-  const BookCard({Key? key}) : super(key: key);
+  IsLoadingType isLoadingType;
+  BookCard({required this.isLoadingType, Key? key}) : super(key: key);
   @override
   State<BookCard> createState() => _BookCardState();
 }
@@ -20,46 +23,53 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
         Provider.of<TodayReservationProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
-    return Container(
-      width: windowWidth - 146,
-      height: 50,
-      decoration: decoWithShadow(15.0),
-      child: Material(
-        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-        child: InkWell(
-          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          onTap: () async {
-            await _todayReservationProvider.getTodayReservation();
-            showModalBottomSheet<void>(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(30.0),
-                      topRight: Radius.circular(30.0)),
+    return Stack(
+      children: [
+        Container(
+          width: windowWidth - 146,
+          height: 50,
+          decoration: decoWithShadow(15.0),
+          child: Material(
+            borderRadius: BorderRadius.all(Radius.circular(15.0)),
+            child: InkWell(
+              borderRadius: BorderRadius.all(Radius.circular(15.0)),
+              onTap: () async {
+                widget.isLoadingType(true);
+                await _todayReservationProvider.getTodayReservation();
+                widget.isLoadingType(false);
+                showModalBottomSheet<void>(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(30.0),
+                          topRight: Radius.circular(30.0)),
+                    ),
+                    context: context,
+                    builder: (BuildContext context) {
+                      return OpenBookCard();
+                    });
+              },
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      "예약카드",
+                      style: TextStyle(
+                          color: Color(0xff2772AC),
+                          fontWeight: FontWeight.w600),
+                    ),
+                    Transform.translate(
+                        offset: Offset(-7, 0),
+                        child: Container(
+                            width: 15, height: 50, color: Color(0xff2099e9)))
+                  ],
                 ),
-                context: context,
-                builder: (BuildContext context) {
-                  return OpenBookCard();
-                });
-          },
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 15.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(
-                  "예약카드",
-                  style: TextStyle(
-                      color: Color(0xff2772AC), fontWeight: FontWeight.w600),
-                ),
-                Transform.translate(
-                    offset: Offset(-7, 0),
-                    child: Container(
-                        width: 15, height: 50, color: Color(0xff2099e9)))
-              ],
+              ),
             ),
           ),
         ),
-      ),
+      ],
     );
   }
 

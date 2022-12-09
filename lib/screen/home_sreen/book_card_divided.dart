@@ -7,6 +7,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
+import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -15,9 +16,13 @@ import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
+typedef IsSetting = void Function(double);
+
 class BookCardDivied extends StatefulWidget {
   TodayReservation reservationInfo;
-  BookCardDivied({required this.reservationInfo, super.key});
+  IsSetting isSetting;
+  BookCardDivied(
+      {required this.reservationInfo, required this.isSetting, super.key});
 
   @override
   State<BookCardDivied> createState() => _BookCardDiviedState();
@@ -48,27 +53,35 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   startScanBeacon() async {
     await flutterBeacon.initializeScanning;
 
-    if (!controller.authorizationStatusOk ||
-        !controller.locationServiceEnabled ||
-        !controller.bluetoothEnabled) {
-      if (_settingErrorOpacitiy == 1.0) {
-        setState(() {
-          _settingErrorOpacitiy = 0.0;
-          Future.delayed(Duration(milliseconds: 150))
-              .then((value) => setState(() {
-                    _settingErrorOpacitiy = 1.0;
-                  }));
-        });
-      } else {
-        setState(() {
-          _settingErrorOpacitiy = 1.0;
-        });
-      }
+    // if (!controller.authorizationStatusOk ||
+    //     !controller.locationServiceEnabled ||
+    //     !controller.bluetoothEnabled) {
+    //   if (_settingErrorOpacitiy == 1.0) {
+    //     setState(() {
+    //       widget.isSetting(0.0);
+    //       _settingErrorOpacitiy = 0.0;
+    //       Future.delayed(Duration(milliseconds: 150))
+    //           .then((value) => setState(() {
+    //                 _settingErrorOpacitiy = 1.0;
+    //                  widget.isSetting(1.0);
+    //               }));
+    //     });
+    //   } else {
+    //     setState(() {
+    //       _settingErrorOpacitiy = 1.0;
+    //        widget.isSetting(1.0);
+    //     });
+    //   }
 
+    //   return;
+    // }
+
+    if (!settingbuttonCheck()) {
       return;
     }
     setState(() {
       _settingErrorOpacitiy = 0.0;
+      widget.isSetting(0.0);
     });
 
     final regions = <Region>[
@@ -170,7 +183,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   void initState() {
     super.initState();
 
-    if (widget.reservationInfo.resStatus == 'prebooked') {
+    if (widget.reservationInfo.resStatus != 'prebooked') {
       _searchResultMessage = "예약 인증이 가능합니다!";
     }
   }
@@ -266,7 +279,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               ),
               Column(
                 children: [
-                  widget.reservationInfo.resStatus == 'prebooked'
+                  widget.reservationInfo.resStatus != 'prebooked'
                       ? Stack(
                           children: [
                             Container(
@@ -335,8 +348,8 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                           width: 40,
                                           height: 40,
                                           margin: const EdgeInsets.all(13),
-                                          child: CircularProgressIndicator(
-                                            color: PRIMARY_COLOR_DEEP,
+                                          child: CustomCircularProgress(
+                                            size: 40,
                                           )),
                                     ),
                                   )
@@ -416,14 +429,17 @@ class _BookCardDiviedState extends State<BookCardDivied> {
       if (_settingErrorOpacitiy == 1.0) {
         setState(() {
           _settingErrorOpacitiy = 0.0;
-          Future.delayed(Duration(milliseconds: 150))
+          widget.isSetting(0.0);
+          Future.delayed(Duration(milliseconds: 200))
               .then((value) => setState(() {
                     _settingErrorOpacitiy = 1.0;
+                    widget.isSetting(1.0);
                   }));
         });
       } else {
         setState(() {
           _settingErrorOpacitiy = 1.0;
+          widget.isSetting(1.0);
         });
       }
       return false;
@@ -431,6 +447,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
     setState(() {
       _settingErrorOpacitiy = 0.0;
+      widget.isSetting(0.0);
     });
     return true;
   }

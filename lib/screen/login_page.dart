@@ -4,6 +4,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/tmp.dart';
+import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
@@ -213,7 +214,9 @@ class _LoginPageState extends State<LoginPage>
                   height: MediaQuery.of(context).size.height,
                   color: Colors.grey.withOpacity(0.5),
                   child: Center(
-                    child: CircularProgressIndicator(),
+                    child: CustomCircularProgress(
+                      size: 40,
+                    ),
                   ),
                 )
               : Container(),

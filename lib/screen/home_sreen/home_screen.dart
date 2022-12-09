@@ -10,10 +10,12 @@ import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/screen/select_am_pm.dart';
 import 'package:ari_gong_gan/screen/studyroom.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
+import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
+
 import 'package:provider/provider.dart';
 import "dart:math" show pi;
 import 'package:page_transition/page_transition.dart';
@@ -33,6 +35,7 @@ class _HomeScreenState extends State<HomeScreen> {
   Color bookBorderColor = Colors.white;
   double bookBorderWidth = 0.0;
   bool isPressed = false;
+  bool _isLoading = false;
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
 
@@ -228,8 +231,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           title: '예약확인',
                           image: 'assets/images/ari_book_leading_icon.png',
                           ontap: () async {
+                            setState(() {
+                              _isLoading = true;
+                            });
                             await _reservationByUserProvider
                                 .getReservationByUser();
+                            setState(() {
+                              _isLoading = false;
+                            });
                             Navigator.push(
                                 context,
                                 PageTransition(
@@ -245,12 +254,27 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Color(0xff80BCFA),
                     ),
                     SizedBox(height: 14.5),
-                    BookCard(),
+                    BookCard(
+                      isLoadingType: (bool isLoading) {
+                        setState(() {
+                          _isLoading = isLoading;
+                        });
+                      },
+                    ),
                   ],
                 ),
               ),
             ),
           ),
+          Container(
+            width: _isLoading ? MediaQuery.of(context).size.width : 0,
+            height: _isLoading ? MediaQuery.of(context).size.height : 0,
+            color: Colors.grey.withOpacity(0.4),
+            child: Center(
+                child: CustomCircularProgress(
+              size: 40,
+            )),
+          )
         ],
       ),
     );

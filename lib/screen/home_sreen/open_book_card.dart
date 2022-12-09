@@ -1,20 +1,14 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:ari_gong_gan/const/colors.dart';
-
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
-
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
-
 import 'package:ari_gong_gan/screen/home_sreen/book_card_divided.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:get/get.dart';
-
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -182,10 +176,19 @@ class _OpenBookCardState extends State<OpenBookCard>
             child: PageView.builder(
               itemCount: _list.length,
               controller: _pageController,
-              onPageChanged: (change) {},
+              onPageChanged: (change) {
+                setState(() {
+                  _settingErrorOpacitiy = 0.0;
+                });
+              },
               itemBuilder: ((BuildContext context, int index) {
                 return BookCardDivied(
                   reservationInfo: _list[index],
+                  isSetting: (double isSetting) {
+                    setState(() {
+                      _settingErrorOpacitiy = isSetting;
+                    });
+                  },
                 );
               }),
             ),
