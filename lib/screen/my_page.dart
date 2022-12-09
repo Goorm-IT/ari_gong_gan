@@ -5,6 +5,7 @@ import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
+import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,7 @@ class _MyPageState extends State<MyPage> {
   List<TodayReservation> _list = [];
   final PageController _pageController = PageController(initialPage: 0);
   int deletePage = 0;
+  bool _isLoading = false;
   late TodayReservationProvider _todayReservationProvider;
   AriUser userInfo = GetIt.I<AriUser>();
   @override
@@ -177,22 +179,60 @@ class _MyPageState extends State<MyPage> {
                 _Item(
                   title: '예약취소',
                   onPress: () async {
+                    setState(() {
+                      _isLoading = true;
+                    });
                     await _todayReservationProvider.getTodayReservation();
+                    setState(() {
+                      _isLoading = false;
+                    });
                     setState(() {
                       _list = context
                           .read<TodayReservationProvider>()
                           .todayReservation
                           .where((TodayReservation element) {
-                        return element.resStatus != "delete";
+                        return !(element.resStatus == "delete" ||
+                            element.resStatus == "cancel");
                       }).toList();
                     });
-                    customShowDiaLog(
-                      context: context,
-                      title: deleteDiaLogTitle(),
-                      content: deleteDiaLogContent(),
-                      action: [deleteDiaLogAction()],
-                      isBackButton: true,
-                    );
+                    _list.isEmpty
+                        ? customShowDiaLog(
+                            context: context,
+                            title: Container(
+                              height: 20.0,
+                              child: Center(
+                                child: Text(
+                                  "예약 내역이 없어요",
+                                  style: TextStyle(
+                                      color: Color(0xff4888E0),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                            content: Container(
+                              height: 45.0,
+                              child: Align(
+                                alignment: Alignment.topCenter,
+                                child: Text(
+                                  "메인 페이지에서 예약하기를 눌러보세요!",
+                                  style: TextStyle(
+                                      color: Color(0xff4888E0),
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w500),
+                                ),
+                              ),
+                            ),
+                            action: [emptyListAction()],
+                            isBackButton: true,
+                          )
+                        : customShowDiaLog(
+                            context: context,
+                            title: deleteDiaLogTitle(),
+                            content: deleteDiaLogContent(),
+                            action: [deleteDiaLogAction()],
+                            isBackButton: true,
+                          );
                   },
                   isChecked: false,
                 ),
@@ -219,7 +259,57 @@ class _MyPageState extends State<MyPage> {
         SizedBox(
           height: 22,
         ),
+        Container(
+          width: _isLoading ? MediaQuery.of(context).size.width : 0,
+          height: _isLoading ? MediaQuery.of(context).size.height : 0,
+          color: Colors.grey.withOpacity(0.4),
+          child: Center(
+              child: CustomCircularProgress(
+            size: 40,
+          )),
+        )
       ]),
+    );
+  }
+
+  Widget emptyListAction() {
+    return Container(
+      height: 53,
+      child: Row(
+        children: [
+          Flexible(
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(18.0),
+                bottomRight: Radius.circular(18.0),
+              ),
+              child: Material(
+                color: Color(0xffF9E769),
+                child: InkWell(
+                  onTap: () async {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(18.0),
+                        bottomLeft: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -341,7 +431,6 @@ class _MyPageState extends State<MyPage> {
                 child: InkWell(
                   splashColor: Color.fromARGB(223, 255, 251, 15),
                   onTap: () async {
-                    Navigator.pop(context);
                     AriServer ariServer = AriServer();
                     try {
                       await ariServer.delete(
@@ -350,13 +439,46 @@ class _MyPageState extends State<MyPage> {
                         name: _list[deletePage].name,
                         time: _list[deletePage].time,
                       );
-                    } catch (e) {}
-                    customShowDiaLog(
+                      Navigator.pop(context);
+                      customShowDiaLog(
+                          context: context,
+                          title: deleteDiaLog2Title(),
+                          content: deleteDiaLog2Content(),
+                          action: [deleteDiaLog2Action()],
+                          isBackButton: false);
+                    } catch (e) {
+                      Navigator.pop(context);
+                      customShowDiaLog(
                         context: context,
-                        title: deleteDiaLog2Title(),
-                        content: deleteDiaLog2Content(),
-                        action: [deleteDiaLog2Action()],
-                        isBackButton: false);
+                        title: Container(
+                          height: 20.0,
+                          child: Center(
+                            child: Text(
+                              "예약취소 실패",
+                              style: TextStyle(
+                                  color: Color(0xff4888E0),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                        content: Container(
+                          height: 45.0,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                              "잠시후 다시 시도해주세요.",
+                              style: TextStyle(
+                                  color: Color(0xff4888E0),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                        action: [emptyListAction()],
+                        isBackButton: true,
+                      );
+                    }
                   },
                   child: Container(
                     alignment: Alignment.center,
