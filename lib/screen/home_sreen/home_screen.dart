@@ -271,9 +271,10 @@ class _HomeScreenState extends State<HomeScreen> {
             height: _isLoading ? MediaQuery.of(context).size.height : 0,
             color: Colors.grey.withOpacity(0.4),
             child: Center(
-                child: CustomCircularProgress(
-              size: 40,
-            )),
+              child: CustomCircularProgress(
+                size: 40,
+              ),
+            ),
           )
         ],
       ),

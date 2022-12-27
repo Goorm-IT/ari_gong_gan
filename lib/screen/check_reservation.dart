@@ -29,6 +29,7 @@ class _CheckReservationState extends State<CheckReservation> {
     super.initState();
     _inititemList = context.read<ReservationByUserProvider>().reservationByUser;
     _itemList = _inititemList;
+    bookedCount = 0;
     countbooked();
   }
 
@@ -91,6 +92,7 @@ class _CheckReservationState extends State<CheckReservation> {
     }
   }
 
+  @override
   Widget build(BuildContext context) {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
@@ -172,8 +174,7 @@ class _CheckReservationState extends State<CheckReservation> {
                               ),
                               Container(
                                 height: 8,
-                                width: 200 *
-                                    (bookedCount / _itemList.length), //수정 요
+                                width: 200 * (bookedCount / _itemList.length),
                                 decoration: BoxDecoration(
                                   color: Color(0xff2772AC),
                                   borderRadius:
@@ -407,6 +408,8 @@ class _CheckReservationState extends State<CheckReservation> {
                         eMonth.text != "" &&
                         eDay.text != "") {
                       changePeroid(_inititemList);
+                      bookedCount = 0;
+                      countbooked();
                       Navigator.pop(context);
                     }
                   },
@@ -649,7 +652,9 @@ class _CheckReservationState extends State<CheckReservation> {
                 margin: const EdgeInsets.only(bottom: 20),
                 height: 90,
                 decoration: BoxDecoration(
-                  color: Color(0xffECF3FF),
+                  color: reservationInfo[index].status == "booked"
+                      ? Color(0xffECF3FF)
+                      : Color(0xffbcbcbc),
                   borderRadius: BorderRadius.all(Radius.circular(20)),
                 ),
                 child: Row(
@@ -657,7 +662,9 @@ class _CheckReservationState extends State<CheckReservation> {
                     Container(
                       width: 25,
                       decoration: BoxDecoration(
-                        color: Color(0xff2099EA),
+                        color: reservationInfo[index].status == "booked"
+                            ? Color(0xff2099EA)
+                            : Color(0xffa6a6a6),
                         borderRadius: BorderRadius.only(
                           topLeft: Radius.circular(20),
                           bottomLeft: Radius.circular(20),
@@ -667,7 +674,9 @@ class _CheckReservationState extends State<CheckReservation> {
                     SizedBox(
                       width: 5,
                     ),
-                    _imageByFloor(floor: reservationInfo[index].floor),
+                    _imageByFloor(
+                        floor: reservationInfo[index].floor,
+                        status: reservationInfo[index].status),
                     Flexible(
                       child: SizedBox(
                         width: 30,
@@ -679,7 +688,9 @@ class _CheckReservationState extends State<CheckReservation> {
                         Text(
                           reservationInfo[index].floor,
                           style: TextStyle(
-                            color: Color(0xff2099EA),
+                            color: reservationInfo[index].status == "booked"
+                                ? Color(0xff2099EA)
+                                : Color(0xffffffff),
                             fontSize: 14,
                             fontFamily: "Noto_Sans_KR",
                             fontWeight: FontWeight.w700,
@@ -694,7 +705,9 @@ class _CheckReservationState extends State<CheckReservation> {
                               .substring(0, 10)
                               .replaceAll('-', '. '),
                           style: TextStyle(
-                            color: Color(0xff80BCFA),
+                            color: reservationInfo[index].status == "booked"
+                                ? Color(0xff80BCFA)
+                                : Color(0xffffffff),
                             fontSize: 11,
                             fontFamily: "Noto_Sans_KR",
                             fontWeight: FontWeight.w500,
@@ -707,17 +720,34 @@ class _CheckReservationState extends State<CheckReservation> {
                         width: 30,
                       ),
                     ),
-                    Transform.translate(
-                      offset: Offset(0, -10),
-                      child: Text(
-                        '${reservationInfo[index].time.substring(0, 5)} - ${int.parse(reservationInfo[index].time.substring(0, 2)) + 1}:00',
-                        style: TextStyle(
-                          color: Color(0xff2099EA),
-                          fontSize: 14,
-                          fontFamily: "Noto_Sans_KR",
-                          fontWeight: FontWeight.w700,
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Text(
+                          '${reservationInfo[index].time.substring(0, 5)} - ${int.parse(reservationInfo[index].time.substring(0, 2)) + 1}:00',
+                          style: TextStyle(
+                            color: reservationInfo[index].status == "booked"
+                                ? Color(0xff2099EA)
+                                : Color(0xffffffff),
+                            fontSize: 14,
+                            fontFamily: "Noto_Sans_KR",
+                            fontWeight: FontWeight.w700,
+                          ),
                         ),
-                      ),
+                        SizedBox(
+                          height: 3,
+                        ),
+                        Text(
+                          reservationInfo[index].status == "canceled"
+                              ? "미인증"
+                              : reservationInfo[index].status == "delete"
+                                  ? "취소함"
+                                  : "",
+                          style:
+                              TextStyle(color: Color(0xffFFF4B4), fontSize: 9),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -727,7 +757,7 @@ class _CheckReservationState extends State<CheckReservation> {
     );
   }
 
-  Widget _imageByFloor({required String floor}) {
+  Widget _imageByFloor({required String floor, required String status}) {
     String imagePath = "ari_3rd_floor";
     if (floor == "아리관 3층") {
       imagePath = "ari_3rd_floor";
@@ -740,7 +770,7 @@ class _CheckReservationState extends State<CheckReservation> {
     }
     return ClipOval(
       child: Container(
-        color: Color(0xff80bcfa),
+        color: status == "booked" ? Color(0xff80bcfa) : Color(0xffa6a6a6),
         width: 35,
         height: 35,
         child: Stack(

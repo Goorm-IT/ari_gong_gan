@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 late String _cookie;
 
 class AriServer {
-  String url = 'https://18.144.154.104:8000';
+  String url = 'http://18.144.154.104:8000';
   Future<String> login({required String id, required String pw}) async {
     var headers = {
       'Content-Type': 'text/plain',
@@ -125,10 +125,11 @@ class AriServer {
     request.body = '{"floor" : "$floor" ,"name" : "$name", "time" : "$time"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
+    print("결과!!");
     print(response.statusCode);
     String tmp = await response.stream.bytesToString();
     var _list = jsonDecode(tmp)["message"];
-    print(_list);
+
     return response.statusCode;
   }
 
@@ -151,17 +152,5 @@ class AriServer {
     var _list = jsonDecode(tmp)["message"];
 
     return response.statusCode;
-
-    // request.body =
-    //     '''{\n    "userId" : "2018H1109",\n    "floor" : "아리관 3층",\n    "name" : "Self 4",\n    "time" : "10:00:00"\n}''';
-    // request.headers.addAll(headers);
-
-    // http.StreamedResponse response = await request.send();
-
-    // if (response.statusCode == 200) {
-    //   print(await response.stream.bytesToString());
-    // } else {
-    //   print(response.reasonPhrase);
-    // }
   }
 }

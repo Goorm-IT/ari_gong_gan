@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
@@ -76,13 +75,18 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     //   return;
     // }
 
+    if (controller.scanningStatus != true) {
+      return;
+    }
     if (!settingbuttonCheck()) {
       return;
     }
-    setState(() {
-      _settingErrorOpacitiy = 0.0;
-      widget.isSetting(0.0);
-    });
+    if (mounted) {
+      setState(() {
+        _settingErrorOpacitiy = 0.0;
+        widget.isSetting(0.0);
+      });
+    }
 
     final regions = <Region>[
       Region(
@@ -101,10 +105,10 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         return;
       }
     }
-
+    controller.startScanning();
     _streamRanging =
         flutterBeacon.ranging(regions).listen((RangingResult result) {
-      // print(result);
+      print(result);
       if (mounted) {
         setState(() {
           _regionBeacons[result.region] = result.beacons;
@@ -117,18 +121,22 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         });
       }
     });
+
+    Future.delayed(Duration(seconds: 30)).then((value) {
+      if (mounted) {
+        setState(() {
+          if (controller.scanningStatus == true) {
+            setState(() {
+              _isScanning = false;
+            });
+          }
+          stopScanning();
+          showToast(msg: "1인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+        });
+      }
+    });
+
     return;
-  }
-
-  pauseScanBeacon() async {
-    _streamRanging?.cancel();
-    // _streamRanging?.pause();
-
-    if (_beacons.isNotEmpty) {
-      setState(() {
-        _beacons.clear();
-      });
-    }
   }
 
   int _compareParameters(Beacon a, Beacon b) {
@@ -146,24 +154,46 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   }
 
   compareBeaconRoom() async {
+    print("비교 부분");
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
         if (_beacons[i].minor == beaconRoom[widget.reservationInfo.floor]) {
           stopScanning();
           AriServer ariServer = AriServer();
           try {
-            await ariServer.booked(
+            int returnstatus = await ariServer.booked(
                 floor: widget.reservationInfo.floor,
                 name: widget.reservationInfo.name,
                 time: widget.reservationInfo.time);
-            showToast(msg: "예약 인증이 완료되었습니다.");
+            if (returnstatus == 200) {
+              showToast(msg: "예약 인증이 완료되었습니다.");
+            } else {
+              showToast(msg: "2인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+              if (mounted) {
+                setState(() {
+                  _isScanning = false;
+                });
+              }
+              return;
+            }
           } catch (e) {
-            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            showToast(msg: "3인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            if (mounted) {
+              setState(() {
+                _isScanning = false;
+              });
+            }
+            return;
           }
-          setState(() {
-            _isScanning = false;
-          });
+          if (mounted) {
+            setState(() {
+              _isScanning = false;
+            });
+          }
           await _reservationByUserProvider.getReservationByUser();
+          if (mounted) {
+            setState(() {});
+          }
         }
       }
     }
@@ -171,19 +201,33 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     return;
   }
 
+  pauseScanBeacon() async {
+    _streamRanging!.cancel();
+    // _streamRanging?.pause();
+    if (mounted) {
+      if (_beacons.isNotEmpty) {
+        setState(() {
+          _beacons.clear();
+        });
+      }
+    }
+  }
+
   stopScanning() {
     controller.pauseScanning();
     pauseScanBeacon();
-    setState(() {
-      _isScanning = false;
-    });
+    if (mounted) {
+      setState(() {
+        _isScanning = false;
+      });
+    }
   }
 
   @override
   void initState() {
     super.initState();
 
-    if (widget.reservationInfo.resStatus != 'prebooked') {
+    if (widget.reservationInfo.resStatus == 'prebooked') {
       _searchResultMessage = "예약 인증이 가능합니다!";
     }
   }
@@ -196,6 +240,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   @override
   Widget build(BuildContext context) {
+    if (widget.reservationInfo.resStatus == 'booked') {
+      _searchResultMessage = "예약 인증이 완료되었습니다.";
+    }
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
     return Column(
@@ -279,7 +326,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               ),
               Column(
                 children: [
-                  widget.reservationInfo.resStatus != 'prebooked'
+                  widget.reservationInfo.resStatus == 'prebooked' //요기
                       ? Stack(
                           children: [
                             Container(
@@ -316,13 +363,14 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                   if (!settingbuttonCheck()) {
                                     return;
                                   }
-                                  setState(() {
-                                    _isScanning = true;
-                                  });
+                                  if (mounted) {
+                                    setState(() {
+                                      _isScanning = true;
+                                    });
+                                  }
+
                                   controller.startScanning();
                                   startScanBeacon();
-                                  await Future.delayed(
-                                      Duration(milliseconds: 2000));
                                 },
                                 child: Container(
                                   width: 60,
@@ -427,28 +475,35 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         !controller.locationServiceEnabled ||
         !controller.bluetoothEnabled) {
       if (_settingErrorOpacitiy == 1.0) {
-        setState(() {
-          _settingErrorOpacitiy = 0.0;
-          widget.isSetting(0.0);
-          Future.delayed(Duration(milliseconds: 200))
-              .then((value) => setState(() {
-                    _settingErrorOpacitiy = 1.0;
-                    widget.isSetting(1.0);
-                  }));
-        });
+        if (mounted) {
+          setState(() {
+            _settingErrorOpacitiy = 0.0;
+            widget.isSetting(0.0);
+            Future.delayed(Duration(milliseconds: 200)).then((value) {
+              return setState(() {
+                _settingErrorOpacitiy = 1.0;
+                widget.isSetting(1.0);
+              });
+            });
+          });
+        }
       } else {
-        setState(() {
-          _settingErrorOpacitiy = 1.0;
-          widget.isSetting(1.0);
-        });
+        if (mounted) {
+          setState(() {
+            _settingErrorOpacitiy = 1.0;
+            widget.isSetting(1.0);
+          });
+        }
       }
       return false;
     }
 
-    setState(() {
-      _settingErrorOpacitiy = 0.0;
-      widget.isSetting(0.0);
-    });
+    if (mounted) {
+      setState(() {
+        _settingErrorOpacitiy = 0.0;
+        widget.isSetting(0.0);
+      });
+    }
     return true;
   }
 

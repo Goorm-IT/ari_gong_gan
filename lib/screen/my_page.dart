@@ -129,13 +129,13 @@ class _MyPageState extends State<MyPage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                _Item(
-                  title: '공지사항',
-                  onPress: () {
-                    return null;
-                  },
-                  isChecked: true,
-                ),
+                // _Item(
+                //   title: '공지사항',
+                //   onPress: () {
+                //     return null;
+                //   },
+                //   isChecked: true,
+                // ),
                 SizedBox(
                   height: 15.0,
                 ),
@@ -153,19 +153,19 @@ class _MyPageState extends State<MyPage> {
                 SizedBox(
                   height: 15.0,
                 ),
-                _Item(
-                  title: '문의사항',
-                  onPress: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.fade, child: HomePage()));
-                  },
-                  isChecked: true,
-                ),
-                SizedBox(
-                  height: 15.0,
-                ),
+                // _Item(
+                //   title: '문의사항',
+                //   onPress: () {
+                //     Navigator.push(
+                //         context,
+                //         PageTransition(
+                //             type: PageTransitionType.fade, child: HomePage()));
+                //   },
+                //   isChecked: true,
+                // ),
+                // SizedBox(
+                //   height: 15.0,
+                // ),
                 _Item(
                   title: '이용약관',
                   onPress: () {
@@ -191,8 +191,8 @@ class _MyPageState extends State<MyPage> {
                           .read<TodayReservationProvider>()
                           .todayReservation
                           .where((TodayReservation element) {
-                        return !(element.resStatus == "delete" ||
-                            element.resStatus == "cancel");
+                        return (element.resStatus == "deactivation" ||
+                            element.resStatus == "prebooked");
                       }).toList();
                     });
                     _list.isEmpty
@@ -202,7 +202,7 @@ class _MyPageState extends State<MyPage> {
                               height: 20.0,
                               child: Center(
                                 child: Text(
-                                  "예약 내역이 없어요",
+                                  "취소 가능한 내역이 없어요",
                                   style: TextStyle(
                                       color: Color(0xff4888E0),
                                       fontSize: 16,

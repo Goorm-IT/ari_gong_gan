@@ -45,6 +45,7 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
                     ),
                     context: context,
                     builder: (BuildContext context) {
+                      print("openBookCard");
                       return OpenBookCard();
                     });
               },

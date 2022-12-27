@@ -182,12 +182,15 @@ class _OpenBookCardState extends State<OpenBookCard>
                 });
               },
               itemBuilder: ((BuildContext context, int index) {
+                print("BookCardDivied");
                 return BookCardDivied(
                   reservationInfo: _list[index],
                   isSetting: (double isSetting) {
-                    setState(() {
-                      _settingErrorOpacitiy = isSetting;
-                    });
+                    if (mounted) {
+                      setState(() {
+                        _settingErrorOpacitiy = isSetting;
+                      });
+                    }
                   },
                 );
               }),
