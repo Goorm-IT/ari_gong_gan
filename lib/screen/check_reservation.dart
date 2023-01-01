@@ -652,7 +652,8 @@ class _CheckReservationState extends State<CheckReservation> {
                 margin: const EdgeInsets.only(bottom: 20),
                 height: 90,
                 decoration: BoxDecoration(
-                  color: reservationInfo[index].status == "booked"
+                  color: reservationInfo[index].status == "booked" ||
+                          reservationInfo[index].status == "deactivation"
                       ? Color(0xffECF3FF)
                       : Color(0xffbcbcbc),
                   borderRadius: BorderRadius.all(Radius.circular(20)),
@@ -662,7 +663,8 @@ class _CheckReservationState extends State<CheckReservation> {
                     Container(
                       width: 25,
                       decoration: BoxDecoration(
-                        color: reservationInfo[index].status == "booked"
+                        color: reservationInfo[index].status == "booked" ||
+                                reservationInfo[index].status == "deactivation"
                             ? Color(0xff2099EA)
                             : Color(0xffa6a6a6),
                         borderRadius: BorderRadius.only(
@@ -688,7 +690,9 @@ class _CheckReservationState extends State<CheckReservation> {
                         Text(
                           reservationInfo[index].floor,
                           style: TextStyle(
-                            color: reservationInfo[index].status == "booked"
+                            color: reservationInfo[index].status == "booked" ||
+                                    reservationInfo[index].status ==
+                                        "deactivation"
                                 ? Color(0xff2099EA)
                                 : Color(0xffffffff),
                             fontSize: 14,
@@ -705,7 +709,9 @@ class _CheckReservationState extends State<CheckReservation> {
                               .substring(0, 10)
                               .replaceAll('-', '. '),
                           style: TextStyle(
-                            color: reservationInfo[index].status == "booked"
+                            color: reservationInfo[index].status == "booked" ||
+                                    reservationInfo[index].status ==
+                                        "deactivation"
                                 ? Color(0xff80BCFA)
                                 : Color(0xffffffff),
                             fontSize: 11,
@@ -727,7 +733,9 @@ class _CheckReservationState extends State<CheckReservation> {
                         Text(
                           '${reservationInfo[index].time.substring(0, 5)} - ${int.parse(reservationInfo[index].time.substring(0, 2)) + 1}:00',
                           style: TextStyle(
-                            color: reservationInfo[index].status == "booked"
+                            color: reservationInfo[index].status == "booked" ||
+                                    reservationInfo[index].status ==
+                                        "deactivation"
                                 ? Color(0xff2099EA)
                                 : Color(0xffffffff),
                             fontSize: 14,
@@ -770,7 +778,9 @@ class _CheckReservationState extends State<CheckReservation> {
     }
     return ClipOval(
       child: Container(
-        color: status == "booked" ? Color(0xff80bcfa) : Color(0xffa6a6a6),
+        color: status == "booked" || status == "deactivation"
+            ? Color(0xff80bcfa)
+            : Color(0xffa6a6a6),
         width: 35,
         height: 35,
         child: Stack(

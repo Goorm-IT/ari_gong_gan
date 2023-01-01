@@ -5,6 +5,7 @@ import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/home_sreen/book_card_divided.dart';
+import 'package:ari_gong_gan/screen/home_sreen/empty_book_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
@@ -113,111 +114,114 @@ class _OpenBookCardState extends State<OpenBookCard>
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
-        color: Colors.white,
-      ),
-      height: 290,
-      child: Column(
-        children: [
-          SizedBox(
-            height: 10,
-          ),
-          Container(
-            height: 37,
-            margin: const EdgeInsets.only(left: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                settingCheck(),
-                Container(
-                  margin: const EdgeInsets.only(right: 30, top: 10),
-                  child: ClipOval(
-                    child: Container(
-                      color: Color(0xff4988e1),
-                      height: 25,
-                      width: 25,
-                      child: IconButton(
-                        iconSize: 20,
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        padding: const EdgeInsets.all(0),
-                        splashRadius: 10.0,
-                        icon: Icon(
-                          Icons.close,
-                          color: Colors.white,
+    if (_list.isEmpty) {
+      return EmptyBookCard();
+    } else {
+      return Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.only(
+              topLeft: Radius.circular(30.0), topRight: Radius.circular(30.0)),
+          color: Colors.white,
+        ),
+        height: 290,
+        child: Column(
+          children: [
+            SizedBox(
+              height: 10,
+            ),
+            Container(
+              height: 37,
+              margin: const EdgeInsets.only(left: 20),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  settingCheck(),
+                  Container(
+                    margin: const EdgeInsets.only(right: 30, top: 10),
+                    child: ClipOval(
+                      child: Container(
+                        color: Color(0xff4988e1),
+                        height: 25,
+                        width: 25,
+                        child: IconButton(
+                          iconSize: 20,
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          padding: const EdgeInsets.all(0),
+                          splashRadius: 10.0,
+                          icon: Icon(
+                            Icons.close,
+                            color: Colors.white,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-          AnimatedOpacity(
-            duration: Duration(milliseconds: 300),
-            opacity: _settingErrorOpacitiy,
-            child: Container(
-              height: 15,
-              color: PRIMARY_COLOR_DEEP,
-              child: Center(
-                child: Text(
-                  "상단의 설정버튼을 확인해주세요",
-                  style: TextStyle(fontSize: 11, color: Colors.white),
+            AnimatedOpacity(
+              duration: Duration(milliseconds: 300),
+              opacity: _settingErrorOpacitiy,
+              child: Container(
+                height: 15,
+                color: PRIMARY_COLOR_DEEP,
+                child: Center(
+                  child: Text(
+                    "상단의 설정버튼을 확인해주세요",
+                    style: TextStyle(fontSize: 11, color: Colors.white),
+                  ),
                 ),
               ),
             ),
-          ),
-          Container(
-            height: 200,
-            child: PageView.builder(
-              itemCount: _list.length,
-              controller: _pageController,
-              onPageChanged: (change) {
-                setState(() {
-                  _settingErrorOpacitiy = 0.0;
-                });
-              },
-              itemBuilder: ((BuildContext context, int index) {
-                print("BookCardDivied");
-                return BookCardDivied(
-                  reservationInfo: _list[index],
-                  isSetting: (double isSetting) {
-                    if (mounted) {
-                      setState(() {
-                        _settingErrorOpacitiy = isSetting;
-                      });
-                    }
-                  },
-                );
-              }),
-            ),
-          ),
-          SizedBox(
-            height: 5,
-          ),
-          SmoothPageIndicator(
-              controller: _pageController,
-              count: _list.length,
-              effect: ExpandingDotsEffect(
-                dotWidth: 8,
-                dotHeight: 8,
-                activeDotColor: PRIMARY_COLOR_DEEP,
-                dotColor: Color(0xff80bcfa),
+            Container(
+              height: 200,
+              child: PageView.builder(
+                itemCount: _list.length,
+                controller: _pageController,
+                onPageChanged: (change) {
+                  setState(() {
+                    _settingErrorOpacitiy = 0.0;
+                  });
+                },
+                itemBuilder: ((BuildContext context, int index) {
+                  return BookCardDivied(
+                    reservationInfo: _list[index],
+                    isSetting: (double isSetting) {
+                      if (mounted) {
+                        setState(() {
+                          _settingErrorOpacitiy = isSetting;
+                        });
+                      }
+                    },
+                  );
+                }),
               ),
-              onDotClicked: (index) {
-                _pageController.animateToPage(
-                  index,
-                  duration: Duration(milliseconds: 250),
-                  curve: Curves.easeIn,
-                );
-              })
-        ],
-      ),
-    );
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            SmoothPageIndicator(
+                controller: _pageController,
+                count: _list.length,
+                effect: ExpandingDotsEffect(
+                  dotWidth: 8,
+                  dotHeight: 8,
+                  activeDotColor: PRIMARY_COLOR_DEEP,
+                  dotColor: Color(0xff80bcfa),
+                ),
+                onDotClicked: (index) {
+                  _pageController.animateToPage(
+                    index,
+                    duration: Duration(milliseconds: 250),
+                    curve: Curves.easeIn,
+                  );
+                })
+          ],
+        ),
+      );
+    }
   }
 
   Widget settingCheck() {

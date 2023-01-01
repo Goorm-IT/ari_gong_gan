@@ -38,7 +38,7 @@ class _HomeScreenState extends State<HomeScreen> {
   bool _isLoading = false;
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
-
+  late TodayReservationProvider _todayReservationProvider;
   final controller = Get.find<RequirementStateController>();
 
   @override
@@ -57,7 +57,8 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<RevervationAllProvider>(context, listen: false);
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
-
+    _todayReservationProvider =
+        Provider.of<TodayReservationProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(

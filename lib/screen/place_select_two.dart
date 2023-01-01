@@ -224,44 +224,13 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                         onPressed: reservationInfo.name == ""
                             ? null
                             : () async {
-                                setState(() {
-                                  _isLoading = true;
-                                });
-                                var ariServer = AriServer();
-                                int result = await ariServer.revervation();
-                                setState(() {
-                                  _isLoading = false;
-                                });
-                                print("여기아님?");
-                                late String tmpFloor, tmpName, tmpTime;
-                                setState(() {
-                                  tmpFloor = reservationInfo.floor;
-                                  tmpName = reservationInfo.name;
-                                  tmpTime = reservationInfo.time;
-                                  reservationInfo.floor = "";
-                                  reservationInfo.name = "";
-                                  reservationInfo.time = "";
-                                  reservationInfo.userNum = "";
-                                });
-                                if (result == 200) {
-                                  Navigator.push(
-                                      context,
-                                      PageTransition(
-                                          type: PageTransitionType.fade,
-                                          child: ReservationComplete(
-                                            floor: tmpFloor,
-                                            name: tmpName,
-                                            time: tmpTime,
-                                          )));
-                                } else {
-                                  customShowDiaLog(
-                                    context: context,
-                                    title: diaLogTitle(),
-                                    content: diaLogContent(),
-                                    action: [diaLogAction()],
-                                    isBackButton: false,
-                                  );
-                                }
+                                customShowDiaLog(
+                                  context: context,
+                                  title: reservationTitle(),
+                                  content: reservationContent(),
+                                  action: [reservationAction()],
+                                  isBackButton: false,
+                                );
                               },
                         child: Text(
                           "예약하기",
@@ -297,6 +266,148 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
               size: 40,
             )),
           )
+        ],
+      ),
+    );
+  }
+
+  Widget reservationTitle() {
+    return Container(
+      child: Center(
+        child: Text(
+          "예약 시 주의사항",
+          style: TextStyle(
+              color: PRIMARY_COLOR_DEEP,
+              fontSize: 18,
+              fontWeight: FontWeight.w800),
+        ),
+      ),
+    );
+  }
+
+  Widget reservationContent() {
+    return Container(
+        height: 80.0,
+        padding: const EdgeInsets.symmetric(horizontal: 20),
+        child: Column(
+          children: [
+            Text(
+              '예약 후 메인페이지의 "예약카드"에서 예약 시간 전후 10분 사이에 예약인증을 해야 예약이 완료됩니다.\n예약 인증을 하지 않는 경우 페널티가 부과됩니다.',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: PRIMARY_COLOR_DEEP,
+                fontSize: 12,
+              ),
+            ),
+            SizedBox(
+              height: 10,
+            )
+          ],
+        ));
+  }
+
+  Widget reservationAction() {
+    return Container(
+      height: 53,
+      child: Row(
+        children: [
+          Flexible(
+            flex: 2,
+            child: ClipRRect(
+              borderRadius:
+                  BorderRadius.only(bottomLeft: Radius.circular(18.0)),
+              child: Material(
+                color: Color(0xffBCBCBC),
+                child: InkWell(
+                  splashColor: Colors.white,
+                  onTap: () {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "취소",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 3,
+            child: ClipRRect(
+              borderRadius:
+                  BorderRadius.only(bottomRight: Radius.circular(18.0)),
+              child: Material(
+                color: Color(0xffF9E769),
+                child: InkWell(
+                  splashColor: Color.fromARGB(223, 255, 251, 15),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    setState(() {
+                      _isLoading = true;
+                    });
+                    var ariServer = AriServer();
+                    int result = await ariServer.revervation();
+                    setState(() {
+                      _isLoading = false;
+                    });
+                    late String tmpFloor, tmpName, tmpTime;
+                    setState(() {
+                      tmpFloor = reservationInfo.floor;
+                      tmpName = reservationInfo.name;
+                      tmpTime = reservationInfo.time;
+                      reservationInfo.floor = "";
+                      reservationInfo.name = "";
+                      reservationInfo.time = "";
+                      reservationInfo.userNum = "";
+                    });
+                    if (result == 200) {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.fade,
+                              child: ReservationComplete(
+                                floor: tmpFloor,
+                                name: tmpName,
+                                time: tmpTime,
+                              )));
+                    } else {
+                      customShowDiaLog(
+                        context: context,
+                        title: diaLogTitle(),
+                        content: diaLogContent(),
+                        action: [diaLogAction()],
+                        isBackButton: false,
+                      );
+                    }
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "동의하고 예약하기",
+                        style: TextStyle(color: Colors.white, fontSize: 14),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

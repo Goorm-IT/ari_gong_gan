@@ -34,7 +34,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   AriUser userInfo = GetIt.I<AriUser>();
   final controller = Get.find<RequirementStateController>();
   DateTime realTime = GetIt.I<DateTime>();
-
+  bool buttonState = false;
   double _settingErrorOpacitiy = 0.0;
   double _searchResultOpacitiy = 1.0;
   String _searchResultMessage = "인증 가능 시간이 아닙니다";
@@ -51,30 +51,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   startScanBeacon() async {
     await flutterBeacon.initializeScanning;
-
-    // if (!controller.authorizationStatusOk ||
-    //     !controller.locationServiceEnabled ||
-    //     !controller.bluetoothEnabled) {
-    //   if (_settingErrorOpacitiy == 1.0) {
-    //     setState(() {
-    //       widget.isSetting(0.0);
-    //       _settingErrorOpacitiy = 0.0;
-    //       Future.delayed(Duration(milliseconds: 150))
-    //           .then((value) => setState(() {
-    //                 _settingErrorOpacitiy = 1.0;
-    //                  widget.isSetting(1.0);
-    //               }));
-    //     });
-    //   } else {
-    //     setState(() {
-    //       _settingErrorOpacitiy = 1.0;
-    //        widget.isSetting(1.0);
-    //     });
-    //   }
-
-    //   return;
-    // }
-
     if (controller.scanningStatus != true) {
       return;
     }
@@ -131,7 +107,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
             });
           }
           stopScanning();
-          showToast(msg: "1인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+          showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
         });
       }
     });
@@ -154,7 +130,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   }
 
   compareBeaconRoom() async {
-    print("비교 부분");
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
         if (_beacons[i].minor == beaconRoom[widget.reservationInfo.floor]) {
@@ -167,8 +142,12 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                 time: widget.reservationInfo.time);
             if (returnstatus == 200) {
               showToast(msg: "예약 인증이 완료되었습니다.");
+              setState(() {
+                buttonState = false;
+                _searchResultMessage = "예약 인증이 완료되었습니다!";
+              });
             } else {
-              showToast(msg: "2인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+              showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
               if (mounted) {
                 setState(() {
                   _isScanning = false;
@@ -177,7 +156,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               return;
             }
           } catch (e) {
-            showToast(msg: "3인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
             if (mounted) {
               setState(() {
                 _isScanning = false;
@@ -226,10 +205,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   @override
   void initState() {
     super.initState();
-
-    if (widget.reservationInfo.resStatus == 'prebooked') {
-      _searchResultMessage = "예약 인증이 가능합니다!";
-    }
   }
 
   @override
@@ -242,6 +217,12 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   Widget build(BuildContext context) {
     if (widget.reservationInfo.resStatus == 'booked') {
       _searchResultMessage = "예약 인증이 완료되었습니다.";
+    }
+    if (widget.reservationInfo.resStatus == 'prebooked') {
+      setState(() {
+        buttonState = true;
+        _searchResultMessage = "예약 인증이 가능합니다!";
+      });
     }
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
@@ -326,7 +307,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               ),
               Column(
                 children: [
-                  widget.reservationInfo.resStatus == 'prebooked' //요기
+                  buttonState //요기
                       ? Stack(
                           children: [
                             Container(

@@ -1,12 +1,16 @@
+import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_time.dart';
 import 'package:ari_gong_gan/model/reservation_time_list.dart';
 import 'package:ari_gong_gan/model/reservation_all.dart';
+import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
+import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_one.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_radio_circle_button.dart';
 import 'package:ari_gong_gan/widget/possible_or_not.dart';
+import 'package:async/async.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:intl/intl.dart';
@@ -24,8 +28,10 @@ class SelectAMPM extends StatefulWidget {
 class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
   bool _isPressedAM = false;
   bool _isPressedPM = false;
-  late AnimationController _animationController;
 
+  late AnimationController _animationController;
+  late TodayReservationProvider _todayReservationProvider;
+  final AsyncMemoizer _memoizer = AsyncMemoizer();
   @override
   void initState() {
     super.initState();
@@ -36,6 +42,8 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    _todayReservationProvider =
+        Provider.of<TodayReservationProvider>(context, listen: false);
     return WillPopScope(
       onWillPop: () async {
         if (_isPressedAM || _isPressedPM) {
@@ -57,220 +65,178 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
               height: MediaQuery.of(context).size.height,
               color: Color(0xff2099e9),
               child: Container(
-                margin: const EdgeInsets.symmetric(horizontal: 33.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     SizedBox(
                       height: 45,
                     ),
-                    BottomToUpFade(
-                      height: 65,
-                      delayTime: 1,
-                      initAlignment: Alignment(-1.0, 0.5),
-                      changeAlignment: Alignment(-1.0, -1.0),
-                      insideWidget: Text.rich(
-                        TextSpan(
-                          text: '시간',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.w700,
-                            color: Colors.white,
-                            fontSize: 20.0,
+                    Container(
+                      margin: const EdgeInsets.symmetric(horizontal: 33.0),
+                      child: BottomToUpFade(
+                        height: 65,
+                        delayTime: 100,
+                        initAlignment: Alignment(-1.0, 0.5),
+                        changeAlignment: Alignment(-1.0, -1.0),
+                        insideWidget: Text.rich(
+                          TextSpan(
+                            text: '시간',
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w700,
+                              color: Colors.white,
+                              fontSize: 20.0,
+                            ),
+                            children: <TextSpan>[
+                              const TextSpan(
+                                text: '을 선택해주세요\n',
+                                style: TextStyle(
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 16.0,
+                                ),
+                              ),
+                              TextSpan(
+                                text: DateFormat('MMM. dd. yyyy')
+                                    .format(DateTime.now()),
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                            ],
                           ),
-                          children: <TextSpan>[
-                            const TextSpan(
-                              text: '을 선택해주세요\n',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16.0,
-                              ),
-                            ),
-                            TextSpan(
-                              text: DateFormat('MMM. dd. yyyy')
-                                  .format(DateTime.now()),
-                              style: const TextStyle(
-                                fontSize: 13,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
                     ),
                     SizedBox(
                       height: 25,
                     ),
-                    BottomToUpFade(
-                      height: 130,
-                      delayTime: 350,
-                      initAlignment: Alignment(-1.0, 0.5),
-                      changeAlignment: Alignment(-1.0, -1.0),
-                      insideWidget: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          SizedBox(
-                            width: 10,
-                          ),
-                          CustomRadioCircleButton(
-                            isSelected: (bool isSelected) {
-                              setState(
-                                () {
-                                  _isPressedAM = isSelected;
-                                  if (_isPressedPM == true) {
-                                    _isPressedPM = false;
-                                  }
-                                },
+                    Expanded(
+                      child: FutureBuilder(
+                          future: _fetchData(),
+                          builder: (futurecontext, snapshot) {
+                            if (snapshot.hasData) {
+                              return Stack(
+                                children: [
+                                  Container(
+                                    margin: const EdgeInsets.symmetric(
+                                        horizontal: 33.0),
+                                    child: BottomToUpFade(
+                                      height: 130,
+                                      delayTime: 1,
+                                      initAlignment: Alignment(-1.0, 0.5),
+                                      changeAlignment: Alignment(-1.0, -1.0),
+                                      insideWidget: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          CustomRadioCircleButton(
+                                            isSelected: (bool isSelected) {
+                                              setState(
+                                                () {
+                                                  _isPressedAM = isSelected;
+                                                  if (_isPressedPM == true) {
+                                                    _isPressedPM = false;
+                                                  }
+                                                },
+                                              );
+                                            },
+                                            isPressed: _isPressedAM,
+                                            title: "오전",
+                                            size: 105.0,
+                                            pressedColor: Color(0xff2772ac),
+                                            shadowColor:
+                                                Color.fromARGB(223, 59, 59, 59),
+                                            onTap: () {
+                                              _animationController.reverse();
+                                              reservationInfo.time = "";
+                                              setState(() {
+                                                for (ReservationTime list
+                                                    in tmpAM) {
+                                                  list.isPressed = false;
+                                                }
+                                                for (ReservationTime list
+                                                    in tmpPM) {
+                                                  list.isPressed = false;
+                                                }
+                                              });
+                                            },
+                                            isBooked: 'activate',
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          CustomRadioCircleButton(
+                                            isSelected: (bool isSelected) {
+                                              setState(
+                                                () {
+                                                  _isPressedPM = isSelected;
+                                                  if (_isPressedAM == true) {
+                                                    _isPressedAM = false;
+                                                  }
+                                                },
+                                              );
+                                            },
+                                            isPressed: _isPressedPM,
+                                            title: "오후",
+                                            size: 105.0,
+                                            pressedColor: Color(0xff2772ac),
+                                            shadowColor:
+                                                Color.fromARGB(223, 59, 59, 59),
+                                            onTap: () {
+                                              _animationController.reverse();
+                                              reservationInfo.time = "";
+                                              setState(() {
+                                                for (ReservationTime list
+                                                    in tmpAM) {
+                                                  list.isPressed = false;
+                                                }
+                                                for (ReservationTime list
+                                                    in tmpPM) {
+                                                  list.isPressed = false;
+                                                }
+                                              });
+                                            },
+                                            isBooked: 'activate',
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    child: AnimatedContainer(
+                                      duration: Duration(milliseconds: 250),
+                                      curve: Curves.easeInOut,
+                                      height: 300,
+                                      width: MediaQuery.of(context).size.width,
+                                      transform: Matrix4.translationValues(
+                                          0,
+                                          _isPressedAM || _isPressedPM
+                                              ? 0
+                                              : 300,
+                                          0),
+                                      child: CustomBottomSheet(
+                                        isPressedAM: _isPressedAM,
+                                        isPressedPM: _isPressedPM,
+                                        animationController:
+                                            _animationController,
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               );
-                            },
-                            isPressed: _isPressedAM,
-                            title: "오전",
-                            size: 105.0,
-                            pressedColor: Color(0xff2772ac),
-                            shadowColor: Color.fromARGB(223, 59, 59, 59),
-                            onTap: () {
-                              _animationController.reverse();
-                              reservationInfo.time = "";
-                              setState(() {
-                                for (ReservationTime list in tmpAM) {
-                                  list.isPressed = false;
-                                }
-                                for (ReservationTime list in tmpPM) {
-                                  list.isPressed = false;
-                                }
-                              });
-                            },
-                            isBooked: 'activate',
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                          CustomRadioCircleButton(
-                            isSelected: (bool isSelected) {
-                              setState(
-                                () {
-                                  _isPressedPM = isSelected;
-                                  if (_isPressedAM == true) {
-                                    _isPressedAM = false;
-                                  }
-                                },
-                              );
-                            },
-                            isPressed: _isPressedPM,
-                            title: "오후",
-                            size: 105.0,
-                            pressedColor: Color(0xff2772ac),
-                            shadowColor: Color.fromARGB(223, 59, 59, 59),
-                            onTap: () {
-                              _animationController.reverse();
-                              reservationInfo.time = "";
-                              setState(() {
-                                for (ReservationTime list in tmpAM) {
-                                  list.isPressed = false;
-                                }
-                                for (ReservationTime list in tmpPM) {
-                                  list.isPressed = false;
-                                }
-                              });
-                            },
-                            isBooked: 'activate',
-                          ),
-                          SizedBox(
-                            width: 10,
-                          ),
-                        ],
-                      ),
+                            } else {
+                              return Container();
+                            }
+                          }),
                     ),
-                    // Row(
-                    //   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    //   children: [
-                    //     SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //     CustomRadioCircleButton(
-                    //       isSelected: (bool isSelected) {
-                    //         setState(
-                    //           () {
-                    //             _isPressedAM = isSelected;
-                    //             if (_isPressedPM == true) {
-                    //               _isPressedPM = false;
-                    //             }
-                    //           },
-                    //         );
-                    //       },
-                    //       isPressed: _isPressedAM,
-                    //       title: "오전",
-                    //       size: 105.0,
-                    //       pressedColor: Color(0xff2772ac),
-                    //       shadowColor: Color.fromARGB(223, 59, 59, 59),
-                    //       onTap: () {
-                    //         _animationController.reverse();
-                    //         reservationInfo.time = "";
-                    //         setState(() {
-                    //           for (ReservationTime list in tmpAM) {
-                    //             list.isPressed = false;
-                    //           }
-                    //           for (ReservationTime list in tmpPM) {
-                    //             list.isPressed = false;
-                    //           }
-                    //         });
-                    //       },
-                    //       isBooked: 'activate',
-                    //     ),
-                    //     SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //     CustomRadioCircleButton(
-                    //       isSelected: (bool isSelected) {
-                    //         setState(
-                    //           () {
-                    //             _isPressedPM = isSelected;
-                    //             if (_isPressedAM == true) {
-                    //               _isPressedAM = false;
-                    //             }
-                    //           },
-                    //         );
-                    //       },
-                    //       isPressed: _isPressedPM,
-                    //       title: "오후",
-                    //       size: 105.0,
-                    //       pressedColor: Color(0xff2772ac),
-                    //       shadowColor: Color.fromARGB(223, 59, 59, 59),
-                    //       onTap: () {
-                    //         _animationController.reverse();
-                    //         reservationInfo.time = "";
-                    //         setState(() {
-                    //           for (ReservationTime list in tmpAM) {
-                    //             list.isPressed = false;
-                    //           }
-                    //           for (ReservationTime list in tmpPM) {
-                    //             list.isPressed = false;
-                    //           }
-                    //         });
-                    //       },
-                    //       isBooked: 'activate',
-                    //     ),
-                    //     SizedBox(
-                    //       width: 10,
-                    //     ),
-                    //   ],
-                    // ),
                   ],
-                ),
-              ),
-            ),
-            Positioned(
-              bottom: 0,
-              child: AnimatedContainer(
-                duration: Duration(milliseconds: 250),
-                curve: Curves.easeInOut,
-                height: 300,
-                width: MediaQuery.of(context).size.width,
-                transform: Matrix4.translationValues(
-                    0, _isPressedAM || _isPressedPM ? 0 : 300, 0),
-                child: CustomBottomSheet(
-                  isPressedAM: _isPressedAM,
-                  isPressedPM: _isPressedPM,
-                  animationController: _animationController,
                 ),
               ),
             ),
@@ -278,6 +244,13 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
         ),
       ),
     );
+  }
+
+  _fetchData() {
+    return this._memoizer.runOnce(() async {
+      await _todayReservationProvider.getTodayReservation();
+      return "done";
+    });
   }
 }
 
@@ -340,6 +313,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
       };
       selectColor = Color(0xff4988e1);
     }
+
     return Container(
       decoration: BoxDecoration(
         color: Color(0xffD1E9FF),
@@ -371,57 +345,87 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
             child: SingleChildScrollView(
               clipBehavior: Clip.none,
               scrollDirection: Axis.horizontal,
-              child: Row(
-                children: widget.isPressedAM
-                    ? tmpAM.asMap().entries.map(
-                        (e) {
-                          ReservationTime val = e.value;
-                          int index = e.key;
-                          bool flag = false;
-                          for (int i = 0; i < _list.length; i++) {
-                            if (_list[i].time == val.time + ":00") {
-                              if (_list[i].isBooked == "activate") {
-                                flag = true;
+              child: Consumer<TodayReservationProvider>(
+                  builder: (providercontext, provider, widgets) {
+                return Row(
+                  children: widget.isPressedAM
+                      ? tmpAM.asMap().entries.map(
+                          (e) {
+                            ReservationTime val = e.value;
+                            int index = e.key;
+                            bool flag = false;
+                            for (int i = 0; i < _list.length; i++) {
+                              if (_list[i].time == val.time + ":00") {
+                                if (_list[i].isBooked == "activate") {
+                                  flag = true;
+                                }
                               }
                             }
-                          }
-                          if (flag) {
-                            return timeButton(
-                              reservationTimeInfo: val,
-                              isAM: true,
-                              idx: index,
-                            );
-                          } else {
-                            return deactivateTimeButton(
-                                reservationTimeInfo: val);
-                          }
-                        },
-                      ).toList()
-                    : tmpPM.asMap().entries.map(
-                        (e) {
-                          ReservationTime val = e.value;
-                          int index = e.key;
-                          bool flag = false;
-                          for (int i = 0; i < _list.length; i++) {
-                            if (_list[i].time == val.time + ":00") {
-                              if (_list[i].isBooked == "activate") {
-                                flag = true;
+
+                            if (flag) {
+                              return timeButton(
+                                reservationTimeInfo: val,
+                                isAM: true,
+                                idx: index,
+                              );
+                            } else {
+                              return deactivateTimeButton(
+                                  reservationTimeInfo: val);
+                            }
+                          },
+                        ).toList()
+                      : tmpPM.asMap().entries.map(
+                          (e) {
+                            ReservationTime val = e.value;
+                            int index = e.key;
+                            bool flag = false;
+
+                            for (int i = 0; i < _list.length; i++) {
+                              if (_list[i].time == val.time + ":00") {
+                                if (_list[i].isBooked == "activate") {
+                                  flag = true;
+                                }
                               }
                             }
-                          }
-                          if (flag) {
-                            return timeButton(
-                              reservationTimeInfo: val,
-                              isAM: false,
-                              idx: index,
-                            );
-                          } else {
-                            return deactivateTimeButton(
-                                reservationTimeInfo: val);
-                          }
-                        },
-                      ).toList(),
-              ),
+                            for (int i = 0; i < _list.length; i++) {
+                              for (int j = 0;
+                                  j < provider.todayReservation.length;
+                                  j++) {
+                                if (provider.todayReservation[j].resStatus !=
+                                    "delete") {
+                                  if (provider.todayReservation[j].time ==
+                                      val.time + ":00") {
+                                    flag = false;
+                                  }
+
+                                  if (val.time + ":00" ==
+                                      (int.parse(provider
+                                                      .todayReservation[j].time
+                                                      .substring(0, 2)) +
+                                                  1)
+                                              .toString() +
+                                          ":00:00") {
+                                    print(val.time);
+                                    flag = false;
+                                  }
+                                }
+                              }
+                            }
+
+                            if (flag) {
+                              return timeButton(
+                                reservationTimeInfo: val,
+                                isAM: false,
+                                idx: index,
+                              );
+                            } else {
+                              return deactivateTimeButton(
+                                  reservationTimeInfo: val);
+                            }
+                          },
+                        ).toList(),
+                );
+              }),
             ),
           ),
           SizedBox(

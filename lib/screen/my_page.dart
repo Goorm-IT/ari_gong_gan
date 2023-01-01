@@ -3,6 +3,7 @@ import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
+import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
@@ -169,7 +170,10 @@ class _MyPageState extends State<MyPage> {
                 _Item(
                   title: '이용약관',
                   onPress: () {
-                    return null;
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => AgreementPage()));
                   },
                   isChecked: true,
                 ),

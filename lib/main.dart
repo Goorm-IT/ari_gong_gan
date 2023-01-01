@@ -55,6 +55,7 @@ void main() async {
       final getuserInfo = await loginCrwal.userInfo();
       var ariServer = AriServer();
       String ariLogin = await ariServer.login(id: saved_id, pw: saved_pw);
+
       if (ariLogin == "SUCCESS") {
         return HomeScreen();
       } else {
