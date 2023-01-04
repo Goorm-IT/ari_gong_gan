@@ -147,6 +147,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       setState(() {
                         _noProgressLoading = true;
                       });
+                      DateTime tmp = await NTP.now();
+                      DateTime currentTime =
+                          tmp.toUtc().add(Duration(hours: 9));
+                      GetIt.I.registerSingleton<DateTime>(currentTime);
                       await _revervationAllProvider.getReservationAll();
                       setState(() {
                         _noProgressLoading = false;

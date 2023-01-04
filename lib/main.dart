@@ -37,6 +37,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
+  GetIt.I.allowReassignment = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
