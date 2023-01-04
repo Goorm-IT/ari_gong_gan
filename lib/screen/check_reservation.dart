@@ -2,6 +2,7 @@ import 'package:ari_gong_gan/model/reservation_by_user.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -15,14 +16,14 @@ class CheckReservation extends StatefulWidget {
 class _CheckReservationState extends State<CheckReservation> {
   List<ReservationByUser> _inititemList = [];
   List<ReservationByUser> _itemList = [];
-
+  DateTime realTime = GetIt.I<DateTime>();
   TextEditingController sYear = TextEditingController();
   TextEditingController sMonth = TextEditingController();
   TextEditingController sDay = TextEditingController();
   TextEditingController eYear = TextEditingController();
   TextEditingController eMonth = TextEditingController();
   TextEditingController eDay = TextEditingController();
-  int _selected = 1;
+  int _selected = 0;
   int bookedCount = 0;
   @override
   void initState() {
@@ -31,6 +32,7 @@ class _CheckReservationState extends State<CheckReservation> {
     _itemList = _inititemList;
     bookedCount = 0;
     countbooked();
+    changeSort(_itemList, _selected);
   }
 
   @override
@@ -97,7 +99,7 @@ class _CheckReservationState extends State<CheckReservation> {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: customAppbar(context, true),
+      appBar: customAppbar(context, true, true),
       body: Stack(
         children: [
           Container(
@@ -303,8 +305,8 @@ class _CheckReservationState extends State<CheckReservation> {
                       style: periodTextStyle(),
                       keyboardType: TextInputType.number,
                       controller: sYear,
-                      decoration: inputDecoration(
-                          DateFormat('yyyy').format(DateTime.now())),
+                      decoration:
+                          inputDecoration(DateFormat('yyyy').format(realTime)),
                     ),
                   ),
                   Text(
@@ -319,8 +321,8 @@ class _CheckReservationState extends State<CheckReservation> {
                         style: periodTextStyle(),
                         keyboardType: TextInputType.number,
                         controller: sMonth,
-                        decoration: inputDecoration(
-                            DateFormat('MM').format(DateTime.now())),
+                        decoration:
+                            inputDecoration(DateFormat('MM').format(realTime)),
                       )),
                   Text(
                     " /  ",
@@ -334,8 +336,8 @@ class _CheckReservationState extends State<CheckReservation> {
                         style: periodTextStyle(),
                         keyboardType: TextInputType.number,
                         controller: sDay,
-                        decoration: inputDecoration(
-                            DateFormat('dd').format(DateTime.now())),
+                        decoration:
+                            inputDecoration(DateFormat('dd').format(realTime)),
                       )),
                 ],
               ),
@@ -359,8 +361,8 @@ class _CheckReservationState extends State<CheckReservation> {
                       style: periodTextStyle(),
                       keyboardType: TextInputType.number,
                       controller: eYear,
-                      decoration: inputDecoration(
-                          DateFormat('yyyy').format(DateTime.now())),
+                      decoration:
+                          inputDecoration(DateFormat('yyyy').format(realTime)),
                     ),
                   ),
                   Text(
@@ -375,8 +377,8 @@ class _CheckReservationState extends State<CheckReservation> {
                         style: periodTextStyle(),
                         keyboardType: TextInputType.number,
                         controller: eMonth,
-                        decoration: inputDecoration(
-                            DateFormat('MM').format(DateTime.now())),
+                        decoration:
+                            inputDecoration(DateFormat('MM').format(realTime)),
                       )),
                   Text(
                     " /  ",
@@ -390,8 +392,8 @@ class _CheckReservationState extends State<CheckReservation> {
                         style: periodTextStyle(),
                         keyboardType: TextInputType.number,
                         controller: eDay,
-                        decoration: inputDecoration(
-                            DateFormat('dd').format(DateTime.now())),
+                        decoration:
+                            inputDecoration(DateFormat('dd').format(realTime)),
                       )),
                 ],
               ),
@@ -407,6 +409,22 @@ class _CheckReservationState extends State<CheckReservation> {
                         eYear.text != "" &&
                         eMonth.text != "" &&
                         eDay.text != "") {
+                      if (int.parse(sYear.text) * 10000 +
+                              int.parse(sMonth.text) * 100 +
+                              int.parse(sDay.text) >
+                          int.parse(eYear.text) * 10000 +
+                              int.parse(eMonth.text) * 100 +
+                              int.parse(eDay.text)) {
+                        String sy = sYear.text;
+                        String sm = sMonth.text;
+                        String sd = sDay.text;
+                        sYear.text = eYear.text;
+                        sMonth.text = eMonth.text;
+                        sDay.text = eDay.text;
+                        eYear.text = sy;
+                        eMonth.text = sm;
+                        eDay.text = sd;
+                      }
                       changePeroid(_inititemList);
                       bookedCount = 0;
                       countbooked();
@@ -505,12 +523,12 @@ class _CheckReservationState extends State<CheckReservation> {
               GestureDetector(
                 onTap: () {
                   setModalState(() {
-                    _selected = 2;
+                    _selected = 0;
                   });
                 },
                 child: Text(
                   "      최신순",
-                  style: _selected == 2
+                  style: _selected == 0
                       ? periodTextStyle()
                       : sortNotSelectedTextStyle(),
                 ),
@@ -751,10 +769,16 @@ class _CheckReservationState extends State<CheckReservation> {
                               ? "미인증"
                               : reservationInfo[index].status == "delete"
                                   ? "취소함"
-                                  : "",
-                          style:
-                              TextStyle(color: Color(0xffFFF4B4), fontSize: 9),
+                                  : reservationInfo[index].status == "booked"
+                                      ? "인증 완료"
+                                      : "",
+                          style: TextStyle(
+                              color: reservationInfo[index].status == "booked"
+                                  ? Color(0xff7f8c8d)
+                                  : Color(0xffFFF4B4),
+                              fontSize: 9),
                         ),
+                        // Text(reservationInfo[index].status),
                       ],
                     ),
                   ],

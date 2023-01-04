@@ -3,6 +3,7 @@ import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:ari_gong_gan/widget/custom_dialog.dart';
 import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
 class TermsOfUse extends StatefulWidget {
@@ -17,8 +18,9 @@ class _TermsOfUseState extends State<TermsOfUse> {
   Widget build(BuildContext context) {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
+    DateTime realTime = GetIt.I<DateTime>();
     return Scaffold(
-      appBar: customAppbar(context, true),
+      appBar: customAppbar(context, false, true),
       body: SafeArea(
         child: Stack(children: [
           Container(
@@ -102,7 +104,7 @@ class _TermsOfUseState extends State<TermsOfUse> {
                       fontWeight: FontWeight.w600),
                 ),
                 Text(
-                  DateFormat('MMM. dd. yyyy').format(DateTime.now()),
+                  DateFormat('MMM. dd. yyyy').format(realTime),
                   style: TextStyle(color: Colors.white),
                 ),
               ],
@@ -198,95 +200,88 @@ class _TermsOfUseState extends State<TermsOfUse> {
           return CustomDialog(
               backgroundColor: Colors.transparent,
               insetPadding: EdgeInsets.symmetric(horizontal: 33),
-              child: Stack(
-                children: [
-                  Container(
-                      width: double.infinity,
-                      height: 460,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(15),
-                          color: Colors.white),
-                      padding: const EdgeInsets.fromLTRB(27, 20, 16, 20),
-                      child: SingleChildScrollView(
-                        child: Column(
-                          children: [
-                            Align(
-                              alignment: Alignment.centerRight,
-                              child: ClipOval(
-                                child: Container(
-                                  color: Color(0xff4988e1),
-                                  height: 20,
-                                  width: 20,
-                                  child: IconButton(
-                                    iconSize: 15,
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    padding: const EdgeInsets.all(0),
-                                    splashRadius: 10.0,
-                                    icon: Icon(
-                                      Icons.close,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
+              child: Container(
+                  width: double.infinity,
+                  height: 460,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15),
+                      color: Colors.white),
+                  padding: const EdgeInsets.fromLTRB(27, 20, 16, 20),
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.centerRight,
+                        child: ClipOval(
+                          child: Container(
+                            color: Color(0xff4988e1),
+                            height: 20,
+                            width: 20,
+                            child: IconButton(
+                              iconSize: 15,
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              padding: const EdgeInsets.all(0),
+                              splashRadius: 10.0,
+                              icon: Icon(
+                                Icons.close,
+                                color: Colors.white,
                               ),
                             ),
-                            Align(
-                              alignment: Alignment.centerLeft,
-                              child: Expanded(
-                                child: Container(
-                                  height: 35,
-                                  width: 135,
-                                  decoration: BoxDecoration(
-                                    boxShadow: [
-                                      BoxShadow(
-                                        blurRadius: 4.0,
-                                        offset: Offset(0.5, 1.9),
-                                        color: Color(0xffbdc3c7),
-                                      )
-                                    ],
-                                    color: color,
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(20)),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 15),
-                                  child: Align(
-                                    alignment: Alignment.center,
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: 13,
-                                          child: Image.asset(
-                                            'assets/images/$imagePath.png',
-                                          ),
-                                        ),
-                                        Text(
-                                          ' $title',
-                                          textAlign: TextAlign.center,
-                                          style: TextStyle(
-                                              fontSize: 14,
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w600),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            SizedBox(
-                              height: 34,
-                            ),
-                            content
-                          ],
+                          ),
                         ),
-                      )),
-                ],
-              ));
+                      ),
+                      Align(
+                        alignment: Alignment.centerLeft,
+                        child: Container(
+                          height: 35,
+                          width: 135,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                blurRadius: 4.0,
+                                offset: Offset(0.5, 1.9),
+                                color: Color(0xffbdc3c7),
+                              )
+                            ],
+                            color: color,
+                            borderRadius: BorderRadius.all(Radius.circular(20)),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 15),
+                          child: Align(
+                            alignment: Alignment.center,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  height: 13,
+                                  child: Image.asset(
+                                    'assets/images/$imagePath.png',
+                                  ),
+                                ),
+                                Text(
+                                  ' $title',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        height: 34,
+                      ),
+                      Expanded(
+                        child: SingleChildScrollView(
+                          child: content,
+                        ),
+                      )
+                    ],
+                  )));
         });
   }
 }

@@ -170,9 +170,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
             });
           }
           await _reservationByUserProvider.getReservationByUser();
-          if (mounted) {
-            setState(() {});
-          }
         }
       }
     }
@@ -205,6 +202,15 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   @override
   void initState() {
     super.initState();
+    if (widget.reservationInfo.resStatus == 'booked') {
+      _searchResultMessage = "예약 인증이 완료되었습니다.";
+    }
+    if (widget.reservationInfo.resStatus == 'prebooked') {
+      setState(() {
+        buttonState = true;
+        _searchResultMessage = "예약 인증이 가능합니다!";
+      });
+    }
   }
 
   @override
@@ -215,15 +221,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.reservationInfo.resStatus == 'booked') {
-      _searchResultMessage = "예약 인증이 완료되었습니다.";
-    }
-    if (widget.reservationInfo.resStatus == 'prebooked') {
-      setState(() {
-        buttonState = true;
-        _searchResultMessage = "예약 인증이 가능합니다!";
-      });
-    }
     _reservationByUserProvider =
         Provider.of<ReservationByUserProvider>(context, listen: false);
     return Column(

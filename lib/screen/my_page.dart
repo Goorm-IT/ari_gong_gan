@@ -195,8 +195,9 @@ class _MyPageState extends State<MyPage> {
                           .read<TodayReservationProvider>()
                           .todayReservation
                           .where((TodayReservation element) {
-                        return (element.resStatus == "deactivation" ||
-                            element.resStatus == "prebooked");
+                        return ((element.resStatus == "deactivation" ||
+                                element.resStatus == "prebooked") &&
+                            element.seatStatus != "disable");
                       }).toList();
                     });
                     _list.isEmpty
@@ -437,19 +438,53 @@ class _MyPageState extends State<MyPage> {
                   onTap: () async {
                     AriServer ariServer = AriServer();
                     try {
-                      await ariServer.delete(
+                      int rst = await ariServer.delete(
                         id: userInfo.studentId,
                         floor: _list[deletePage].floor,
                         name: _list[deletePage].name,
                         time: _list[deletePage].time,
                       );
+
                       Navigator.pop(context);
-                      customShowDiaLog(
+                      if (rst == 200) {
+                        customShowDiaLog(
+                            context: context,
+                            title: deleteDiaLog2Title(),
+                            content: deleteDiaLog2Content(),
+                            action: [deleteDiaLog2Action()],
+                            isBackButton: false);
+                      } else {
+                        customShowDiaLog(
                           context: context,
-                          title: deleteDiaLog2Title(),
-                          content: deleteDiaLog2Content(),
-                          action: [deleteDiaLog2Action()],
-                          isBackButton: false);
+                          title: Container(
+                            height: 20.0,
+                            child: Center(
+                              child: Text(
+                                "예약취소 실패",
+                                style: TextStyle(
+                                    color: Color(0xff4888E0),
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                          content: Container(
+                            height: 45.0,
+                            child: Align(
+                              alignment: Alignment.topCenter,
+                              child: Text(
+                                "잠시후 다시 시도해주세요.",
+                                style: TextStyle(
+                                    color: Color(0xff4888E0),
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500),
+                              ),
+                            ),
+                          ),
+                          action: [emptyListAction()],
+                          isBackButton: true,
+                        );
+                      }
                     } catch (e) {
                       Navigator.pop(context);
                       customShowDiaLog(

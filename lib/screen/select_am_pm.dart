@@ -13,6 +13,7 @@ import 'package:ari_gong_gan/widget/possible_or_not.dart';
 import 'package:async/async.dart';
 import 'package:flutter/material.dart' hide BoxDecoration, BoxShadow;
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
+import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter_inset_box_shadow/flutter_inset_box_shadow.dart';
 import 'package:page_transition/page_transition.dart';
@@ -28,7 +29,7 @@ class SelectAMPM extends StatefulWidget {
 class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
   bool _isPressedAM = false;
   bool _isPressedPM = false;
-
+  DateTime realTime = GetIt.I<DateTime>();
   late AnimationController _animationController;
   late TodayReservationProvider _todayReservationProvider;
   final AsyncMemoizer _memoizer = AsyncMemoizer();
@@ -57,7 +58,7 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
         }
       },
       child: Scaffold(
-        appBar: customAppbar(context, true),
+        appBar: customAppbar(context, true, true),
         body: Stack(
           children: [
             Container(
@@ -96,7 +97,7 @@ class _SelectAMPMState extends State<SelectAMPM> with TickerProviderStateMixin {
                               ),
                               TextSpan(
                                 text: DateFormat('MMM. dd. yyyy')
-                                    .format(DateTime.now()),
+                                    .format(realTime),
                                 style: const TextStyle(
                                   fontSize: 13,
                                   fontWeight: FontWeight.w500,
@@ -355,9 +356,33 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
                             int index = e.key;
                             bool flag = false;
                             for (int i = 0; i < _list.length; i++) {
-                              if (_list[i].time == val.time + ":00") {
+                              if (_list[i].time == "${val.time}:00") {
                                 if (_list[i].isBooked == "activate") {
                                   flag = true;
+                                }
+                              }
+                            }
+                            for (int i = 0; i < _list.length; i++) {
+                              for (int j = 0;
+                                  j < provider.todayReservation.length;
+                                  j++) {
+                                if (provider.todayReservation[j].resStatus !=
+                                    "delete") {
+                                  if (provider.todayReservation[j].time ==
+                                      "${val.time}:00") {
+                                    flag = false;
+                                  }
+
+                                  if ("${val.time}:00" ==
+                                      "${int.parse(provider.todayReservation[j].time.substring(0, 2)) + 1}:00:00") {
+                                    print(val.time);
+                                    flag = false;
+                                  }
+                                  if ("${val.time}:00" ==
+                                      "${int.parse(provider.todayReservation[j].time.substring(0, 2)) - 1}:00:00") {
+                                    print(val.time);
+                                    flag = false;
+                                  }
                                 }
                               }
                             }
@@ -381,7 +406,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
                             bool flag = false;
 
                             for (int i = 0; i < _list.length; i++) {
-                              if (_list[i].time == val.time + ":00") {
+                              if (_list[i].time == "${val.time}:00") {
                                 if (_list[i].isBooked == "activate") {
                                   flag = true;
                                 }
@@ -394,18 +419,16 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
                                 if (provider.todayReservation[j].resStatus !=
                                     "delete") {
                                   if (provider.todayReservation[j].time ==
-                                      val.time + ":00") {
+                                      "${val.time}:00") {
                                     flag = false;
                                   }
 
-                                  if (val.time + ":00" ==
-                                      (int.parse(provider
-                                                      .todayReservation[j].time
-                                                      .substring(0, 2)) +
-                                                  1)
-                                              .toString() +
-                                          ":00:00") {
-                                    print(val.time);
+                                  if ("${val.time}:00" ==
+                                      "${int.parse(provider.todayReservation[j].time.substring(0, 2)) + 1}:00:00") {
+                                    flag = false;
+                                  }
+                                  if ("${val.time}:00" ==
+                                      "${int.parse(provider.todayReservation[j].time.substring(0, 2)) - 1}:00:00") {
                                     flag = false;
                                   }
                                 }
@@ -524,7 +547,7 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
       onTap: () {
         setState(() {
           widget.animationController.reverse();
-          reservationInfo.time = reservationTimeInfo.time + ":00";
+          reservationInfo.time = "${reservationTimeInfo.time}:00";
           if (isAM) {
             for (int i = 0; i < tmpAM.length; i++) {
               if (i != idx) {

@@ -14,7 +14,7 @@ class _StudyroomState extends State<Studyroom> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(context, true),
+      appBar: customAppbar(context, true, true),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
@@ -66,8 +66,8 @@ class _StudyroomState extends State<Studyroom> {
                     ),
                     studyroomButton(
                         //아름다운 리더관
-                        right: 202,
-                        top: 229,
+                        right: 203.5,
+                        top: 227,
                         onTap: () {
                           showDialog(
                               useSafeArea: false,
@@ -79,23 +79,9 @@ class _StudyroomState extends State<Studyroom> {
                               });
                         }),
                     studyroomButton(
-                        // 대신관
-                        right: 51,
-                        top: 0,
-                        onTap: () {
-                          showDialog(
-                              useSafeArea: false,
-                              context: context,
-                              builder: (context) {
-                                return studyroomDialog(
-                                    title: "대신관은 뭐지..?",
-                                    floorList: ari_4th_floor);
-                              });
-                        }),
-                    studyroomButton(
                         //수봉관
-                        right: 117,
-                        top: 17,
+                        right: 119.2,
+                        top: 16.5,
                         onTap: () {
                           showDialog(
                               useSafeArea: false,
@@ -108,8 +94,8 @@ class _StudyroomState extends State<Studyroom> {
                         }),
                     studyroomButton(
                         //수리관
-                        right: 79,
-                        top: 93,
+                        right: 81,
+                        top: 92,
                         onTap: () {
                           showDialog(
                               useSafeArea: false,
@@ -135,6 +121,7 @@ class _StudyroomState extends State<Studyroom> {
   }) {
     final PageController _pageController = PageController(initialPage: 0);
     String _title = title;
+    String _room = floorList[0].place;
     return StatefulBuilder(
         builder: (BuildContext context, StateSetter setModalState) {
       return AlertDialog(
@@ -189,79 +176,92 @@ class _StudyroomState extends State<Studyroom> {
         content: Container(
           height: 220,
           width: 300,
-          child: PageView.builder(
-            itemCount: floorList.length,
-            controller: _pageController,
-            onPageChanged: (change) {
-              print(floorList[change].place);
-              if (floorList[change].place == 'Self 1') {
-                setModalState(() {
-                  _title = "아리관 4층";
-                });
-              }
-
-              if (floorList[change].place == 'Self 6') {
-                setModalState(() {
-                  _title = "아리관 3층";
-                });
-              }
-            },
-            itemBuilder: ((BuildContext context, int index) {
-              return Container(
-                child: Column(
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                      children: [
-                        IconButton(
-                          iconSize: 30,
-                          onPressed: () {
-                            _pageController.previousPage(
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeIn);
-                          },
-                          padding: const EdgeInsets.all(0),
-                          splashRadius: 20.0,
-                          icon: Icon(
-                            Icons.chevron_left,
-                            color: Color(0xff4888E0),
-                          ),
-                        ),
-                        Container(
-                          height: 170,
-                          width: 170,
-                          color: Colors.grey,
-                        ),
-                        IconButton(
-                          iconSize: 30,
-                          onPressed: () {
-                            _pageController.nextPage(
-                                duration: Duration(milliseconds: 300),
-                                curve: Curves.easeIn);
-                          },
-                          padding: const EdgeInsets.all(0),
-                          splashRadius: 20.0,
-                          icon: Icon(
-                            Icons.chevron_right,
-                            color: Color(0xff4888E0),
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(
-                      height: 14,
-                    ),
-                    Text(
-                      floorList[index].place,
-                      style: TextStyle(
-                          color: Color(0xff2772AC),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600),
-                    ),
-                  ],
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Transform.translate(
+                offset: Offset(0, -20),
+                child: IconButton(
+                  iconSize: 30,
+                  onPressed: () {
+                    _pageController.previousPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn);
+                  },
+                  padding: const EdgeInsets.all(0),
+                  splashRadius: 20.0,
+                  icon: Icon(
+                    Icons.chevron_left,
+                    color: Color(0xff4888E0),
+                  ),
                 ),
-              );
-            }),
+              ),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 200,
+                    height: 200,
+                    child: PageView.builder(
+                      itemCount: floorList.length,
+                      controller: _pageController,
+                      onPageChanged: (change) {
+                        print(floorList[change].place);
+                        setModalState(() {
+                          _room = floorList[change].place;
+                        });
+                        if (floorList[change].place == 'Self 1') {
+                          setModalState(() {
+                            _title = "아리관 4층";
+                          });
+                        }
+
+                        if (floorList[change].place == 'Self 6') {
+                          setModalState(() {
+                            _title = "아리관 3층";
+                          });
+                        }
+                      },
+                      itemBuilder: ((BuildContext context, int index) {
+                        return Column(
+                          children: [
+                            Container(
+                              height: 170,
+                              width: 170,
+                              color: Colors.grey,
+                            ),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
+                  Text(
+                    _room,
+                    style: TextStyle(
+                        color: Color(0xff2772AC),
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+              Transform.translate(
+                offset: Offset(0, -20),
+                child: IconButton(
+                  iconSize: 30,
+                  onPressed: () {
+                    _pageController.nextPage(
+                        duration: Duration(milliseconds: 300),
+                        curve: Curves.easeIn);
+                  },
+                  padding: const EdgeInsets.all(0),
+                  splashRadius: 20.0,
+                  icon: Icon(
+                    Icons.chevron_right,
+                    color: Color(0xff4888E0),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       );
@@ -281,8 +281,8 @@ class _StudyroomState extends State<Studyroom> {
           child: InkWell(
             onTap: onTap,
             child: Container(
-              width: 59,
-              height: 59,
+              width: 58,
+              height: 58,
             ),
           ),
         ),

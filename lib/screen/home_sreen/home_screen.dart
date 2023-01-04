@@ -36,6 +36,7 @@ class _HomeScreenState extends State<HomeScreen> {
   double bookBorderWidth = 0.0;
   bool isPressed = false;
   bool _isLoading = false;
+  bool _noProgressLoading = false;
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
   late TodayReservationProvider _todayReservationProvider;
@@ -62,7 +63,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-      appBar: customAppbar(context, true),
+      appBar: customAppbar(context, true, false),
       body: Stack(
         children: [
           Container(
@@ -106,12 +107,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   )),
               Container(
                 margin: const EdgeInsets.only(left: 35),
-                child: Text(DateFormat('MMM. dd. yyyy').format(realTime),
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    )),
+                child: Text(
+                  DateFormat('MMM. dd. yyyy').format(realTime),
+                  style: TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.white,
+                  ),
+                ),
               )
             ],
           ),
@@ -140,26 +143,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     borderRadius: BorderRadius.all(
                       Radius.circular(28),
                     ),
-                    // onTapDown: (TapDownDetails tmp) {
-                    //   setState(() {
-                    //     bookBorderColor = Colors.transparent;
-                    //     bookBorderWidth = 2.0;
-                    //   });
-                    // },
-                    // onTapCancel: () {
-                    //   setState(() {
-                    //     bookBorderColor = Colors.white;
-                    //     bookBorderWidth = 0.0;
-                    //   });
-                    // },
-                    // onTapUp: (TapUpDetails tmp) {
-                    //   setState(() {
-                    //     bookBorderColor = Colors.white;
-                    //     bookBorderWidth = 0.0;
-                    //   });
-                    // },
                     onTap: () async {
+                      setState(() {
+                        _noProgressLoading = true;
+                      });
                       await _revervationAllProvider.getReservationAll();
+                      setState(() {
+                        _noProgressLoading = false;
+                      });
                       Navigator.push(
                           context,
                           PageTransition(
@@ -204,7 +195,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 color: Color(0xffecf3ff),
               ),
-              height: MediaQuery.of(context).size.height - 420,
+              height: MediaQuery.of(context).size.height - 400,
               margin: const EdgeInsets.symmetric(horizontal: 48.0),
               width: windowWidth - 96,
               child: Padding(
@@ -276,6 +267,11 @@ class _HomeScreenState extends State<HomeScreen> {
                 size: 40,
               ),
             ),
+          ),
+          Container(
+            width: _noProgressLoading ? MediaQuery.of(context).size.width : 0,
+            height: _noProgressLoading ? MediaQuery.of(context).size.height : 0,
+            color: Colors.grey.withOpacity(0.0),
           )
         ],
       ),

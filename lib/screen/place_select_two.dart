@@ -48,7 +48,7 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(context, true),
+      appBar: customAppbar(context, true, true),
       body: Stack(
         children: [
           Container(

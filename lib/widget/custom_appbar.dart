@@ -3,7 +3,8 @@ import 'package:ari_gong_gan/screen/my_page.dart';
 import 'package:flutter/material.dart';
 import 'package:page_transition/page_transition.dart';
 
-PreferredSizeWidget customAppbar(BuildContext context, bool menuVisible) {
+PreferredSizeWidget customAppbar(
+    BuildContext context, bool menuVisible, bool backButtonVisible) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(58),
     child: AppBar(
@@ -14,6 +15,17 @@ PreferredSizeWidget customAppbar(BuildContext context, bool menuVisible) {
         'assets/images/ari_logo.png',
         width: 35,
       ),
+      leading: backButtonVisible
+          ? IconButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(
+                Icons.arrow_back,
+                size: 28,
+                color: PRIMARY_COLOR_DEEP,
+              ))
+          : Container(),
       actions: <Widget>[
         Transform.translate(
             offset: Offset(-10, 0),
