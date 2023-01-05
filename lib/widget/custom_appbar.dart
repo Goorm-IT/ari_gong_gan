@@ -38,8 +38,8 @@ PreferredSizeWidget customAppbar(
                               type: PageTransitionType.fade, child: MyPage()));
                     },
                     icon: const Icon(
-                      Icons.menu,
-                      size: 35,
+                      Icons.person,
+                      size: 37,
                       color: PRIMARY_COLOR_DEEP,
                     ))
                 : Container()),

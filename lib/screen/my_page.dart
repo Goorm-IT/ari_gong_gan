@@ -3,6 +3,7 @@ import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
+import 'package:ari_gong_gan/screen/agreement_page_in_my_page.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
@@ -173,10 +174,11 @@ class _MyPageState extends State<MyPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => AgreementPage()));
+                            builder: (context) => AgreementPageInMyPage()));
                   },
                   isChecked: true,
                 ),
+
                 SizedBox(
                   height: 15.0,
                 ),
@@ -889,7 +891,7 @@ class __ItemState extends State<_Item> {
                     widget.title,
                     style: TextStyle(
                       fontSize: 16,
-                      color: Color(0xff4988e1),
+                      color: PRIMARY_COLOR_DEEP,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

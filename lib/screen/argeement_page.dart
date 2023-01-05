@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ari_gong_gan/const/colors.dart';
 
 class AgreementPage extends StatefulWidget {
   const AgreementPage({Key? key}) : super(key: key);
@@ -19,11 +20,11 @@ class _AgreementPageState extends State<AgreementPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: customAppbar(context, false, true),
+      appBar: customAppbar(context, false, false),
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        color: Color(0xff4988e1),
+        color: PRIMARY_COLOR_DEEP,
         child: Container(
           margin: const EdgeInsets.symmetric(horizontal: 35),
           child: Column(
@@ -181,7 +182,7 @@ class _AgreementPageState extends State<AgreementPage> {
                     child: Text(
                       "확인",
                       style: TextStyle(
-                          color: Color(0xff4988e1),
+                          color: PRIMARY_COLOR_DEEP,
                           fontWeight: FontWeight.w500),
                     ),
                     style: ElevatedButton.styleFrom(
@@ -272,7 +273,7 @@ class _AgreementPageState extends State<AgreementPage> {
                         alignment: Alignment.centerRight,
                         child: ClipOval(
                           child: Container(
-                            color: Color(0xff4988e1),
+                            color: PRIMARY_COLOR_DEEP,
                             height: 20,
                             width: 20,
                             child: IconButton(
@@ -297,7 +298,7 @@ class _AgreementPageState extends State<AgreementPage> {
                         height: 40,
                         width: 150,
                         decoration: BoxDecoration(
-                          color: Color(0xff4988e1),
+                          color: PRIMARY_COLOR_DEEP,
                           borderRadius: BorderRadius.all(Radius.circular(20)),
                         ),
                         padding: const EdgeInsets.symmetric(horizontal: 15),
@@ -321,7 +322,7 @@ class _AgreementPageState extends State<AgreementPage> {
                 child: RawScrollbar(
                   thumbVisibility: true,
                   thickness: 10,
-                  thumbColor: Color(0xff4988e1),
+                  thumbColor: PRIMARY_COLOR_DEEP,
                   radius: Radius.circular(20),
                   child: Container(
                       margin: const EdgeInsets.symmetric(horizontal: 30),
@@ -331,7 +332,7 @@ class _AgreementPageState extends State<AgreementPage> {
                             return SingleChildScrollView(
                               child: Text(
                                 snapshot.data.toString(),
-                                style: TextStyle(color: Color(0xff4988e1)),
+                                style: TextStyle(color: PRIMARY_COLOR_DEEP),
                               ),
                             );
                           })),
