@@ -10,6 +10,7 @@ import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
 import 'package:ari_gong_gan/view/home_page.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -37,6 +38,7 @@ void main() async {
   HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
+
   GetIt.I.allowReassignment = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');

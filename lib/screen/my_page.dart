@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
@@ -10,7 +12,10 @@ import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:get_it/get_it.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:provider/provider.dart';
@@ -32,6 +37,11 @@ class _MyPageState extends State<MyPage> {
   bool _isLoading = false;
   late TodayReservationProvider _todayReservationProvider;
   AriUser userInfo = GetIt.I<AriUser>();
+  String osVersion = "";
+  String machine = "";
+  String emailBody = "";
+  String ariVersion = "";
+
   @override
   void initState() {
     super.initState();
@@ -43,6 +53,94 @@ class _MyPageState extends State<MyPage> {
         Provider.of<TodayReservationProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
+    DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+
+    getDeviceAppInfo() async {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      String appName = packageInfo.appName;
+      String version = packageInfo.version;
+      setState(() {
+        ariVersion = '$appName $version';
+      });
+      if (Platform.isAndroid) {
+        AndroidDeviceInfo info = await deviceInfo.androidInfo;
+
+        var release = info.version.release;
+        var sdkInt = info.version.sdkInt;
+        var manufacturer = info.manufacturer;
+        var model = info.model;
+        setState(() {
+          osVersion = 'Android $release (SDK $sdkInt)';
+          machine = '$manufacturer $model';
+        });
+      } else if (Platform.isIOS) {
+        IosDeviceInfo info = await deviceInfo.iosInfo;
+        var systemName = info.systemName;
+        var version = info.systemVersion;
+        var name = info.name;
+        var model = info.model;
+        setState(() {
+          osVersion = '$systemName $version';
+          machine = '$name $model';
+        });
+      }
+      setState(() {
+        emailBody = "";
+        emailBody += "==============\n";
+        emailBody += "아래 내용을 함께 보내주시면 큰 도움이 됩니다:)\n\n";
+        emailBody += "학번 : ${userInfo.studentId}\n";
+        emailBody += "아리공간 버전 : $ariVersion\n";
+        emailBody += "OS 버전 : $osVersion\n";
+        emailBody += "기기 : $machine\n";
+        emailBody += "==============\n";
+      });
+    }
+
+    void _sendEmail() async {
+      final Email email = Email(
+        body: emailBody,
+        subject: '[아리공간 문의]',
+        recipients: ['gjrehf@gmail.com'],
+        cc: [],
+        bcc: [],
+        attachmentPaths: [],
+        isHTML: false,
+      );
+
+      try {
+        await FlutterEmailSender.send(email);
+      } catch (error) {
+        String title =
+            "기본 메일 앱을 사용할 수 없기 때문에 앱에서 바로 문의를 전송하기 어려운 상황입니다.\n\n아래 메일로 문의 부탁드려요! \n\ngjrehf@gmail.com";
+        String message = "";
+        customShowDiaLog(
+          context: context,
+          title: Container(
+            child: Text("죄송합니다"),
+          ),
+          content: Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            height: 350,
+            child: Column(
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(fontSize: 14),
+                ),
+                Text("\n"),
+                Text(
+                  emailBody,
+                  style: TextStyle(fontSize: 14),
+                ),
+              ],
+            ),
+          ),
+          action: [deleteDiaLog2Action()],
+          isBackButton: true,
+        );
+      }
+    }
+
     return Scaffold(
       appBar: _myPageAppbar(context),
       body: Stack(children: [
@@ -127,139 +225,142 @@ class _MyPageState extends State<MyPage> {
           top: 180,
           child: Container(
             margin: const EdgeInsets.symmetric(horizontal: 50.0),
-            height: 500,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // _Item(
-                //   title: '공지사항',
-                //   onPress: () {
-                //     return null;
-                //   },
-                //   isChecked: true,
-                // ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                _Item(
-                  title: '이용수칙',
-                  onPress: () {
-                    Navigator.push(
-                        context,
-                        PageTransition(
-                            type: PageTransitionType.fade,
-                            child: TermsOfUse()));
-                  },
-                  isChecked: true,
-                ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                // _Item(
-                //   title: '문의사항',
-                //   onPress: () {
-                //     Navigator.push(
-                //         context,
-                //         PageTransition(
-                //             type: PageTransitionType.fade, child: HomePage()));
-                //   },
-                //   isChecked: true,
-                // ),
-                // SizedBox(
-                //   height: 15.0,
-                // ),
-                _Item(
-                  title: '이용약관',
-                  onPress: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => AgreementPageInMyPage()));
-                  },
-                  isChecked: true,
-                ),
+            height: MediaQuery.of(context).size.height - 180,
+            child: SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  // _Item(
+                  //   title: '공지사항',
+                  //   onPress: () {
+                  //     return null;
+                  //   },
+                  //   isChecked: true,
+                  // ),
+                  SizedBox(
+                    height: 25.0,
+                  ),
+                  _Item(
+                    title: '이용수칙',
+                    onPress: () {
+                      Navigator.push(
+                          context,
+                          PageTransition(
+                              type: PageTransitionType.fade,
+                              child: TermsOfUse()));
+                    },
+                    isChecked: true,
+                  ),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  _Item(
+                    title: '문의사항',
+                    onPress: () async {
+                      await getDeviceAppInfo();
+                      _sendEmail();
+                    },
+                    isChecked: true,
+                  ),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  _Item(
+                    title: '이용약관',
+                    onPress: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AgreementPageInMyPage()));
+                    },
+                    isChecked: true,
+                  ),
 
-                SizedBox(
-                  height: 15.0,
-                ),
-                _Item(
-                  title: '예약취소',
-                  onPress: () async {
-                    setState(() {
-                      _isLoading = true;
-                    });
-                    await _todayReservationProvider.getTodayReservation();
-                    setState(() {
-                      _isLoading = false;
-                    });
-                    setState(() {
-                      _list = context
-                          .read<TodayReservationProvider>()
-                          .todayReservation
-                          .where((TodayReservation element) {
-                        return ((element.resStatus == "deactivation" ||
-                                element.resStatus == "prebooked") &&
-                            element.seatStatus != "disable");
-                      }).toList();
-                    });
-                    _list.isEmpty
-                        ? customShowDiaLog(
-                            context: context,
-                            title: Container(
-                              height: 20.0,
-                              child: Center(
-                                child: Text(
-                                  "취소 가능한 내역이 없어요",
-                                  style: TextStyle(
-                                      color: Color(0xff4888E0),
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.w600),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  _Item(
+                    title: '예약취소',
+                    onPress: () async {
+                      setState(() {
+                        _isLoading = true;
+                      });
+                      await _todayReservationProvider.getTodayReservation();
+                      setState(() {
+                        _isLoading = false;
+                      });
+                      setState(() {
+                        _list = context
+                            .read<TodayReservationProvider>()
+                            .todayReservation
+                            .where((TodayReservation element) {
+                          return ((element.resStatus == "deactivation" ||
+                                  element.resStatus == "prebooked") &&
+                              element.seatStatus != "disable");
+                        }).toList();
+                      });
+                      _list.isEmpty
+                          ? customShowDiaLog(
+                              context: context,
+                              title: Container(
+                                height: 20.0,
+                                child: Center(
+                                  child: Text(
+                                    "취소 가능한 내역이 없어요",
+                                    style: TextStyle(
+                                        color: Color(0xff4888E0),
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.w600),
+                                  ),
                                 ),
                               ),
-                            ),
-                            content: Container(
-                              height: 45.0,
-                              child: Align(
-                                alignment: Alignment.topCenter,
-                                child: Text(
-                                  "메인 페이지에서 예약하기를 눌러보세요!",
-                                  style: TextStyle(
-                                      color: Color(0xff4888E0),
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w500),
+                              content: Container(
+                                height: 45.0,
+                                child: Align(
+                                  alignment: Alignment.topCenter,
+                                  child: Text(
+                                    "메인 페이지에서 예약하기를 눌러보세요!",
+                                    style: TextStyle(
+                                        color: Color(0xff4888E0),
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w500),
+                                  ),
                                 ),
                               ),
-                            ),
-                            action: [emptyListAction()],
-                            isBackButton: true,
-                          )
-                        : customShowDiaLog(
-                            context: context,
-                            title: deleteDiaLogTitle(),
-                            content: deleteDiaLogContent(),
-                            action: [deleteDiaLogAction()],
-                            isBackButton: true,
-                          );
-                  },
-                  isChecked: false,
-                ),
-                SizedBox(
-                  height: 15.0,
-                ),
-                _Item(
-                  title: '로그아웃',
-                  onPress: () {
-                    customShowDiaLog(
-                      context: context,
-                      title: logoutDiaLogTitle(),
-                      content: logoutDiaLogContent(),
-                      action: [logoutDiaLogAction()],
-                      isBackButton: true,
-                    );
-                  },
-                  isChecked: false,
-                ),
-              ],
+                              action: [emptyListAction()],
+                              isBackButton: true,
+                            )
+                          : customShowDiaLog(
+                              context: context,
+                              title: deleteDiaLogTitle(),
+                              content: deleteDiaLogContent(),
+                              action: [deleteDiaLogAction()],
+                              isBackButton: true,
+                            );
+                    },
+                    isChecked: false,
+                  ),
+                  SizedBox(
+                    height: 15.0,
+                  ),
+                  _Item(
+                    title: '로그아웃',
+                    onPress: () {
+                      customShowDiaLog(
+                        context: context,
+                        title: logoutDiaLogTitle(),
+                        content: logoutDiaLogContent(),
+                        action: [logoutDiaLogAction()],
+                        isBackButton: true,
+                      );
+                    },
+                    isChecked: false,
+                  ),
+                  SizedBox(
+                    height: 100,
+                  ),
+                ],
+              ),
             ),
           ),
         ),
@@ -274,7 +375,7 @@ class _MyPageState extends State<MyPage> {
               child: CustomCircularProgress(
             size: 40,
           )),
-        )
+        ),
       ]),
     );
   }
