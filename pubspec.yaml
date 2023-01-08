@@ -59,6 +59,8 @@ dependencies:
   encrypt: ^5.0.1
   pointycastle: ^3.6.2
 
+  flutter_js: ^0.6.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -82,7 +84,7 @@ flutter:
   assets:
     - assets/images/
     - assets/texts/
-    - assets/keys/
+    - assets/jscode/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
