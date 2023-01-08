@@ -58,7 +58,7 @@ dependencies:
 
   encrypt: ^5.0.1
   pointycastle: ^3.6.2
-
+  crypto_keys: ^0.3.0+1
   flutter_js: ^0.6.0
 
 dev_dependencies:
