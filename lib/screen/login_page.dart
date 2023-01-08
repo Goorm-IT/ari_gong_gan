@@ -373,6 +373,7 @@ class _LoginButton extends StatelessWidget {
 
             var ariServer = AriServer();
             String ariLogin = await ariServer.login(id: id, pw: pw);
+            print(ariLogin);
             if (ariLogin == "SUCCESS") {
               if (loginInfoSave) {
                 await ctrl.saveLoginData(id, pw);

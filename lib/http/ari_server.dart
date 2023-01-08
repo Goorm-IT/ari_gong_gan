@@ -26,10 +26,10 @@ class AriServer {
     String _tmpCookie = response.headers['set-cookie'] ?? '';
     var idx = _tmpCookie.indexOf(';');
     _cookie = (idx == -1) ? _tmpCookie : _tmpCookie.substring(0, idx);
-    print(response.statusCode);
+
     if (response.statusCode == 200) {
       String tmp = await response.stream.bytesToString();
-      return jsonDecode(tmp)["message"];
+      return jsonDecode(tmp)["result"];
     } else {
       throw CustomException(400, "로그인 오류");
     }

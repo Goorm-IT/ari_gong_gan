@@ -134,7 +134,7 @@ class _ReservationCompleteState extends State<ReservationComplete> {
                           ),
                         ),
                         Text(
-                          "  예약이 완료되었습니다",
+                          "  좌석 지정이 완료되었습니다",
                           style: TextStyle(
                             color: Color(0xff4988e1),
                             fontSize: 19,

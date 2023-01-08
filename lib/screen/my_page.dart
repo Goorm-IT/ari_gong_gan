@@ -255,7 +255,7 @@ class _MyPageState extends State<MyPage> {
                     height: 15.0,
                   ),
                   _Item(
-                    title: '문의사항',
+                    title: '문의하기',
                     onPress: () async {
                       await getDeviceAppInfo();
                       _sendEmail();

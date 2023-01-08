@@ -287,12 +287,12 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
 
   Widget reservationContent() {
     return Container(
-        height: 80.0,
+        height: 100.0,
         padding: const EdgeInsets.symmetric(horizontal: 20),
         child: Column(
           children: [
             Text(
-              '예약 후 메인페이지의 "예약카드"에서 예약 시간 전후 10분 사이에 예약인증을 해야 예약이 완료됩니다.\n예약 인증을 하지 않는 경우 페널티가 부과됩니다.',
+              '예약 후 메인페이지의 "예약카드"에서 예약 시간 전후 10분 사이에 예약인증을 해야 예약이 완료됩니다.\n예약 인증은 예약한 좌석에서 가능합니다.\n예약 인증을 하지 않는 경우 페널티가 부과됩니다.',
               textAlign: TextAlign.center,
               style: TextStyle(
                 color: PRIMARY_COLOR_DEEP,
@@ -301,7 +301,15 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
             ),
             SizedBox(
               height: 10,
-            )
+            ),
+            Text(
+              '페널티 - 하루동안 예약불가',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                  fontSize: 12,
+                  color: Color(0xffe74c3c),
+                  fontWeight: FontWeight.w600),
+            ),
           ],
         ));
   }
