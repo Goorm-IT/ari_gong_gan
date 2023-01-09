@@ -43,7 +43,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
-    // return HomePage();
+    return HomePage();
     var ctrl = new LoginData();
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";
