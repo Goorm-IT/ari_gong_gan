@@ -13,15 +13,15 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 typedef IsSetting = void Function(double);
 
 class BookCardDivied extends StatefulWidget {
-  TodayReservation reservationInfo;
+  int index;
   IsSetting isSetting;
-  BookCardDivied(
-      {required this.reservationInfo, required this.isSetting, super.key});
+  BookCardDivied({required this.index, required this.isSetting, super.key});
 
   @override
   State<BookCardDivied> createState() => _BookCardDiviedState();
@@ -36,11 +36,14 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   DateTime realTime = GetIt.I<DateTime>();
   bool buttonState = false;
   double _settingErrorOpacitiy = 0.0;
+
+  List<TodayReservation> _list = [];
   double _searchResultOpacitiy = 1.0;
   String _searchResultMessage = "인증 가능 시간이 아닙니다";
   int _searchResultMessageStatus = 0;
   bool isBeaconSearch = false;
-  late ReservationByUserProvider _reservationByUserProvider;
+
+  late TodayReservationProvider _todayReservationProvider;
   bool _isScanning = false;
   Map beaconRoom = {
     '아리관 3층': 62908,
@@ -84,7 +87,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     controller.startScanning();
     _streamRanging =
         flutterBeacon.ranging(regions).listen((RangingResult result) {
-      print(result);
       if (mounted) {
         setState(() {
           _regionBeacons[result.region] = result.beacons;
@@ -132,14 +134,14 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   compareBeaconRoom() async {
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
-        if (_beacons[i].minor == beaconRoom[widget.reservationInfo.floor]) {
+        if (_beacons[i].minor == beaconRoom[_list[widget.index].floor]) {
           stopScanning();
           AriServer ariServer = AriServer();
           try {
             int returnstatus = await ariServer.booked(
-                floor: widget.reservationInfo.floor,
-                name: widget.reservationInfo.name,
-                time: widget.reservationInfo.time);
+                floor: _list[widget.index].floor,
+                name: _list[widget.index].name,
+                time: _list[widget.index].time);
             if (returnstatus == 200) {
               showToast(msg: "예약 인증이 완료되었습니다.");
               setState(() {
@@ -169,7 +171,8 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               _isScanning = false;
             });
           }
-          await _reservationByUserProvider.getReservationByUser();
+
+          await _todayReservationProvider.getTodayReservation();
         }
       }
     }
@@ -202,10 +205,17 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   @override
   void initState() {
     super.initState();
-    if (widget.reservationInfo.resStatus == 'booked') {
+    _list = context
+        .read<TodayReservationProvider>()
+        .todayReservation
+        .where((TodayReservation element) {
+      return element.resStatus != "delete";
+    }).toList();
+
+    if (_list[widget.index].resStatus == 'booked') {
       _searchResultMessage = "예약 인증이 완료되었습니다.";
     }
-    if (widget.reservationInfo.resStatus == 'prebooked') {
+    if (_list[widget.index].resStatus == 'prebooked') {
       setState(() {
         buttonState = true;
         _searchResultMessage = "예약 인증이 가능합니다!";
@@ -221,8 +231,8 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   @override
   Widget build(BuildContext context) {
-    _reservationByUserProvider =
-        Provider.of<ReservationByUserProvider>(context, listen: false);
+    _todayReservationProvider =
+        Provider.of<TodayReservationProvider>(context, listen: false);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -284,7 +294,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                   infoItem(
                     title: "시간",
                     content:
-                        '${widget.reservationInfo.time.substring(0, 5)} - ${int.parse(widget.reservationInfo.time.substring(0, 2)) + 1}:00',
+                        '${_list[widget.index].time.substring(0, 5)} - ${int.parse(_list[widget.index].time.substring(0, 2)) + 1}:00',
                   ),
                   SizedBox(
                     height: 14,
@@ -292,7 +302,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                   infoItem(
                     title: "장소",
                     content:
-                        '${widget.reservationInfo.floor} ${widget.reservationInfo.name}',
+                        '${_list[widget.index].floor} ${_list[widget.index].name}',
                   ),
                 ],
               ),

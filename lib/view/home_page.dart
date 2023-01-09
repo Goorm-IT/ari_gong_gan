@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -171,13 +172,21 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
           }),
         ],
       ),
-      body: IndexedStack(
-        index: currentIndex,
-        children: [
-          TabScanning(),
-          TabBroadcasting(),
-        ],
-      ),
+      body: FutureBuilder(
+          future: checkPerm(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return IndexedStack(
+                index: currentIndex,
+                children: [
+                  TabScanning(),
+                  TabBroadcasting(),
+                ],
+              );
+            } else {
+              return Container();
+            }
+          }),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: currentIndex,
         onTap: (index) {
@@ -254,5 +263,32 @@ class _HomePageState extends State<HomePage> with WidgetsBindingObserver {
         },
       );
     }
+  }
+
+  checkPerm() async {
+    if (Platform.isAndroid) {
+      print("하고 있지?");
+      var status = await Permission.bluetoothScan.status;
+      print(status);
+      if (status.isDenied) {
+        await Permission.bluetoothScan.request();
+      }
+      if (await Permission.bluetoothScan.isRestricted) {
+        print("아니 왜 거절해");
+      }
+      if (await Permission.bluetoothScan.isPermanentlyDenied) {
+        print("ped");
+      }
+      if (await Permission.bluetoothScan.isDenied) {
+        openAppSettings();
+        print("ped");
+      }
+
+      if (await Permission.bluetoothScan.status.isPermanentlyDenied) {
+        openAppSettings();
+        print("여기 아니야?");
+      }
+    }
+    return "asd";
   }
 }

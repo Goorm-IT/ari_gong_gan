@@ -28,6 +28,22 @@
 		<string>LaunchScreen</string>
 		<key>UIMainStoryboardFile</key>
 		<string>Main</string>
+		 <!-- When in use -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+  		<string>Our app uses bluetooth to find, connect with beacon</string>
+  		<!-- Always -->
+  		<!-- for iOS 11 + -->
+  		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+  		<string>Our app uses bluetooth to find, connect with beacon</string>
+  		<!-- for iOS 9/10 -->
+  		<key>NSLocationAlwaysUsageDescription</key>
+  		<string>Our app uses bluetooth to find, connect with beacon</string>
+		<key>NSBluetoothAlwaysUsageDescription</key>
+		<string>Our app uses bluetooth to find, connect with beacon</string>
+		<key>NSBonjourServices</key>
+		<array>
+			<string>_dartobservatory._tcp</string>
+		</array>
 		<key>UISupportedInterfaceOrientations</key>
 		<array>
 			<string>UIInterfaceOrientationPortrait</string>

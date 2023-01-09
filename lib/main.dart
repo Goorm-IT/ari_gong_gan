@@ -18,6 +18,7 @@ import 'package:get_it/get_it.dart';
 import 'package:ntp/ntp.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,20 +26,19 @@ const Color color = Color(0xfff9e769);
 int? isInitView;
 
 // 릴리즈시 삭제할 것
-class MyHttpOverrides extends HttpOverrides {
-  @override
-  HttpClient createHttpClient(SecurityContext? context) {
-    return super.createHttpClient(context)
-      ..badCertificateCallback =
-          (X509Certificate cert, String host, int port) => true;
-  }
-}
+// class MyHttpOverrides extends HttpOverrides {
+//   @override
+//   HttpClient createHttpClient(SecurityContext? context) {
+//     return super.createHttpClient(context)
+//       ..badCertificateCallback =
+//           (X509Certificate cert, String host, int port) => true;
+//   }
+// }
 
 void main() async {
-  HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
+  // HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
-
   GetIt.I.allowReassignment = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');

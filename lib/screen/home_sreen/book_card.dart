@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
+import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 typedef IsLoadingType = void Function(bool);
@@ -37,6 +41,9 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
                 widget.isLoadingType(true);
                 await _todayReservationProvider.getTodayReservation();
                 widget.isLoadingType(false);
+                if (Platform.isAndroid) {
+                  checkPerm();
+                }
                 showModalBottomSheet<void>(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -70,6 +77,94 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
           ),
         ),
       ],
+    );
+  }
+
+  checkPerm() async {
+    var status = await Permission.bluetoothScan.status;
+    print(status);
+    if (status.isDenied) {
+      await Permission.bluetoothScan.request();
+    }
+    if (!(await Permission.bluetoothScan.isGranted)) {
+      Navigator.pop(context);
+      customShowDiaLog(
+        context: context,
+        title: Text(
+          "주변기기 권한",
+          style: TextStyle(
+              color: Color(0xff4888E0),
+              fontSize: 16,
+              fontWeight: FontWeight.w600),
+        ),
+        content: Container(
+          height: 60,
+          margin: const EdgeInsets.symmetric(horizontal: 18.0),
+          child: Text(
+            "주변기기 권한이 없으면 인증이 불가합니다.\n권한을 허용해주세요.",
+            style: TextStyle(
+                color: Color(0xff4888E0),
+                fontSize: 14,
+                fontWeight: FontWeight.w500),
+          ),
+        ),
+        action: [logoutDiaLog2Action()],
+        isBackButton: true,
+      );
+    }
+    // else if (await Permission.bluetoothScan.isRestricted) {
+    //   // openAppSettings();
+    //   print("여기 아니야?2");
+    // } else if (await Permission.bluetoothScan.isPermanentlyDenied) {
+    //   print("여기 아니야?3");
+    // }
+
+    // if (await Permission.bluetoothScan.status.isPermanentlyDenied) {
+    //   // openAppSettings();
+    //   print("여기 아니야?4");
+    // }
+    return "Done";
+  }
+
+  Widget logoutDiaLog2Action() {
+    return Container(
+      height: 53,
+      child: Row(
+        children: [
+          Flexible(
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(18.0),
+                bottomRight: Radius.circular(18.0),
+              ),
+              child: Material(
+                color: Color(0xffF9E769),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.pop(context);
+                    openAppSettings();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(18.0),
+                        bottomLeft: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 

@@ -187,7 +187,7 @@ class _OpenBookCardState extends State<OpenBookCard>
                 },
                 itemBuilder: ((BuildContext context, int index) {
                   return BookCardDivied(
-                    reservationInfo: _list[index],
+                    index: index,
                     isSetting: (double isSetting) {
                       if (mounted) {
                         setState(() {
