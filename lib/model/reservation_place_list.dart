@@ -41,12 +41,6 @@ List<ReservationPlace> ari_4th_floor = [
     isPossible: true,
     isPressed: false,
   ),
-  ReservationPlace(
-    place: "Self 4",
-    time: tmpAM + tmpPM,
-    isPossible: true,
-    isPressed: false,
-  ),
 ];
 
 List<ReservationPlace> subong_7th_floor = [

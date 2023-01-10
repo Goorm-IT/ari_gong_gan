@@ -9,16 +9,16 @@ import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
-import 'package:ari_gong_gan/view/home_page.dart';
-import 'package:device_info_plus/device_info_plus.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
+import 'package:dio/adapter.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:ntp/ntp.dart';
 import 'package:page_transition/page_transition.dart';
 import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -37,8 +37,13 @@ int? isInitView;
 
 void main() async {
   // HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
+  // return HomePage();
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
+  ByteData data = await PlatformAssetBundle()
+      .load('assets/certificate/arigonggan.site.pem');
+  SecurityContext.defaultContext
+      .setTrustedCertificatesBytes(data.buffer.asUint8List());
   GetIt.I.allowReassignment = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
