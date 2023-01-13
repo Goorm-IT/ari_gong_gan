@@ -1,5 +1,6 @@
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 class BLELoctionStateController extends GetxController {
   RxBool bluetoothState = false.obs;
@@ -12,7 +13,15 @@ class BLELoctionStateController extends GetxController {
     bluetoothState.value = state;
   }
 
-  setLocationState(bool state) {
-    locationState.value = state;
+  setLocationState() async {
+    Future<bool> checkLocation() async {
+      Location location = new Location();
+      bool _serviceEnabled = false;
+      _serviceEnabled = await location.serviceEnabled();
+
+      return _serviceEnabled;
+    }
+
+    locationState.value = await checkLocation();
   }
 }

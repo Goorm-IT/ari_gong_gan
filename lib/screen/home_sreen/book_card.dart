@@ -8,6 +8,8 @@ import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get_it/get_it.dart';
 import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -22,35 +24,16 @@ class BookCard extends StatefulWidget {
   State<BookCard> createState() => _BookCardState();
 }
 
-Future<bool> locationStream() async {
-  Location location = new Location();
-  bool _serviceEnabled = false;
-  _serviceEnabled = await location.serviceEnabled();
-  return _serviceEnabled;
-}
-
 class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
   AriUser userInfo = GetIt.I<AriUser>();
   late TodayReservationProvider _todayReservationProvider;
   final flutterReactiveBle = FlutterReactiveBle();
-  BLELoctionStateController _bleLoctionStateController =
-      BLELoctionStateController();
-  StreamSubscription<bool> tmp =
-      Stream.fromFuture(locationStream()).listen((bool event) {
-    return;
-  });
+
+  final _bleLoctionStateController = Get.find<BLELoctionStateController>();
 
   @override
   void initState() {
     super.initState();
-    flutterReactiveBle.statusStream.listen((status) {
-      print(status);
-      if (status.toString() == "BleStatus.ready") {
-        _bleLoctionStateController.setBluetoothState(true);
-      } else {
-        _bleLoctionStateController.setBluetoothState(false);
-      }
-    });
   }
 
   @override
@@ -73,8 +56,9 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
                 widget.isLoadingType(true);
                 await _todayReservationProvider.getTodayReservation();
                 widget.isLoadingType(false);
+                await checkPerm();
 
-                checkPerm();
+                _bleLoctionStateController.setLocationState();
 
                 showModalBottomSheet<void>(
                     shape: RoundedRectangleBorder(

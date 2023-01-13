@@ -460,42 +460,45 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     );
   }
 
-  // bool settingbuttonCheck() {
-  //   if (!controller.authorizationStatusOk ||
-  //       !controller.locationServiceEnabled ||
-  //       !controller.bluetoothEnabled) {
-  //     if (_settingErrorOpacitiy == 1.0) {
-  //       if (mounted) {
-  //         setState(() {
-  //           _settingErrorOpacitiy = 0.0;
-  //           widget.isSetting(0.0);
-  //           Future.delayed(Duration(milliseconds: 200)).then((value) {
-  //             return setState(() {
-  //               _settingErrorOpacitiy = 1.0;
-  //               widget.isSetting(1.0);
-  //             });
-  //           });
-  //         });
-  //       }
-  //     } else {
-  //       if (mounted) {
-  //         setState(() {
-  //           _settingErrorOpacitiy = 1.0;
-  //           widget.isSetting(1.0);
-  //         });
-  //       }
-  //     }
-  //     return false;
-  //   }
+  bool settingbuttonCheck() {
+    print(controller.authorizationStatusOk);
+    print(controller.locationServiceEnabled);
+    print(controller.bluetoothEnabled);
+    if (!controller.authorizationStatusOk ||
+        !controller.locationServiceEnabled ||
+        !controller.bluetoothEnabled) {
+      if (_settingErrorOpacitiy == 1.0) {
+        if (mounted) {
+          setState(() {
+            _settingErrorOpacitiy = 0.0;
+            widget.isSetting(0.0);
+            Future.delayed(Duration(milliseconds: 200)).then((value) {
+              return setState(() {
+                _settingErrorOpacitiy = 1.0;
+                widget.isSetting(1.0);
+              });
+            });
+          });
+        }
+      } else {
+        if (mounted) {
+          setState(() {
+            _settingErrorOpacitiy = 1.0;
+            widget.isSetting(1.0);
+          });
+        }
+      }
+      return false;
+    }
 
-  //   if (mounted) {
-  //     setState(() {
-  //       _settingErrorOpacitiy = 0.0;
-  //       widget.isSetting(0.0);
-  //     });
-  //   }
-  //   return true;
-  // }
+    if (mounted) {
+      setState(() {
+        _settingErrorOpacitiy = 0.0;
+        widget.isSetting(0.0);
+      });
+    }
+    return true;
+  }
 
   Widget infoItem({required String title, required String content}) {
     return Container(

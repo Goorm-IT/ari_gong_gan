@@ -1,17 +1,25 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:app_settings/app_settings.dart';
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/home_sreen/book_card_divided.dart';
 import 'package:ari_gong_gan/screen/home_sreen/empty_book_card.dart';
+import 'package:ari_gong_gan/widget/custom_icon_button.dart';
+import 'package:ari_gong_gan/widget/custom_rotate_refresh.dart';
+import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 import 'package:provider/provider.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
+
+import '../../controller/ble_location_state_controller.dart';
 
 class OpenBookCard extends StatefulWidget {
   const OpenBookCard({super.key});
@@ -30,8 +38,9 @@ class _OpenBookCardState extends State<OpenBookCard>
   StreamSubscription<BluetoothState>? _streamBluetooth;
   int buttonStatus = 0;
   double _settingErrorOpacitiy = 0.0;
-
+  final _bleLoctionStateController = Get.find<BLELoctionStateController>();
   bool isBeaconSearch = false;
+  final flutterReactiveBle = FlutterReactiveBle();
 
   List<TodayReservation> _list = [];
 
@@ -83,6 +92,15 @@ class _OpenBookCardState extends State<OpenBookCard>
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
+
+    flutterReactiveBle.statusStream.listen((status) {
+      if (status.toString() == "BleStatus.ready") {
+        _bleLoctionStateController.setBluetoothState(true);
+      } else {
+        _bleLoctionStateController.setBluetoothState(false);
+      }
+    });
+
     _list = context
         .read<TodayReservationProvider>()
         .todayReservation
@@ -136,7 +154,7 @@ class _OpenBookCardState extends State<OpenBookCard>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // settingCheck(),
+                  settingCheck(),
                   Container(
                     margin: const EdgeInsets.only(right: 30, top: 10),
                     child: ClipOval(
@@ -225,172 +243,144 @@ class _OpenBookCardState extends State<OpenBookCard>
     }
   }
 
-  // Widget settingCheck() {
-  //   return Row(
-  //     crossAxisAlignment: CrossAxisAlignment.start,
-  //     mainAxisAlignment: MainAxisAlignment.end,
-  //     children: [
-  //       Obx(() {
-  //         if (!controller.authorizationStatusOk)
-  //           return customIconButton(
-  //             tooltip: 'Not Authorized',
-  //             onPressed: () async {
-  //               try {
-  //                 await flutterBeacon.requestAuthorization;
-  //               } catch (e) {}
-  //             },
-  //             icon: Icon(Icons.location_off),
-  //             color: Colors.yellow,
-  //           );
+  Widget settingCheck() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        Obx(() {
+          if (!_bleLoctionStateController.getBluetoothState)
+            return customIconButton(
+              tooltip: 'Not Authorized',
+              onPressed: () async {
+                try {
+                  AppSettings.openBluetoothSettings();
+                } catch (e) {}
+              },
+              icon: Icon(Icons.bluetooth),
+              color: Colors.red,
+            );
 
-  //         return customIconButton(
-  //           tooltip: controller.locationServiceEnabled
-  //               ? 'Location Service ON'
-  //               : 'Location Service OFF',
-  //           onPressed: controller.locationServiceEnabled
-  //               ? () {}
-  //               : handleOpenLocationSettings,
-  //           icon: Icon(
-  //             controller.locationServiceEnabled
-  //                 ? Icons.location_on
-  //                 : Icons.location_off,
-  //           ),
-  //           color: controller.locationServiceEnabled ? Colors.blue : Colors.red,
-  //         );
-  //       }),
-  //       Obx(() {
-  //         if (!controller.locationServiceEnabled)
-  //           return customIconButton(
-  //             tooltip: 'Not Determined',
-  //             onPressed: () {},
-  //             icon: Icon(Icons.portable_wifi_off),
-  //             color: Colors.grey,
-  //           );
+          return customIconButton(
+            tooltip: 'Authorized',
+            onPressed: () {},
+            icon: Icon(Icons.bluetooth),
+            color: Colors.blue,
+          );
+        }),
+        Obx(() {
+          if (!_bleLoctionStateController.getLocationState)
+            return customIconButton(
+              tooltip: 'Not Authorized',
+              onPressed: () async {
+                try {
+                  // AppSettings.openLocationSettings(callback: () {
+                  //   print("흠");
+                  // });
+                  Location location = Location();
+                  if (await location.requestService()) {
+                    _bleLoctionStateController.setLocationState();
+                  } else {
+                    if (Platform.isAndroid) {
+                      customShowDiaLog(
+                        context: context,
+                        title: Container(
+                          height: 20.0,
+                          child: Center(
+                            child: Text(
+                              "위치 기능",
+                              style: TextStyle(
+                                  color: Color(0xff4888E0),
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                        ),
+                        content: Container(
+                          height: 45.0,
+                          child: Align(
+                            alignment: Alignment.topCenter,
+                            child: Text(
+                              "바콘 인증을 위해서는 위치 기능을 켜야합니다.",
+                              style: TextStyle(
+                                  color: Color(0xff4888E0),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500),
+                            ),
+                          ),
+                        ),
+                        action: [emptyListAction()],
+                        isBackButton: true,
+                      ).then((value) {
+                        Navigator.pop(context);
+                      });
+                    }
+                  }
+                } catch (e) {}
+              },
+              icon: Icon(Icons.location_on),
+              color: Colors.red,
+            );
 
-  //         if (!controller.authorizationStatusOk)
-  //           return customIconButton(
-  //             tooltip: 'Not Authorized',
-  //             onPressed: () async {
-  //               try {
-  //                 await flutterBeacon.requestAuthorization;
-  //               } catch (e) {}
-  //             },
-  //             icon: Icon(Icons.portable_wifi_off),
-  //             color: Colors.red,
-  //           );
-
-  //         return customIconButton(
-  //           tooltip: 'Authorized',
-  //           onPressed: () async {
-  //             try {
-  //               await flutterBeacon.requestAuthorization;
-  //             } catch (e) {}
-  //           },
-  //           icon: Icon(Icons.wifi_tethering),
-  //           color: Colors.blue,
-  //         );
-  //       }),
-  //       Obx(() {
-  //         final state = controller.bluetoothState.value;
-
-  //         if (state == BluetoothState.stateOn) {
-  //           return customIconButton(
-  //             tooltip: 'Bluetooth ON',
-  //             onPressed: () {},
-  //             icon: Icon(Icons.bluetooth_connected),
-  //             color: Colors.lightBlueAccent,
-  //           );
-  //         }
-
-  //         if (state == BluetoothState.stateOff) {
-  //           return customIconButton(
-  //             tooltip: 'Bluetooth OFF',
-  //             onPressed: handleOpenBluetooth,
-  //             icon: Icon(Icons.bluetooth),
-  //             color: Colors.red,
-  //           );
-  //         }
-  //         return customIconButton(
-  //           tooltip: 'Bluetooth State Unknown',
-  //           onPressed: () {},
-  //           icon: Icon(Icons.bluetooth_disabled),
-  //           color: Colors.grey,
-  //         );
-  //       }),
-  //     ],
-  //   );
-  // }
-
-  handleOpenLocationSettings() async {
-    if (Platform.isAndroid) {
-      try {
-        await flutterBeacon.requestAuthorization;
-      } catch (e) {}
-      await flutterBeacon.openLocationSettings;
-    } else if (Platform.isIOS) {
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Location Services Off'),
-            content: Text(
-              'Please enable Location Services on Settings > Privacy > Location Services.',
+          return customIconButton(
+            tooltip: 'Authorized',
+            onPressed: () {},
+            icon: Icon(Icons.location_on),
+            color: Colors.blue,
+          );
+        }),
+        CustomRotateRefresh(
+          widget: Container(
+            width: 40,
+            margin: const EdgeInsets.symmetric(vertical: 6),
+            child: Icon(
+              Icons.refresh,
+              color: Colors.blue,
+              size: 27,
             ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    }
+          ),
+        )
+      ],
+    );
   }
 
-  handleOpenBluetooth() async {
-    if (Platform.isAndroid) {
-      try {
-        await flutterBeacon.openBluetoothSettings;
-      } on PlatformException catch (e) {
-        print(e);
-      }
-    } else if (Platform.isIOS) {
-      await showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            title: Text('Bluetooth is Off'),
-            content: Text('Please enable Bluetooth on Settings > Bluetooth.'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: Text('OK'),
+  Widget emptyListAction() {
+    return Container(
+      height: 53,
+      child: Row(
+        children: [
+          Flexible(
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(18.0),
+                bottomRight: Radius.circular(18.0),
               ),
-            ],
-          );
-        },
-      );
-    }
-  }
-
-  Widget customIconButton(
-      {required String tooltip,
-      required Function()? onPressed,
-      required Icon icon,
-      required Color color}) {
-    return Material(
-      color: Colors.transparent,
-      child: Container(
-        width: 40,
-        child: IconButton(
-            padding: const EdgeInsets.all(0),
-            iconSize: 25,
-            splashRadius: 20,
-            icon: icon,
-            tooltip: tooltip,
-            onPressed: onPressed,
-            color: color),
+              child: Material(
+                color: Color(0xffF9E769),
+                child: InkWell(
+                  onTap: () async {
+                    Navigator.pop(context);
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(18.0),
+                        bottomLeft: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:ari_gong_gan/controller/ble_location_state_controller.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
@@ -38,6 +39,7 @@ void main() async {
   //  HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
 
   Get.put(RequirementStateController());
+  Get.put(BLELoctionStateController());
   WidgetsFlutterBinding.ensureInitialized();
   ByteData data = await PlatformAssetBundle()
       .load('assets/certificate/arigonggan.site.pem');
@@ -47,7 +49,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
-    //return HomePage();
+    //sreturn HomePage();
     var ctrl = new LoginData();
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";
