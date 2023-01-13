@@ -1,11 +1,15 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:ari_gong_gan/const/user_info.dart';
+import 'package:ari_gong_gan/controller/ble_location_state_controller.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get_it/get_it.dart';
+import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
@@ -18,9 +22,37 @@ class BookCard extends StatefulWidget {
   State<BookCard> createState() => _BookCardState();
 }
 
+Future<bool> locationStream() async {
+  Location location = new Location();
+  bool _serviceEnabled = false;
+  _serviceEnabled = await location.serviceEnabled();
+  return _serviceEnabled;
+}
+
 class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
   AriUser userInfo = GetIt.I<AriUser>();
   late TodayReservationProvider _todayReservationProvider;
+  final flutterReactiveBle = FlutterReactiveBle();
+  BLELoctionStateController _bleLoctionStateController =
+      BLELoctionStateController();
+  StreamSubscription<bool> tmp =
+      Stream.fromFuture(locationStream()).listen((bool event) {
+    return;
+  });
+
+  @override
+  void initState() {
+    super.initState();
+    flutterReactiveBle.statusStream.listen((status) {
+      print(status);
+      if (status.toString() == "BleStatus.ready") {
+        _bleLoctionStateController.setBluetoothState(true);
+      } else {
+        _bleLoctionStateController.setBluetoothState(false);
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     _todayReservationProvider =
@@ -41,9 +73,9 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
                 widget.isLoadingType(true);
                 await _todayReservationProvider.getTodayReservation();
                 widget.isLoadingType(false);
-                if (Platform.isAndroid) {
-                  checkPerm();
-                }
+
+                checkPerm();
+
                 showModalBottomSheet<void>(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
@@ -81,49 +113,72 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
   }
 
   checkPerm() async {
-    var status = await Permission.bluetoothScan.status;
-    print(status);
-    if (status.isDenied) {
-      await Permission.bluetoothScan.request();
+    if (Platform.isAndroid) {
+      if (await Permission.bluetoothScan.status.isDenied) {
+        await Permission.bluetoothScan.request();
+      }
+      if (await Permission.location.status.isDenied) {
+        await Permission.location.request();
+      }
+      if (!(await Permission.bluetoothScan.isGranted)) {
+        Navigator.pop(context);
+        requestPerm(
+            title: "권한 요청", content: "주변기기 권한이 없으면 비콘 인증이 불가합니다.\n권한을 허용해주세요.");
+      }
+      if (!(await Permission.location.isGranted)) {
+        Navigator.pop(context);
+        requestPerm(
+            title: '권한 요청',
+            content: '정확한 위치 권한이 없으면 비콘 인증이 불가합니다.\n권한을 허용해주세요.');
+      }
+    } else if (Platform.isIOS) {
+      if (await Permission.bluetooth.status.isDenied) {
+        await Permission.bluetooth.request();
+      }
+
+      if (await Permission.location.status.isDenied) {
+        await Permission.location.request();
+      }
+      if (!(await Permission.bluetooth.status.isGranted)) {
+        Navigator.pop(context);
+        requestPerm(
+            title: '권한 요청', content: '블루투스 권한이 없으면 비콘 인증이 불가합니다.\n권한을 허용해주세요.');
+      }
+      if (!(await Permission.location.status.isGranted)) {
+        Navigator.pop(context);
+        requestPerm(
+            title: '권한 요청',
+            content: '정확한 위치 권한이 없으면 비콘 인증이 불가합니다.\n권한을 허용해주세요.');
+      }
     }
-    if (!(await Permission.bluetoothScan.isGranted)) {
-      Navigator.pop(context);
-      customShowDiaLog(
-        context: context,
-        title: Text(
-          "주변기기 권한",
+
+    return "Done";
+  }
+
+  Future requestPerm({required String title, required String content}) {
+    return customShowDiaLog(
+      context: context,
+      title: Text(
+        title,
+        style: TextStyle(
+            color: Color(0xff4888E0),
+            fontSize: 16,
+            fontWeight: FontWeight.w600),
+      ),
+      content: Container(
+        height: 60,
+        margin: const EdgeInsets.symmetric(horizontal: 18.0),
+        child: Text(
+          content,
           style: TextStyle(
               color: Color(0xff4888E0),
-              fontSize: 16,
-              fontWeight: FontWeight.w600),
+              fontSize: 14,
+              fontWeight: FontWeight.w500),
         ),
-        content: Container(
-          height: 60,
-          margin: const EdgeInsets.symmetric(horizontal: 18.0),
-          child: Text(
-            "주변기기 권한이 없으면 인증이 불가합니다.\n권한을 허용해주세요.",
-            style: TextStyle(
-                color: Color(0xff4888E0),
-                fontSize: 14,
-                fontWeight: FontWeight.w500),
-          ),
-        ),
-        action: [logoutDiaLog2Action()],
-        isBackButton: true,
-      );
-    }
-    // else if (await Permission.bluetoothScan.isRestricted) {
-    //   // openAppSettings();
-    //   print("여기 아니야?2");
-    // } else if (await Permission.bluetoothScan.isPermanentlyDenied) {
-    //   print("여기 아니야?3");
-    // }
-
-    // if (await Permission.bluetoothScan.status.isPermanentlyDenied) {
-    //   // openAppSettings();
-    //   print("여기 아니야?4");
-    // }
-    return "Done";
+      ),
+      action: [logoutDiaLog2Action()],
+      isBackButton: true,
+    );
   }
 
   Widget logoutDiaLog2Action() {

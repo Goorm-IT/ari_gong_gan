@@ -57,9 +57,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     if (controller.scanningStatus != true) {
       return;
     }
-    if (!settingbuttonCheck()) {
-      return;
-    }
+    // if (!settingbuttonCheck()) {
+    //   return;
+    // }
     if (mounted) {
       setState(() {
         _settingErrorOpacitiy = 0.0;
@@ -87,6 +87,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     controller.startScanning();
     _streamRanging =
         flutterBeacon.ranging(regions).listen((RangingResult result) {
+      print(result);
       if (mounted) {
         setState(() {
           _regionBeacons[result.region] = result.beacons;
@@ -95,7 +96,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
             _beacons.addAll(list);
           });
           _beacons.sort(_compareParameters);
-          compareBeaconRoom();
+          // compareBeaconRoom();
         });
       }
     });
@@ -134,7 +135,8 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   compareBeaconRoom() async {
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
-        if (_beacons[i].minor == beaconRoom[_list[widget.index].floor]) {
+        if (_beacons[i].minor == beaconRoom[_list[widget.index].floor] ||
+            _beacons[i].minor == 62905) {
           stopScanning();
           AriServer ariServer = AriServer();
           try {
@@ -215,7 +217,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     if (_list[widget.index].resStatus == 'booked') {
       _searchResultMessage = "예약 인증이 완료되었습니다.";
     }
-    if (_list[widget.index].resStatus == 'prebooked') {
+    if (_list[widget.index].resStatus != 'prebooked') {
       setState(() {
         buttonState = true;
         _searchResultMessage = "예약 인증이 가능합니다!";
@@ -348,9 +350,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                     BorderRadius.all(Radius.circular(60)),
                                 splashColor: Colors.grey.withOpacity(0.5),
                                 onTap: () async {
-                                  if (!settingbuttonCheck()) {
-                                    return;
-                                  }
+                                  // if (!settingbuttonCheck()) {
+                                  //   return;
+                                  // }
                                   if (mounted) {
                                     setState(() {
                                       _isScanning = true;
@@ -458,42 +460,42 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     );
   }
 
-  bool settingbuttonCheck() {
-    if (!controller.authorizationStatusOk ||
-        !controller.locationServiceEnabled ||
-        !controller.bluetoothEnabled) {
-      if (_settingErrorOpacitiy == 1.0) {
-        if (mounted) {
-          setState(() {
-            _settingErrorOpacitiy = 0.0;
-            widget.isSetting(0.0);
-            Future.delayed(Duration(milliseconds: 200)).then((value) {
-              return setState(() {
-                _settingErrorOpacitiy = 1.0;
-                widget.isSetting(1.0);
-              });
-            });
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _settingErrorOpacitiy = 1.0;
-            widget.isSetting(1.0);
-          });
-        }
-      }
-      return false;
-    }
+  // bool settingbuttonCheck() {
+  //   if (!controller.authorizationStatusOk ||
+  //       !controller.locationServiceEnabled ||
+  //       !controller.bluetoothEnabled) {
+  //     if (_settingErrorOpacitiy == 1.0) {
+  //       if (mounted) {
+  //         setState(() {
+  //           _settingErrorOpacitiy = 0.0;
+  //           widget.isSetting(0.0);
+  //           Future.delayed(Duration(milliseconds: 200)).then((value) {
+  //             return setState(() {
+  //               _settingErrorOpacitiy = 1.0;
+  //               widget.isSetting(1.0);
+  //             });
+  //           });
+  //         });
+  //       }
+  //     } else {
+  //       if (mounted) {
+  //         setState(() {
+  //           _settingErrorOpacitiy = 1.0;
+  //           widget.isSetting(1.0);
+  //         });
+  //       }
+  //     }
+  //     return false;
+  //   }
 
-    if (mounted) {
-      setState(() {
-        _settingErrorOpacitiy = 0.0;
-        widget.isSetting(0.0);
-      });
-    }
-    return true;
-  }
+  //   if (mounted) {
+  //     setState(() {
+  //       _settingErrorOpacitiy = 0.0;
+  //       widget.isSetting(0.0);
+  //     });
+  //   }
+  //   return true;
+  // }
 
   Widget infoItem({required String title, required String content}) {
     return Container(

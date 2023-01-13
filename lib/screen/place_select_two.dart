@@ -389,10 +389,15 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
                                 time: tmpTime,
                               )));
                     } else {
+                      String message = "잠시후에 다시 시도해주세요";
+                      if (result == 100) {
+                        message = "예약 인증을 하지 않아 \n하루 동안 사용이 제한되었습니다.";
+                      }
+
                       customShowDiaLog(
                         context: context,
                         title: diaLogTitle(),
-                        content: diaLogContent(),
+                        content: diaLogContent(message: message),
                         action: [diaLogAction()],
                         isBackButton: false,
                       );
@@ -435,19 +440,19 @@ class _PlaceSelectTwoState extends State<PlaceSelectTwo> {
     );
   }
 
-  Widget diaLogContent() {
+  Widget diaLogContent({required String message}) {
     return Container(
-        height: 50.0,
+        height: 52.0,
+        margin: const EdgeInsets.symmetric(horizontal: 10),
         child: Column(
           children: [
             Text(
-              "잠시후에 다시 시도해주세요",
-              style: TextStyle(
-                color: PRIMARY_COLOR_DEEP,
-              ),
+              message,
+              style: TextStyle(color: PRIMARY_COLOR_DEEP, fontSize: 12),
+              textAlign: TextAlign.center,
             ),
             SizedBox(
-              height: 20,
+              height: 15,
             )
           ],
         ));

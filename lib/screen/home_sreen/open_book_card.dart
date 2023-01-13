@@ -36,47 +36,48 @@ class _OpenBookCardState extends State<OpenBookCard>
   List<TodayReservation> _list = [];
 
   final PageController _pageController = PageController(initialPage: 0);
-  listeningState() async {
-    print('Listening to bluetooth state');
-    _streamBluetooth = flutterBeacon
-        .bluetoothStateChanged()
-        .listen((BluetoothState state) async {
-      print('state: $state');
-      controller.updateBluetoothState(state);
-      await checkAllRequirements();
-    });
-  }
 
-  checkAllRequirements() async {
-    final bluetoothState = await flutterBeacon.bluetoothState;
-    controller.updateBluetoothState(bluetoothState);
-    print('BLUETOOTH $bluetoothState');
+  // listeningState() async {
+  //   print('Listening to bluetooth state');
+  //   _streamBluetooth = flutterBeacon
+  //       .bluetoothStateChanged()
+  //       .listen((BluetoothState state) async {
+  //     print('state: $state');
+  //     controller.updateBluetoothState(state);
+  //     // await checkAllRequirements();
+  //   });
+  // }
 
-    final authorizationStatus = await flutterBeacon.authorizationStatus;
-    controller.updateAuthorizationStatus(authorizationStatus);
-    print('AUTHORIZATION $authorizationStatus');
+  // checkAllRequirements() async {
+  //   final bluetoothState = await flutterBeacon.bluetoothState;
+  //   controller.updateBluetoothState(bluetoothState);
+  //   print('BLUETOOTH $bluetoothState');
 
-    final locationServiceEnabled =
-        await flutterBeacon.checkLocationServicesIfEnabled;
-    controller.updateLocationService(locationServiceEnabled);
-    print('LOCATION SERVICE $locationServiceEnabled');
+  //   final authorizationStatus = await flutterBeacon.authorizationStatus;
+  //   controller.updateAuthorizationStatus(authorizationStatus);
+  //   print('AUTHORIZATION $authorizationStatus');
 
-    // if (controller.bluetoothEnabled &&
-    //     controller.authorizationStatusOk &&
-    //     controller.locationServiceEnabled) {
-    //   print('STATE READY');
-    //   if (isBeaconSearch == true) {
-    //     print('SCANNING');
-    //     controller.startScanning();
-    //   } else {
-    //     print('STOPScannig');
-    //     controller.pauseScanning();
-    //   }
-    // } else {
-    //   print('STATE NOT READY');
-    //   controller.pauseScanning();
-    // }
-  }
+  //   final locationServiceEnabled =
+  //       await flutterBeacon.checkLocationServicesIfEnabled;
+  //   controller.updateLocationService(locationServiceEnabled);
+  //   print('LOCATION SERVICE $locationServiceEnabled');
+
+  //   // if (controller.bluetoothEnabled &&
+  //   //     controller.authorizationStatusOk &&
+  //   //     controller.locationServiceEnabled) {
+  //   //   print('STATE READY');
+  //   //   if (isBeaconSearch == true) {
+  //   //     print('SCANNING');
+  //   //     controller.startScanning();
+  //   //   } else {
+  //   //     print('STOPScannig');
+  //   //     controller.pauseScanning();
+  //   //   }
+  //   // } else {
+  //   //   print('STATE NOT READY');
+  //   //   controller.pauseScanning();
+  //   // }
+  // }
 
   @override
   void initState() {
@@ -88,7 +89,7 @@ class _OpenBookCardState extends State<OpenBookCard>
         .where((TodayReservation element) {
       return element.resStatus != "delete";
     }).toList();
-    listeningState();
+    // listeningState();
   }
 
   @override
@@ -100,7 +101,7 @@ class _OpenBookCardState extends State<OpenBookCard>
           _streamBluetooth?.resume();
         }
       }
-      await checkAllRequirements();
+      // await checkAllRequirements();
     } else if (state == AppLifecycleState.paused) {
       _streamBluetooth?.pause();
     }
@@ -135,7 +136,7 @@ class _OpenBookCardState extends State<OpenBookCard>
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  settingCheck(),
+                  // settingCheck(),
                   Container(
                     margin: const EdgeInsets.only(right: 30, top: 10),
                     child: ClipOval(
@@ -224,101 +225,101 @@ class _OpenBookCardState extends State<OpenBookCard>
     }
   }
 
-  Widget settingCheck() {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisAlignment: MainAxisAlignment.end,
-      children: [
-        Obx(() {
-          if (!controller.authorizationStatusOk)
-            return customIconButton(
-              tooltip: 'Not Authorized',
-              onPressed: () async {
-                try {
-                  await flutterBeacon.requestAuthorization;
-                } catch (e) {}
-              },
-              icon: Icon(Icons.location_off),
-              color: Colors.yellow,
-            );
+  // Widget settingCheck() {
+  //   return Row(
+  //     crossAxisAlignment: CrossAxisAlignment.start,
+  //     mainAxisAlignment: MainAxisAlignment.end,
+  //     children: [
+  //       Obx(() {
+  //         if (!controller.authorizationStatusOk)
+  //           return customIconButton(
+  //             tooltip: 'Not Authorized',
+  //             onPressed: () async {
+  //               try {
+  //                 await flutterBeacon.requestAuthorization;
+  //               } catch (e) {}
+  //             },
+  //             icon: Icon(Icons.location_off),
+  //             color: Colors.yellow,
+  //           );
 
-          return customIconButton(
-            tooltip: controller.locationServiceEnabled
-                ? 'Location Service ON'
-                : 'Location Service OFF',
-            onPressed: controller.locationServiceEnabled
-                ? () {}
-                : handleOpenLocationSettings,
-            icon: Icon(
-              controller.locationServiceEnabled
-                  ? Icons.location_on
-                  : Icons.location_off,
-            ),
-            color: controller.locationServiceEnabled ? Colors.blue : Colors.red,
-          );
-        }),
-        Obx(() {
-          if (!controller.locationServiceEnabled)
-            return customIconButton(
-              tooltip: 'Not Determined',
-              onPressed: () {},
-              icon: Icon(Icons.portable_wifi_off),
-              color: Colors.grey,
-            );
+  //         return customIconButton(
+  //           tooltip: controller.locationServiceEnabled
+  //               ? 'Location Service ON'
+  //               : 'Location Service OFF',
+  //           onPressed: controller.locationServiceEnabled
+  //               ? () {}
+  //               : handleOpenLocationSettings,
+  //           icon: Icon(
+  //             controller.locationServiceEnabled
+  //                 ? Icons.location_on
+  //                 : Icons.location_off,
+  //           ),
+  //           color: controller.locationServiceEnabled ? Colors.blue : Colors.red,
+  //         );
+  //       }),
+  //       Obx(() {
+  //         if (!controller.locationServiceEnabled)
+  //           return customIconButton(
+  //             tooltip: 'Not Determined',
+  //             onPressed: () {},
+  //             icon: Icon(Icons.portable_wifi_off),
+  //             color: Colors.grey,
+  //           );
 
-          if (!controller.authorizationStatusOk)
-            return customIconButton(
-              tooltip: 'Not Authorized',
-              onPressed: () async {
-                try {
-                  await flutterBeacon.requestAuthorization;
-                } catch (e) {}
-              },
-              icon: Icon(Icons.portable_wifi_off),
-              color: Colors.red,
-            );
+  //         if (!controller.authorizationStatusOk)
+  //           return customIconButton(
+  //             tooltip: 'Not Authorized',
+  //             onPressed: () async {
+  //               try {
+  //                 await flutterBeacon.requestAuthorization;
+  //               } catch (e) {}
+  //             },
+  //             icon: Icon(Icons.portable_wifi_off),
+  //             color: Colors.red,
+  //           );
 
-          return customIconButton(
-            tooltip: 'Authorized',
-            onPressed: () async {
-              try {
-                await flutterBeacon.requestAuthorization;
-              } catch (e) {}
-            },
-            icon: Icon(Icons.wifi_tethering),
-            color: Colors.blue,
-          );
-        }),
-        Obx(() {
-          final state = controller.bluetoothState.value;
+  //         return customIconButton(
+  //           tooltip: 'Authorized',
+  //           onPressed: () async {
+  //             try {
+  //               await flutterBeacon.requestAuthorization;
+  //             } catch (e) {}
+  //           },
+  //           icon: Icon(Icons.wifi_tethering),
+  //           color: Colors.blue,
+  //         );
+  //       }),
+  //       Obx(() {
+  //         final state = controller.bluetoothState.value;
 
-          if (state == BluetoothState.stateOn) {
-            return customIconButton(
-              tooltip: 'Bluetooth ON',
-              onPressed: () {},
-              icon: Icon(Icons.bluetooth_connected),
-              color: Colors.lightBlueAccent,
-            );
-          }
+  //         if (state == BluetoothState.stateOn) {
+  //           return customIconButton(
+  //             tooltip: 'Bluetooth ON',
+  //             onPressed: () {},
+  //             icon: Icon(Icons.bluetooth_connected),
+  //             color: Colors.lightBlueAccent,
+  //           );
+  //         }
 
-          if (state == BluetoothState.stateOff) {
-            return customIconButton(
-              tooltip: 'Bluetooth OFF',
-              onPressed: handleOpenBluetooth,
-              icon: Icon(Icons.bluetooth),
-              color: Colors.red,
-            );
-          }
-          return customIconButton(
-            tooltip: 'Bluetooth State Unknown',
-            onPressed: () {},
-            icon: Icon(Icons.bluetooth_disabled),
-            color: Colors.grey,
-          );
-        }),
-      ],
-    );
-  }
+  //         if (state == BluetoothState.stateOff) {
+  //           return customIconButton(
+  //             tooltip: 'Bluetooth OFF',
+  //             onPressed: handleOpenBluetooth,
+  //             icon: Icon(Icons.bluetooth),
+  //             color: Colors.red,
+  //           );
+  //         }
+  //         return customIconButton(
+  //           tooltip: 'Bluetooth State Unknown',
+  //           onPressed: () {},
+  //           icon: Icon(Icons.bluetooth_disabled),
+  //           color: Colors.grey,
+  //         );
+  //       }),
+  //     ],
+  //   );
+  // }
 
   handleOpenLocationSettings() async {
     if (Platform.isAndroid) {

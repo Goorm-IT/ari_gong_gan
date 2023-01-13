@@ -26,6 +26,7 @@ class _LoginPageState extends State<LoginPage>
   AriUser userInfo = AriUser('', '');
   bool status = false;
   bool isLoading = false;
+  String errorMessage = "로그인 정보를 확인해주세요";
   late AnimationController _animationController;
   @override
   void initState() {
@@ -102,7 +103,7 @@ class _LoginPageState extends State<LoginPage>
                                 child: FadeTransition(
                                   opacity: _animationController,
                                   child: Text(
-                                    "로그인 정보를 확인해주세요",
+                                    errorMessage,
                                     style: TextStyle(
                                         color: Colors.red, fontSize: 10.0),
                                   ),
@@ -162,6 +163,15 @@ class _LoginPageState extends State<LoginPage>
                           isLoading: (bool loading) {
                             setState(() {
                               isLoading = loading;
+                            });
+                          },
+                          messageKind: (num) {
+                            setState(() {
+                              if (num == 1) {
+                                errorMessage = "로그인 정보를 확인해주세요1";
+                              } else if (num == 2) {
+                                errorMessage = "로그인 정보를 확인해주세요2";
+                              }
                             });
                           },
                         ),
@@ -343,6 +353,7 @@ class _LoginTextFieldState extends State<_LoginTextField> {
 
 typedef LoginFailedMessage = void Function(bool);
 typedef IsLoading = void Function(bool);
+typedef MessageKind = void Function(int);
 
 class _LoginButton extends StatelessWidget {
   AriUser userInfo = AriUser('', '');
@@ -350,12 +361,14 @@ class _LoginButton extends StatelessWidget {
   bool loginInfoSave;
   LoginFailedMessage sendMessage;
   IsLoading isLoading;
+  MessageKind messageKind;
   _LoginButton(
       {required this.id,
       required this.pw,
       required this.loginInfoSave,
       required this.sendMessage,
       required this.isLoading,
+      required this.messageKind,
       Key? key})
       : super(key: key);
 
@@ -370,10 +383,9 @@ class _LoginButton extends StatelessWidget {
           isLoading(true);
           try {
             final getuserInfo = await loginCrwal.userInfo();
-
             var ariServer = AriServer();
             String ariLogin = await ariServer.login(id: id, pw: pw);
-            print(ariLogin);
+
             if (ariLogin == "SUCCESS") {
               if (loginInfoSave) {
                 await ctrl.saveLoginData(id, pw);
@@ -389,11 +401,14 @@ class _LoginButton extends StatelessWidget {
                       type: PageTransitionType.fade, child: HomeScreen()));
             } else {
               isLoading(false);
+              messageKind(1);
               sendMessage(true);
+
               print("로그인 실패1");
             }
           } catch (e) {
             isLoading(false);
+            messageKind(2);
             sendMessage(true);
             print(e);
             print("로그인 실패2");

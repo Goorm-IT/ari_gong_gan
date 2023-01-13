@@ -9,9 +9,8 @@ import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
 import 'package:ari_gong_gan/screen/login_page.dart';
+import 'package:ari_gong_gan/view/home_page.dart';
 import 'package:ari_gong_gan/widget/login_data.dart';
-import 'package:dio/adapter.dart';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -36,8 +35,8 @@ int? isInitView;
 // }
 
 void main() async {
-  // HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
-  // return HomePage();
+  //  HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
+
   Get.put(RequirementStateController());
   WidgetsFlutterBinding.ensureInitialized();
   ByteData data = await PlatformAssetBundle()
@@ -48,7 +47,7 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
-    // return HomePage();
+    //return HomePage();
     var ctrl = new LoginData();
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";

@@ -40,6 +40,8 @@
   		<string>Our app uses bluetooth to find, connect with beacon</string>
 		<key>NSBluetoothAlwaysUsageDescription</key>
 		<string>Our app uses bluetooth to find, connect with beacon</string>
+		<key>NSBluetoothPeripheralUsageDescription</key>
+		<string>Our app uses bluetooth to find, connect with beacon</string>
 		<key>NSBonjourServices</key>
 		<array>
 			<string>_dartobservatory._tcp</string>
