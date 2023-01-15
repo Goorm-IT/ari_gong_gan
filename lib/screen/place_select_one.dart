@@ -3,7 +3,6 @@ import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_place.dart';
 import 'package:ari_gong_gan/model/reservation_place_list.dart';
 import 'package:ari_gong_gan/model/reservation_all.dart';
-import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_two.dart';
 import 'package:ari_gong_gan/widget/bottom_to_top_fade.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
@@ -11,7 +10,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 import 'package:page_transition/page_transition.dart';
-import 'package:provider/provider.dart';
 
 class PlaceSelectOne extends StatefulWidget {
   List<ReservationAll> placeListFilteredBytime;

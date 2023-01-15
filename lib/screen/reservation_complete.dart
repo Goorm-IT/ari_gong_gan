@@ -8,7 +8,6 @@ import 'package:intl/intl.dart';
 import 'package:ntp/ntp.dart';
 import 'package:page_transition/page_transition.dart';
 import "dart:math" show pi;
-import '../model/reservation.dart';
 
 class ReservationComplete extends StatefulWidget {
   String time;

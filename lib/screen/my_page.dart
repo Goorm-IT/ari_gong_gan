@@ -1,12 +1,10 @@
 import 'dart:io';
-
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/agreement_page_in_my_page.dart';
-import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
@@ -229,13 +227,6 @@ class _MyPageState extends State<MyPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // _Item(
-                  //   title: '공지사항',
-                  //   onPress: () {
-                  //     return null;
-                  //   },
-                  //   isChecked: true,
-                  // ),
                   SizedBox(
                     height: 25.0,
                   ),
@@ -274,7 +265,6 @@ class _MyPageState extends State<MyPage> {
                     },
                     isChecked: true,
                   ),
-
                   SizedBox(
                     height: 15.0,
                   ),

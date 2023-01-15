@@ -11,7 +11,6 @@ import 'package:ari_gong_gan/widget/custom_icon_button.dart';
 import 'package:ari_gong_gan/widget/custom_rotate_refresh.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';

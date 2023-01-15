@@ -3,9 +3,7 @@ import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
-import 'package:ari_gong_gan/screen/tmp.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
-
 import 'package:ari_gong_gan/widget/login_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
@@ -168,9 +166,9 @@ class _LoginPageState extends State<LoginPage>
                           messageKind: (num) {
                             setState(() {
                               if (num == 1) {
-                                errorMessage = "로그인 정보를 확인해주세요1";
+                                errorMessage = "로그인 정보를 확인해주세요(1)";
                               } else if (num == 2) {
-                                errorMessage = "로그인 정보를 확인해주세요2";
+                                errorMessage = "로그인 정보를 확인해주세요(2)";
                               }
                             });
                           },
@@ -403,15 +401,11 @@ class _LoginButton extends StatelessWidget {
               isLoading(false);
               messageKind(1);
               sendMessage(true);
-
-              print("로그인 실패1");
             }
           } catch (e) {
             isLoading(false);
             messageKind(2);
             sendMessage(true);
-            print(e);
-            print("로그인 실패2");
           }
         },
         style: ElevatedButton.styleFrom(

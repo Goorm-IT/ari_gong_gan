@@ -1,11 +1,9 @@
 import 'dart:async';
-import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/controller/ble_location_state_controller.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
-import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:flutter/material.dart';
@@ -14,7 +12,6 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:get/get.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 
 typedef IsSetting = void Function(double);

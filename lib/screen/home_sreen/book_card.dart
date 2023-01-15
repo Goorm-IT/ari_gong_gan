@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/controller/ble_location_state_controller.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
@@ -8,11 +7,9 @@ import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
-
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get_it/get_it.dart';
-import 'package:location/location.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:provider/provider.dart';
 

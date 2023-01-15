@@ -1,7 +1,6 @@
 import 'package:ari_gong_gan/const/terms_of_use_text.dart';
 import 'package:ari_gong_gan/widget/custom_appbar.dart';
 import 'package:ari_gong_gan/widget/custom_dialog.dart';
-import 'package:ari_gong_gan/widget/custom_dotted_line.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';

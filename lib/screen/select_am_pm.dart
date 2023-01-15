@@ -1,9 +1,7 @@
-import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/reservation.dart';
 import 'package:ari_gong_gan/model/reservation_time.dart';
 import 'package:ari_gong_gan/model/reservation_time_list.dart';
 import 'package:ari_gong_gan/model/reservation_all.dart';
-import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/place_select_one.dart';

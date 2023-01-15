@@ -24,20 +24,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 const Color color = Color(0xfff9e769);
 int? isInitView;
-
-// 릴리즈시 삭제할 것
-// class MyHttpOverrides extends HttpOverrides {
-//   @override
-//   HttpClient createHttpClient(SecurityContext? context) {
-//     return super.createHttpClient(context)
-//       ..badCertificateCallback =
-//           (X509Certificate cert, String host, int port) => true;
-//   }
-// }
-
 void main() async {
-  //  HttpOverrides.global = MyHttpOverrides(); //릴리즈시 삭제할 것
-
   Get.put(RequirementStateController());
   Get.put(BLELoctionStateController());
   WidgetsFlutterBinding.ensureInitialized();
@@ -49,7 +36,6 @@ void main() async {
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
   isLoginDataSaved() async {
-    // return HomePage();
     var ctrl = new LoginData();
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";
