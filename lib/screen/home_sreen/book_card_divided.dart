@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:ari_gong_gan/const/colors.dart';
 import 'package:ari_gong_gan/const/user_info.dart';
+import 'package:ari_gong_gan/controller/ble_location_state_controller.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
 import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
@@ -36,11 +37,12 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   DateTime realTime = GetIt.I<DateTime>();
   bool buttonState = false;
   double _settingErrorOpacitiy = 0.0;
-
+  final _bleLoctionStateController = Get.find<BLELoctionStateController>();
   List<TodayReservation> _list = [];
-  double _searchResultOpacitiy = 1.0;
-  String _searchResultMessage = "인증 가능 시간이 아닙니다";
-  int _searchResultMessageStatus = 0;
+
+  String bottomMessageText = "인증 가능 시간이 아닙니다";
+  Color bottomMessageTextColor = Color(0xffe8cb1e);
+  Color bottomMessageBackgroundColor = Color(0xfffff4b4);
   bool isBeaconSearch = false;
 
   late TodayReservationProvider _todayReservationProvider;
@@ -57,9 +59,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     if (controller.scanningStatus != true) {
       return;
     }
-    // if (!settingbuttonCheck()) {
-    //   return;
-    // }
+
     if (mounted) {
       setState(() {
         _settingErrorOpacitiy = 0.0;
@@ -108,9 +108,9 @@ class _BookCardDiviedState extends State<BookCardDivied> {
             setState(() {
               _isScanning = false;
             });
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            stopScanning();
           }
-          stopScanning();
-          showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
         });
       }
     });
@@ -148,7 +148,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               showToast(msg: "예약 인증이 완료되었습니다.");
               setState(() {
                 buttonState = false;
-                _searchResultMessage = "예약 인증이 완료되었습니다!";
+                bottomMessageText = "예약 인증이 완료되었습니다!!";
               });
             } else {
               showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
@@ -184,7 +184,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
 
   pauseScanBeacon() async {
     _streamRanging!.cancel();
-    // _streamRanging?.pause();
     if (mounted) {
       if (_beacons.isNotEmpty) {
         setState(() {
@@ -213,15 +212,21 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         .where((TodayReservation element) {
       return element.resStatus != "delete";
     }).toList();
-
+    _list.sort((a, b) => a.time.compareTo(b.time));
     if (_list[widget.index].resStatus == 'booked') {
-      _searchResultMessage = "예약 인증이 완료되었습니다.";
+      bottomMessageText = "예약 인증이 완료되었습니다!!";
+      bottomMessageTextColor = Color(0xff303952);
+      bottomMessageBackgroundColor = Color(0xff778beb);
     }
-    if (_list[widget.index].resStatus != 'prebooked') {
-      setState(() {
-        buttonState = true;
-        _searchResultMessage = "예약 인증이 가능합니다!";
-      });
+    if (_list[widget.index].resStatus == 'canceled') {
+      bottomMessageText = "인증을 하지 않아 하루 동안 비활성화되었습니다";
+      bottomMessageTextColor = Color(0xffd63031);
+      bottomMessageBackgroundColor = Color(0xfff78fb3);
+    }
+
+    if (_list[widget.index].resStatus == 'prebooked') {
+      buttonState = true;
+      bottomMessageText = "예약 인증이 가능합니다!";
     }
   }
 
@@ -350,15 +355,23 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                     BorderRadius.all(Radius.circular(60)),
                                 splashColor: Colors.grey.withOpacity(0.5),
                                 onTap: () async {
-                                  // if (!settingbuttonCheck()) {
-                                  //   return;
-                                  // }
+                                  await _bleLoctionStateController
+                                      .setLocationState();
+
+                                  if (!_bleLoctionStateController
+                                          .getBluetoothState ||
+                                      !_bleLoctionStateController
+                                          .getLocationState) {
+                                    widget.isSetting(1.0);
+                                    return;
+                                  }
+                                  print(_bleLoctionStateController
+                                      .getLocationState);
                                   if (mounted) {
                                     setState(() {
                                       _isScanning = true;
                                     });
                                   }
-
                                   controller.startScanning();
                                   startScanBeacon();
                                 },
@@ -430,74 +443,34 @@ class _BookCardDiviedState extends State<BookCardDivied> {
         SizedBox(
           height: 10,
         ),
-        Center(
-          child: AnimatedOpacity(
-            duration: Duration(milliseconds: 300),
-            opacity: _searchResultOpacitiy,
-            child: Container(
-              width: 190,
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               height: 35,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.all(
                   Radius.circular(15),
                 ),
-                color: Color(0xfffff4b4),
+                color: bottomMessageBackgroundColor,
               ),
               child: Center(
                 child: Text(
-                  _searchResultMessage,
+                  bottomMessageText,
                   style: TextStyle(
-                    color: Color(0xffe8cb1e),
+                    color: bottomMessageTextColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
             ),
-          ),
+          ],
         )
       ],
     );
-  }
-
-  bool settingbuttonCheck() {
-    print(controller.authorizationStatusOk);
-    print(controller.locationServiceEnabled);
-    print(controller.bluetoothEnabled);
-    if (!controller.authorizationStatusOk ||
-        !controller.locationServiceEnabled ||
-        !controller.bluetoothEnabled) {
-      if (_settingErrorOpacitiy == 1.0) {
-        if (mounted) {
-          setState(() {
-            _settingErrorOpacitiy = 0.0;
-            widget.isSetting(0.0);
-            Future.delayed(Duration(milliseconds: 200)).then((value) {
-              return setState(() {
-                _settingErrorOpacitiy = 1.0;
-                widget.isSetting(1.0);
-              });
-            });
-          });
-        }
-      } else {
-        if (mounted) {
-          setState(() {
-            _settingErrorOpacitiy = 1.0;
-            widget.isSetting(1.0);
-          });
-        }
-      }
-      return false;
-    }
-
-    if (mounted) {
-      setState(() {
-        _settingErrorOpacitiy = 0.0;
-        widget.isSetting(0.0);
-      });
-    }
-    return true;
   }
 
   Widget infoItem({required String title, required String content}) {

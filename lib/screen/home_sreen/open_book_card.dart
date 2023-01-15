@@ -13,7 +13,6 @@ import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_beacon/flutter_beacon.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
 import 'package:provider/provider.dart';
@@ -40,66 +39,27 @@ class _OpenBookCardState extends State<OpenBookCard>
   double _settingErrorOpacitiy = 0.0;
   final _bleLoctionStateController = Get.find<BLELoctionStateController>();
   bool isBeaconSearch = false;
-  final flutterReactiveBle = FlutterReactiveBle();
 
   List<TodayReservation> _list = [];
 
   final PageController _pageController = PageController(initialPage: 0);
 
-  // listeningState() async {
-  //   print('Listening to bluetooth state');
-  //   _streamBluetooth = flutterBeacon
-  //       .bluetoothStateChanged()
-  //       .listen((BluetoothState state) async {
-  //     print('state: $state');
-  //     controller.updateBluetoothState(state);
-  //     // await checkAllRequirements();
-  //   });
-  // }
-
-  // checkAllRequirements() async {
-  //   final bluetoothState = await flutterBeacon.bluetoothState;
-  //   controller.updateBluetoothState(bluetoothState);
-  //   print('BLUETOOTH $bluetoothState');
-
-  //   final authorizationStatus = await flutterBeacon.authorizationStatus;
-  //   controller.updateAuthorizationStatus(authorizationStatus);
-  //   print('AUTHORIZATION $authorizationStatus');
-
-  //   final locationServiceEnabled =
-  //       await flutterBeacon.checkLocationServicesIfEnabled;
-  //   controller.updateLocationService(locationServiceEnabled);
-  //   print('LOCATION SERVICE $locationServiceEnabled');
-
-  //   // if (controller.bluetoothEnabled &&
-  //   //     controller.authorizationStatusOk &&
-  //   //     controller.locationServiceEnabled) {
-  //   //   print('STATE READY');
-  //   //   if (isBeaconSearch == true) {
-  //   //     print('SCANNING');
-  //   //     controller.startScanning();
-  //   //   } else {
-  //   //     print('STOPScannig');
-  //   //     controller.pauseScanning();
-  //   //   }
-  //   // } else {
-  //   //   print('STATE NOT READY');
-  //   //   controller.pauseScanning();
-  //   // }
-  // }
+  listeningState() async {
+    flutterBeacon.bluetoothStateChanged().listen((BluetoothState state) async {
+      if (state.toString() == "STATE_ON") {
+        _bleLoctionStateController.setBluetoothState(true);
+      } else {
+        _bleLoctionStateController.setBluetoothState(false);
+      }
+    });
+  }
 
   @override
   void initState() {
     WidgetsBinding.instance.addObserver(this);
     super.initState();
 
-    flutterReactiveBle.statusStream.listen((status) {
-      if (status.toString() == "BleStatus.ready") {
-        _bleLoctionStateController.setBluetoothState(true);
-      } else {
-        _bleLoctionStateController.setBluetoothState(false);
-      }
-    });
+    listeningState();
 
     _list = context
         .read<TodayReservationProvider>()
@@ -107,22 +67,6 @@ class _OpenBookCardState extends State<OpenBookCard>
         .where((TodayReservation element) {
       return element.resStatus != "delete";
     }).toList();
-    // listeningState();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) async {
-    print('AppLifecycleState = $state');
-    if (state == AppLifecycleState.resumed) {
-      if (_streamBluetooth != null) {
-        if (_streamBluetooth!.isPaused) {
-          _streamBluetooth?.resume();
-        }
-      }
-      // await checkAllRequirements();
-    } else if (state == AppLifecycleState.paused) {
-      _streamBluetooth?.pause();
-    }
   }
 
   @override
@@ -254,7 +198,34 @@ class _OpenBookCardState extends State<OpenBookCard>
               tooltip: 'Not Authorized',
               onPressed: () async {
                 try {
-                  AppSettings.openBluetoothSettings();
+                  if (Platform.isIOS) {
+                    customShowDiaLog(
+                      context: context,
+                      title: Text(
+                        "Bluetooth",
+                        style: TextStyle(
+                            color: Color(0xff4888E0),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600),
+                      ),
+                      content: Container(
+                        height: 60,
+                        margin: const EdgeInsets.symmetric(horizontal: 18.0),
+                        child: Text(
+                          "비콘 인증을 하기위해서는 Bluetooth를 켜야합니다.\n Bluetooth를 켜주세요.",
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              color: Color(0xff4888E0),
+                              fontSize: 14,
+                              fontWeight: FontWeight.w500),
+                        ),
+                      ),
+                      action: [emptyListAction()],
+                      isBackButton: true,
+                    );
+                  } else {
+                    AppSettings.openBluetoothSettings();
+                  }
                 } catch (e) {}
               },
               icon: Icon(Icons.bluetooth),
@@ -274,47 +245,42 @@ class _OpenBookCardState extends State<OpenBookCard>
               tooltip: 'Not Authorized',
               onPressed: () async {
                 try {
-                  // AppSettings.openLocationSettings(callback: () {
-                  //   print("흠");
-                  // });
                   Location location = Location();
-                  if (await location.requestService()) {
-                    _bleLoctionStateController.setLocationState();
-                  } else {
-                    if (Platform.isAndroid) {
-                      customShowDiaLog(
-                        context: context,
-                        title: Container(
-                          height: 20.0,
-                          child: Center(
-                            child: Text(
-                              "위치 기능",
-                              style: TextStyle(
-                                  color: Color(0xff4888E0),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
+                  await location.requestService();
+                  await _bleLoctionStateController.setLocationState();
+                  if (!_bleLoctionStateController.getLocationState) {
+                    customShowDiaLog(
+                      context: context,
+                      title: Container(
+                        height: 20.0,
+                        child: Center(
+                          child: Text(
+                            "위치 기능",
+                            style: TextStyle(
+                                color: Color(0xff4888E0),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600),
                           ),
                         ),
-                        content: Container(
-                          height: 45.0,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                              "바콘 인증을 위해서는 위치 기능을 켜야합니다.",
-                              style: TextStyle(
-                                  color: Color(0xff4888E0),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500),
-                            ),
+                      ),
+                      content: Container(
+                        height: 45.0,
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: Text(
+                            "바콘 인증을 위해서는 위치 기능을 켜야합니다.",
+                            style: TextStyle(
+                                color: Color(0xff4888E0),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500),
                           ),
                         ),
-                        action: [emptyListAction()],
-                        isBackButton: true,
-                      ).then((value) {
-                        Navigator.pop(context);
-                      });
-                    }
+                      ),
+                      action: [emptyListAction()],
+                      isBackButton: true,
+                    ).then((value) {
+                      Navigator.pop(context);
+                    });
                   }
                 } catch (e) {}
               },

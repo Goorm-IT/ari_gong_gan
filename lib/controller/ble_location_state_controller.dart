@@ -13,15 +13,15 @@ class BLELoctionStateController extends GetxController {
     bluetoothState.value = state;
   }
 
+  Future<bool> checkLocation() async {
+    Location location = new Location();
+    bool _serviceEnabled = false;
+    _serviceEnabled = await location.serviceEnabled();
+
+    return _serviceEnabled;
+  }
+
   setLocationState() async {
-    Future<bool> checkLocation() async {
-      Location location = new Location();
-      bool _serviceEnabled = false;
-      _serviceEnabled = await location.serviceEnabled();
-
-      return _serviceEnabled;
-    }
-
     locationState.value = await checkLocation();
   }
 }

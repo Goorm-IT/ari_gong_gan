@@ -7,7 +7,8 @@ import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/home_sreen/open_book_card.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_reactive_ble/flutter_reactive_ble.dart';
+import 'package:flutter_beacon/flutter_beacon.dart';
+
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get_it/get_it.dart';
@@ -27,7 +28,6 @@ class BookCard extends StatefulWidget {
 class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
   AriUser userInfo = GetIt.I<AriUser>();
   late TodayReservationProvider _todayReservationProvider;
-  final flutterReactiveBle = FlutterReactiveBle();
 
   final _bleLoctionStateController = Get.find<BLELoctionStateController>();
 
@@ -55,10 +55,14 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
               onTap: () async {
                 widget.isLoadingType(true);
                 await _todayReservationProvider.getTodayReservation();
-                widget.isLoadingType(false);
-                await checkPerm();
+                var result = await flutterBeacon.bluetoothState;
 
-                _bleLoctionStateController.setLocationState();
+                await _bleLoctionStateController.setBluetoothState(
+                    result.toString() == "STATE_ON" ? true : false);
+
+                widget.isLoadingType(false);
+
+                await _bleLoctionStateController.setLocationState();
 
                 showModalBottomSheet<void>(
                     shape: RoundedRectangleBorder(
@@ -70,6 +74,7 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
                     builder: (BuildContext context) {
                       return OpenBookCard();
                     });
+                await checkPerm();
               },
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -128,7 +133,34 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
         requestPerm(
             title: '권한 요청', content: '블루투스 권한이 없으면 비콘 인증이 불가합니다.\n권한을 허용해주세요.');
       }
-      if (!(await Permission.location.status.isGranted)) {
+
+      if (!_bleLoctionStateController.getLocationState) {
+        Navigator.pop(context);
+        customShowDiaLog(
+          context: context,
+          title: Text(
+            "위치 서비스",
+            style: TextStyle(
+                color: Color(0xff4888E0),
+                fontSize: 16,
+                fontWeight: FontWeight.w600),
+          ),
+          content: Container(
+            height: 60,
+            margin: const EdgeInsets.symmetric(horizontal: 18.0),
+            child: Text(
+              "비콘 인증을 하기위해서는 위치를 켜야합니다.\n설정 > 위치 에서 위치 서비스를 켜주세요.",
+              textAlign: TextAlign.start,
+              style: TextStyle(
+                  color: Color(0xff4888E0),
+                  fontSize: 14,
+                  fontWeight: FontWeight.w500),
+            ),
+          ),
+          action: [logoutDiaLogAction()],
+          isBackButton: true,
+        );
+      } else if (!(await Permission.location.status.isGranted)) {
         Navigator.pop(context);
         requestPerm(
             title: '권한 요청',
@@ -179,9 +211,50 @@ class _BookCardState extends State<BookCard> with WidgetsBindingObserver {
               child: Material(
                 color: Color(0xffF9E769),
                 child: InkWell(
-                  onTap: () {
+                  onTap: () async {
                     Navigator.pop(context);
                     openAppSettings();
+                  },
+                  child: Container(
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.only(
+                        bottomRight: Radius.circular(18.0),
+                        bottomLeft: Radius.circular(18.0),
+                      ),
+                    ),
+                    child: Container(
+                      child: Text(
+                        "확인",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget logoutDiaLogAction() {
+    return Container(
+      height: 53,
+      child: Row(
+        children: [
+          Flexible(
+            child: ClipRRect(
+              borderRadius: BorderRadius.only(
+                bottomLeft: Radius.circular(18.0),
+                bottomRight: Radius.circular(18.0),
+              ),
+              child: Material(
+                color: Color(0xffF9E769),
+                child: InkWell(
+                  onTap: () async {
+                    Navigator.pop(context);
                   },
                   child: Container(
                     alignment: Alignment.center,

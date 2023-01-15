@@ -297,6 +297,7 @@ class _MyPageState extends State<MyPage> {
                                   element.resStatus == "prebooked") &&
                               element.seatStatus != "disable");
                         }).toList();
+                        _list.sort((a, b) => a.time.compareTo(b.time));
                       });
                       _list.isEmpty
                           ? customShowDiaLog(
