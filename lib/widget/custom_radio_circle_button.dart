@@ -43,7 +43,6 @@ class CustomRadioCircleButtonState extends State<CustomRadioCircleButton> {
 
   @override
   Widget build(BuildContext context) {
-    print(widget.isPressed);
     return widget.isBooked == 'activate'
         ? GestureDetector(
             onTap: () {

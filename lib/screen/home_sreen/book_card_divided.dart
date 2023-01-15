@@ -84,7 +84,6 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     controller.startScanning();
     _streamRanging =
         flutterBeacon.ranging(regions).listen((RangingResult result) {
-      print(result);
       if (mounted) {
         setState(() {
           _regionBeacons[result.region] = result.beacons;
@@ -362,8 +361,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                     widget.isSetting(1.0);
                                     return;
                                   }
-                                  print(_bleLoctionStateController
-                                      .getLocationState);
+
                                   if (mounted) {
                                     setState(() {
                                       _isScanning = true;

@@ -45,7 +45,7 @@ class AriServer {
 
     try {
       http.StreamedResponse response = await request.send();
-      print(response.statusCode);
+
       String tmp = await response.stream.bytesToString();
       var _list = jsonDecode(tmp)["message"];
 
@@ -85,7 +85,6 @@ class AriServer {
 
     http.StreamedResponse response = await request.send();
 
-    print(response.statusCode);
     if (response.statusCode == 200) {
       String tmp = await response.stream.bytesToString();
       _list = jsonDecode(tmp)["res"];
@@ -126,8 +125,7 @@ class AriServer {
     request.body = '{"floor" : "$floor" ,"name" : "$name", "time" : "$time"}';
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
-    print("결과!!");
-    print(response.statusCode);
+
     String tmp = await response.stream.bytesToString();
     var _list = jsonDecode(tmp)["message"];
 
@@ -147,8 +145,7 @@ class AriServer {
 
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
-    print('$id $floor $name $time');
-    print(response.statusCode);
+
     String tmp = await response.stream.bytesToString();
     var _list = jsonDecode(tmp)["message"];
 

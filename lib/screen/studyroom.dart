@@ -206,7 +206,6 @@ class _StudyroomState extends State<Studyroom> {
                       itemCount: floorList.length,
                       controller: _pageController,
                       onPageChanged: (change) {
-                        print(floorList[change].place);
                         setModalState(() {
                           _room = floorList[change].place;
                         });
