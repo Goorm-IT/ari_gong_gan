@@ -144,9 +144,11 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               setState(() {
                 buttonState = false;
                 bottomMessageText = "예약 인증이 완료되었습니다!!";
+                bottomMessageTextColor = Color(0xff303952);
+                bottomMessageBackgroundColor = Color(0xff778beb);
               });
             } else {
-              showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+              showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.(1)");
               if (mounted) {
                 setState(() {
                   _isScanning = false;
@@ -155,7 +157,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
               return;
             }
           } catch (e) {
-            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.(2)");
             if (mounted) {
               setState(() {
                 _isScanning = false;
