@@ -92,7 +92,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
             _beacons.addAll(list);
           });
           _beacons.sort(_compareParameters);
-          // compareBeaconRoom();
+          compareBeaconRoom();
         });
       }
     });
@@ -131,8 +131,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   compareBeaconRoom() async {
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
-        if (_beacons[i].minor == beaconRoom[_list[widget.index].floor] ||
-            _beacons[i].minor == 62905) {
+        if (_beacons[i].minor == beaconRoom[_list[widget.index].floor]) {
           stopScanning();
           AriServer ariServer = AriServer();
           try {
