@@ -11,7 +11,7 @@ import 'package:http/http.dart' as http;
 late String _cookie;
 
 class AriServer {
-  String url = 'https://www.arigonggan.site:8000';
+  String url = 'https://www.arigonggan.site';
   Future<String> login({required String id, required String pw}) async {
     var headers = {
       'Content-Type': 'text/plain',
