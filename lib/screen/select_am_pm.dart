@@ -375,8 +375,13 @@ class _CustomBottomSheetState extends State<CustomBottomSheet>
                                       "${int.parse(provider.todayReservation[j].time.substring(0, 2)) + 1}:00:00") {
                                     flag = false;
                                   }
-                                  if ("${val.time}:00" ==
-                                      "${int.parse(provider.todayReservation[j].time.substring(0, 2)) - 1}:00:00") {
+                                  String tmp = (int.parse(provider
+                                              .todayReservation[j].time
+                                              .substring(0, 2)) -
+                                          1)
+                                      .toString()
+                                      .padLeft(2, '0');
+                                  if ("${val.time}:00" == "$tmp:00:00") {
                                     flag = false;
                                   }
                                 }

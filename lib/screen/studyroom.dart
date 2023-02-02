@@ -225,9 +225,14 @@ class _StudyroomState extends State<Studyroom> {
                         return Column(
                           children: [
                             Container(
+                              padding: const EdgeInsets.all(40),
                               height: 170,
                               width: 170,
-                              color: Colors.grey,
+                              color: Colors.grey.withOpacity(0.25),
+                              child: Image.asset(
+                                'assets/images/ari_logo.png',
+                                width: 35,
+                              ),
                             ),
                           ],
                         );

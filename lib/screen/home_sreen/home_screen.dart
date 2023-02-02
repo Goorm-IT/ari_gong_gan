@@ -197,7 +197,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 color: Color(0xffecf3ff),
               ),
-              height: MediaQuery.of(context).size.height - 400,
+              height: MediaQuery.of(context).size.height -
+                  MediaQuery.of(context).padding.top -
+                  400,
               margin: const EdgeInsets.symmetric(horizontal: 48.0),
               width: windowWidth - 96,
               child: Padding(
@@ -207,11 +209,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _Button(
                           title: '스터디룸',
-                          image: 'assets/images/ari_book_leading_icon.png',
+                          image: 'assets/images/ari_study_room_icon.png',
                           ontap: () {
                             Navigator.push(
                                 context,
@@ -301,8 +303,8 @@ class _ButtonState extends State<_Button> {
   Widget build(BuildContext context) {
     Color titleColor = isPressed ? PRIMARY_COLOR_DEEP : PRIMARY_COLOR_DEEP;
     return Container(
-      width: 108,
-      height: 106,
+      width: MediaQuery.of(context).size.width / 3.7,
+      height: MediaQuery.of(context).size.width / 3.7,
       decoration: decoWithShadow(10.0),
       child: Material(
         borderRadius: BorderRadius.all(

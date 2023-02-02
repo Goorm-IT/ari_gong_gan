@@ -5,6 +5,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/model/today_reservation_list.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/agreement_page_in_my_page.dart';
+import 'package:ari_gong_gan/screen/mypage_showdialog/reservation_delete.dart';
 import 'package:ari_gong_gan/screen/terms_of_use.dart';
 import 'package:ari_gong_gan/widget/custom_gradient_progress.dart';
 import 'package:ari_gong_gan/widget/custom_showdialog.dart';
@@ -32,6 +33,7 @@ class _MyPageState extends State<MyPage> {
   final PageController _pageController = PageController(initialPage: 0);
   int deletePage = 0;
   bool _isLoading = false;
+  bool _isLoadingInpopup = false;
   late TodayReservationProvider _todayReservationProvider;
   AriUser userInfo = GetIt.I<AriUser>();
   String osVersion = "";
@@ -132,7 +134,7 @@ class _MyPageState extends State<MyPage> {
               ],
             ),
           ),
-          action: [deleteDiaLog2Action()],
+          action: [emptyListAction()],
           isBackButton: true,
         );
       }
@@ -320,13 +322,11 @@ class _MyPageState extends State<MyPage> {
                               action: [emptyListAction()],
                               isBackButton: true,
                             )
-                          : customShowDiaLog(
+                          : showDialog(
                               context: context,
-                              title: deleteDiaLogTitle(),
-                              content: deleteDiaLogContent(),
-                              action: [deleteDiaLogAction()],
-                              isBackButton: true,
-                            );
+                              builder: ((context) {
+                                return ReservationDelete(list: _list);
+                              }));
                     },
                     isChecked: false,
                   ),
@@ -371,302 +371,6 @@ class _MyPageState extends State<MyPage> {
   }
 
   Widget emptyListAction() {
-    return Container(
-      height: 53,
-      child: Row(
-        children: [
-          Flexible(
-            child: ClipRRect(
-              borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(18.0),
-                bottomRight: Radius.circular(18.0),
-              ),
-              child: Material(
-                color: Color(0xffF9E769),
-                child: InkWell(
-                  onTap: () async {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(18.0),
-                        bottomLeft: Radius.circular(18.0),
-                      ),
-                    ),
-                    child: Container(
-                      child: Text(
-                        "확인",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget deleteDiaLogTitle() {
-    return Container();
-  }
-
-  Widget deleteDiaLogContent() {
-    return Container(
-        height: 75.0,
-        child: Column(
-          children: [
-            Container(
-              height: 50,
-              width: 300,
-              child: PageView.builder(
-                itemCount: _list.length,
-                controller: _pageController,
-                onPageChanged: (int index) {
-                  setState(() {
-                    deletePage = index;
-                  });
-                },
-                itemBuilder: ((BuildContext context, int index) {
-                  return Container(
-                    height: 50,
-                    width: 300,
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                          '${_list[index].floor}  ${_list[index].name}',
-                          style: TextStyle(
-                            color: Color(0xff4888E0),
-                            fontSize: 12,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 2,
-                        ),
-                        Text(
-                          '${_list[index].time.substring(0, 5)} - ${int.parse(_list[index].time.substring(0, 2)) + 1}:00',
-                          style: TextStyle(
-                            color: Color(0xff4888E0),
-                            fontSize: 20,
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                }),
-              ),
-            ),
-            SizedBox(
-              height: 10,
-            ),
-            SmoothPageIndicator(
-                controller: _pageController,
-                count: _list.length,
-                effect: ColorTransitionEffect(
-                  dotWidth: 5,
-                  dotHeight: 5,
-                  activeDotColor: PRIMARY_COLOR_DEEP,
-                  dotColor: Color(0xff80bcfa),
-                ),
-                onDotClicked: (index) {
-                  _pageController.animateToPage(
-                    index,
-                    duration: Duration(milliseconds: 250),
-                    curve: Curves.easeIn,
-                  );
-                })
-          ],
-        ));
-  }
-
-  Widget deleteDiaLogAction() {
-    return Container(
-      height: 53,
-      child: Row(
-        children: [
-          Flexible(
-            flex: 2,
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.only(bottomLeft: Radius.circular(18.0)),
-              child: Material(
-                color: Color(0xffBCBCBC),
-                child: InkWell(
-                  splashColor: Colors.white,
-                  onTap: () {
-                    Navigator.pop(context);
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomLeft: Radius.circular(18.0),
-                      ),
-                    ),
-                    child: Container(
-                      child: Text(
-                        "종료",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-          Flexible(
-            flex: 3,
-            child: ClipRRect(
-              borderRadius:
-                  BorderRadius.only(bottomRight: Radius.circular(18.0)),
-              child: Material(
-                color: Color(0xffF9E769),
-                child: InkWell(
-                  splashColor: Color.fromARGB(223, 255, 251, 15),
-                  onTap: () async {
-                    AriServer ariServer = AriServer();
-                    try {
-                      int rst = await ariServer.delete(
-                        id: userInfo.studentId,
-                        floor: _list[deletePage].floor,
-                        name: _list[deletePage].name,
-                        time: _list[deletePage].time,
-                      );
-
-                      Navigator.pop(context);
-                      if (rst == 200) {
-                        customShowDiaLog(
-                            context: context,
-                            title: deleteDiaLog2Title(),
-                            content: deleteDiaLog2Content(),
-                            action: [deleteDiaLog2Action()],
-                            isBackButton: false);
-                      } else {
-                        customShowDiaLog(
-                          context: context,
-                          title: Container(
-                            height: 20.0,
-                            child: Center(
-                              child: Text(
-                                "예약취소 실패",
-                                style: TextStyle(
-                                    color: Color(0xff4888E0),
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                          content: Container(
-                            height: 45.0,
-                            child: Align(
-                              alignment: Alignment.topCenter,
-                              child: Text(
-                                "잠시후 다시 시도해주세요.",
-                                style: TextStyle(
-                                    color: Color(0xff4888E0),
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500),
-                              ),
-                            ),
-                          ),
-                          action: [emptyListAction()],
-                          isBackButton: true,
-                        );
-                      }
-                    } catch (e) {
-                      Navigator.pop(context);
-                      customShowDiaLog(
-                        context: context,
-                        title: Container(
-                          height: 20.0,
-                          child: Center(
-                            child: Text(
-                              "예약취소 실패",
-                              style: TextStyle(
-                                  color: Color(0xff4888E0),
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                        content: Container(
-                          height: 45.0,
-                          child: Align(
-                            alignment: Alignment.topCenter,
-                            child: Text(
-                              "잠시후 다시 시도해주세요.",
-                              style: TextStyle(
-                                  color: Color(0xff4888E0),
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w500),
-                            ),
-                          ),
-                        ),
-                        action: [emptyListAction()],
-                        isBackButton: true,
-                      );
-                    }
-                  },
-                  child: Container(
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.only(
-                        bottomRight: Radius.circular(18.0),
-                      ),
-                    ),
-                    child: Container(
-                      child: Text(
-                        "예약취소",
-                        style: TextStyle(color: Colors.white),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget deleteDiaLog2Title() {
-    return Container();
-  }
-
-  Widget deleteDiaLog2Content() {
-    return Container(
-        height: 75.0,
-        width: 300,
-        child: Column(
-          children: [
-            Text(
-              "예약 취소",
-              style: TextStyle(
-                  color: PRIMARY_COLOR_DEEP,
-                  fontSize: 15,
-                  fontWeight: FontWeight.w800),
-            ),
-            SizedBox(
-              height: 5,
-            ),
-            Text(
-              "예약이 취소되었습니다",
-              style: TextStyle(
-                fontSize: 13,
-                color: PRIMARY_COLOR_DEEP,
-              ),
-            ),
-          ],
-        ));
-  }
-
-  Widget deleteDiaLog2Action() {
     return Container(
       height: 53,
       child: Row(
