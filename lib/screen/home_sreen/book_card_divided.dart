@@ -51,6 +51,69 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     '수리관 1층': 62902
   };
 
+  testStartScanBeacon() async {
+    await flutterBeacon.initializeScanning;
+    if (controller.scanningStatus != true) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        _settingErrorOpacitiy = 0.0;
+        widget.isSetting(0.0);
+      });
+    }
+
+    final regions = <Region>[
+      Region(
+        identifier: 'MBeacon',
+        proximityUUID: '74278BDA-B644-4520-8F0C-720EAF059935',
+      ),
+      Region(
+        identifier: 'BeaconType2',
+        proximityUUID: '6a84c716-0f2a-1ce9-f210-6a63bd873dd9',
+      ),
+    ];
+
+    if (_streamRanging != null) {
+      if (_streamRanging!.isPaused) {
+        _streamRanging?.resume();
+        return;
+      }
+    }
+    controller.startScanning();
+    _streamRanging =
+        flutterBeacon.ranging(regions).listen((RangingResult result) {
+      if (mounted) {
+        setState(() {
+          _regionBeacons[result.region] = result.beacons;
+          _beacons.clear();
+          _regionBeacons.values.forEach((list) {
+            _beacons.addAll(list);
+          });
+          _beacons.sort(_compareParameters);
+          testcompaerBeaconRoom();
+        });
+      }
+    });
+
+    Future.delayed(Duration(seconds: 30)).then((value) {
+      if (mounted) {
+        setState(() {
+          if (controller.scanningStatus == true) {
+            setState(() {
+              _isScanning = false;
+            });
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.");
+            stopScanning();
+          }
+        });
+      }
+    });
+
+    return;
+  }
+
   startScanBeacon() async {
     await flutterBeacon.initializeScanning;
     if (controller.scanningStatus != true) {
@@ -128,6 +191,46 @@ class _BookCardDiviedState extends State<BookCardDivied> {
     return compare;
   }
 
+  testcompaerBeaconRoom() async {
+    print(_beacons);
+    if (_beacons.isNotEmpty) {
+      for (int i = 0; i < _beacons.length; i++) {
+        if (_beacons[i].major == 40010) {
+          print('###############################');
+          print('${_beacons[i]}');
+          print('###############################');
+          stopScanning();
+          AriServer ariServer = AriServer();
+          try {
+            showToast(msg: "예약 인증이 완료되었습니다.");
+            setState(() {
+              buttonState = false;
+              bottomMessageText = "예약 인증이 완료되었습니다!!";
+              bottomMessageTextColor = Color(0xff303952);
+              bottomMessageBackgroundColor = Color(0xff778beb);
+            });
+          } catch (e) {
+            showToast(msg: "인증에 실패했습니다. 잠시후 다시 시도해주세요.(2)");
+            if (mounted) {
+              setState(() {
+                _isScanning = false;
+              });
+            }
+            return;
+          }
+          if (mounted) {
+            setState(() {
+              _isScanning = false;
+              _list[widget.index].resStatus = 'booked';
+            });
+          }
+        }
+      }
+    }
+
+    return;
+  }
+
   compareBeaconRoom() async {
     if (_beacons.isNotEmpty) {
       for (int i = 0; i < _beacons.length; i++) {
@@ -203,6 +306,7 @@ class _BookCardDiviedState extends State<BookCardDivied> {
   @override
   void initState() {
     super.initState();
+
     _list = context
         .read<TodayReservationProvider>()
         .todayReservation
@@ -210,6 +314,14 @@ class _BookCardDiviedState extends State<BookCardDivied> {
       return element.resStatus != "delete";
     }).toList();
     _list.sort((a, b) => a.time.compareTo(b.time));
+    _list.insert(
+        0,
+        TodayReservation(
+            resStatus: 'prebooked',
+            seatStatus: 'booked',
+            floor: '테스트용',
+            name: '테스트용',
+            time: '09:00'));
     if (_list[widget.index].resStatus == 'booked') {
       bottomMessageText = "예약 인증이 완료되었습니다!!";
       bottomMessageTextColor = Color(0xff303952);
@@ -369,7 +481,12 @@ class _BookCardDiviedState extends State<BookCardDivied> {
                                     });
                                   }
                                   controller.startScanning();
-                                  startScanBeacon();
+                                  if (_list[widget.index].floor == '테스트용') {
+                                    print('test');
+                                    testStartScanBeacon();
+                                  } else {
+                                    startScanBeacon();
+                                  }
                                 },
                                 child: Container(
                                   width: 60,

@@ -1,7 +1,9 @@
 import 'package:ari_gong_gan/const/user_info.dart';
 import 'package:ari_gong_gan/controller/requirement_state_controller.dart';
+import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/provider/review_by_floor_provider.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/check_reservation.dart';
 import 'package:ari_gong_gan/screen/home_sreen/book_card.dart';
@@ -38,6 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
   late RevervationAllProvider _revervationAllProvider;
   late ReservationByUserProvider _reservationByUserProvider;
   late TodayReservationProvider _todayReservationProvider;
+  late ReviewByFloorProvider _reviewByFloorProvider;
   final controller = Get.find<RequirementStateController>();
 
   @override
@@ -58,8 +61,11 @@ class _HomeScreenState extends State<HomeScreen> {
         Provider.of<ReservationByUserProvider>(context, listen: false);
     _todayReservationProvider =
         Provider.of<TodayReservationProvider>(context, listen: false);
+    _reviewByFloorProvider =
+        Provider.of<ReviewByFloorProvider>(context, listen: false);
     double windowHeight = MediaQuery.of(context).size.height;
     double windowWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       appBar: customAppbar(context, true, false),
       body: Stack(
@@ -212,9 +218,20 @@ class _HomeScreenState extends State<HomeScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
                         _Button(
-                          title: '스터디룸',
+                          title: '스터디룸 리뷰',
                           image: 'assets/images/ari_study_room_icon.png',
-                          ontap: () {
+                          ontap: () async {
+                            AriServer ariServer = AriServer();
+                            await _reservationByUserProvider
+                                .getReservationByUser();
+                            await _reviewByFloorProvider.getReviewByFloor(
+                                floor: '아리관 3층');
+                            await _reviewByFloorProvider.getReviewByFloor(
+                                floor: '아리관 4층');
+                            await _reviewByFloorProvider.getReviewByFloor(
+                                floor: '수봉관 7층');
+                            await _reviewByFloorProvider.getReviewByFloor(
+                                floor: '수리관 1층');
                             Navigator.push(
                                 context,
                                 PageTransition(

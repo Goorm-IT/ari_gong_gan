@@ -25,7 +25,6 @@ class LoginCrwal {
     const url = 'http://cyber.anyang.ac.kr/MUser.do?cmd=loginUser';
     final response = await _getResponse('POST', url, headers, body);
     String rawCookie = response.headers['set-cookie'] ?? '';
-
     if (response.headers['pragma'] != null) {
       throw new CustomException(300, 'Login Failed');
     } else {

@@ -6,6 +6,7 @@ import 'package:ari_gong_gan/http/ari_server.dart';
 import 'package:ari_gong_gan/http/login_crawl.dart';
 import 'package:ari_gong_gan/provider/reservation_all_provider.dart';
 import 'package:ari_gong_gan/provider/reservation_by_user_provider.dart';
+import 'package:ari_gong_gan/provider/review_by_floor_provider.dart';
 import 'package:ari_gong_gan/provider/today_reservation_provider.dart';
 import 'package:ari_gong_gan/screen/argeement_page.dart';
 import 'package:ari_gong_gan/screen/home_sreen/home_screen.dart';
@@ -34,28 +35,52 @@ void main() async {
   GetIt.I.allowReassignment = true;
   SharedPreferences prefs = await SharedPreferences.getInstance();
   isInitView = prefs.getInt('agreement');
-  isLoginDataSaved() async {
+
+  Future<int> tmp2() async {
+    print("1");
+    DateTime tmp = await NTP.now().timeout(const Duration(seconds: 3),
+        onTimeout: () async {
+      print("시간제한1");
+      return await NTP.now();
+    });
+    print("2");
+    DateTime currentTime = tmp.toUtc().add(Duration(hours: 9));
+    print("3");
+    GetIt.I.registerSingleton<DateTime>(currentTime);
+    print("4");
+
     var ctrl = new LoginData();
     var assurance = await ctrl.loadLoginData();
     String saved_id = assurance["user_id"] ?? "";
     String saved_pw = assurance["user_pw"] ?? "";
-
-    DateTime tmp = await NTP.now();
-    DateTime currentTime = tmp.toUtc().add(Duration(hours: 9));
-    GetIt.I.registerSingleton<DateTime>(currentTime);
+    print("5");
 
     try {
       var loginCrwal = LoginCrwal(id: saved_id, pw: saved_pw);
       final getuserInfo = await loginCrwal.userInfo();
+      print("6");
       var ariServer = AriServer();
       String ariLogin = await ariServer.login(id: saved_id, pw: saved_pw);
+      print("7");
 
       if (ariLogin == "SUCCESS") {
-        return HomeScreen();
+        return 1;
       } else {
-        return isInitView == 0 ? LoginPage() : AgreementPage();
+        return -1;
       }
     } catch (e) {
+      return -1;
+    }
+  }
+
+  isLoginDataSaved() async {
+    int rst = await tmp2().timeout(const Duration(seconds: 10), onTimeout: () {
+      print("시간제한2");
+      return -1;
+    });
+    if (rst == 1) {
+      return HomeScreen();
+    } else {
       return isInitView == 0 ? LoginPage() : AgreementPage();
     }
   }
@@ -68,6 +93,9 @@ void main() async {
           create: (BuildContext context) => RevervationAllProvider(),
         ),
         ChangeNotifierProvider(
+          create: (BuildContext context) => ReviewByFloorProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (BuildContext context) => ReservationByUserProvider(),
         ),
         ChangeNotifierProvider(
@@ -75,6 +103,7 @@ void main() async {
         ),
       ],
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'NotoSans',
           bottomSheetTheme: BottomSheetThemeData(),

@@ -96,21 +96,19 @@ class _CheckReservationState extends State<CheckReservation> {
 
   @override
   Widget build(BuildContext context) {
-    double windowHeight = MediaQuery.of(context).size.height;
-    double windowWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: customAppbar(context, true, true),
       body: Stack(
         children: [
           Container(
-            height: windowHeight,
-            width: windowWidth,
+            height: MediaQuery.of(context).size.height,
+            width: MediaQuery.of(context).size.width,
             color: Color(0xff2772ac),
           ),
           Column(
             children: [
               Container(
-                width: windowWidth,
+                width: MediaQuery.of(context).size.width,
                 height: 140,
                 decoration: BoxDecoration(
                   color: Color(0xffecf3ff),
@@ -176,7 +174,11 @@ class _CheckReservationState extends State<CheckReservation> {
                               ),
                               Container(
                                 height: 8,
-                                width: 200 * (bookedCount / _itemList.length),
+                                width: 200 *
+                                    (bookedCount /
+                                        (_itemList.length == 0
+                                            ? 1
+                                            : _itemList.length)),
                                 decoration: BoxDecoration(
                                   color: Color(0xff2772AC),
                                   borderRadius:

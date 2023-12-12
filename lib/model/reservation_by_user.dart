@@ -12,6 +12,7 @@ class ReservationByUser {
     required this.floor,
     required this.time,
   });
+
   @override
   String toString() => '$status, $realTime,  $name, $floor, $time';
 

@@ -66,6 +66,14 @@ class _OpenBookCardState extends State<OpenBookCard>
         .where((TodayReservation element) {
       return element.resStatus != "delete";
     }).toList();
+    _list.insert(
+        0,
+        TodayReservation(
+            resStatus: 'prebooked',
+            seatStatus: 'booked',
+            floor: '테스트용',
+            name: '테스트용',
+            time: '09:00'));
   }
 
   @override
